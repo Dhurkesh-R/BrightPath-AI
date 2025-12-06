@@ -17,6 +17,25 @@ const Chatbot = () => {
   const { bg, text, border, bgSecondary, barBg, textThird, textFourth } =
     getThemeClasses(theme);
 
+  const persistChat = async (chatHistory) => {
+    try {
+      await sendChatData(
+        chatHistory.map(m => ({
+          user_message: m.sender === "user" ? m.text : null,
+          bot_response: m.sender === "bot" ? m.text : null
+        }))
+      );
+    } catch (err) {
+      console.error("Chat sync failed:", err);
+    }
+  };
+
+  useEffect(() => {
+  if (messages.length > 1) {
+    persistChat(messages);
+  }
+}, [messages]);
+
   // ✅ Save messages to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem("chat_messages", JSON.stringify(messages));
@@ -29,7 +48,7 @@ const Chatbot = () => {
   useEffect(() => {
     const storedProfile = JSON.parse(localStorage.getItem("studentProfile"));
     if (storedProfile && messages.length === 0) {
-      const favSubject = storedProfile[4]; // Q4 = “Favorite Subject”
+      const favSubject = storedProfile?.interest || null;
       const greetText = favSubject
         ? `👋 Hey there! I remember you love ${favSubject}. Ready to explore something fun in that area today?`
         : "👋 Hey there! Ready to learn and explore something new today?";

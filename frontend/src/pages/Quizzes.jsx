@@ -83,7 +83,7 @@ const Quizzes = () => {
       }));
 
       // 2. Pause for 1.5 seconds to show feedback
-      setTimeout(() => {
+      setTimeout(async () => {
           // 3. Clear feedback state for the next question
           setSelectedAnswer(null);
 
@@ -97,19 +97,27 @@ const Quizzes = () => {
                   setCurrentSubject(subjects[currentIdx + 1]);
                   setCurrentIndex(0);
               } else {
-                  // Quiz finished logic
-                  setFinished(true);
-                  setSubmitting(true);
-                  try {
-                      sendQuizResults({ summary_data: answers }); 
-                      localStorage.setItem("studentProfile", JSON.stringify(answers));
-                      const xp = Math.round(Object.keys(answers).length * 10);
+                    setFinished(true);
+                    setSubmitting(true);
+
+                    try {
+                      const finalAnswers = {
+                        ...answers,
+                        [currentQuestion.id]: answeredQuestionData
+                      };
+                  
+                      await sendQuizResults({ summary_data: finalAnswers });
+                  
+                      localStorage.setItem("studentProfile", JSON.stringify(finalAnswers));
+                      const xp = Object.keys(finalAnswers).length * 10;
                       localStorage.setItem("xpPoints", xp);
-                  } catch (err) {
+                  
+                    } catch (err) {
                       console.error("Error sending results:", err);
-                  } finally {
+                    } finally {
                       setSubmitting(false);
-                  }
+                    }
+
               }
           }
       }, 1500); 

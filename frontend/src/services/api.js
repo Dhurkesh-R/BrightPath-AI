@@ -313,16 +313,33 @@ export async function getDailyQuiz() {
   return res.json();
 }
 
-export const sendQuizResults = async (answers) => {
+export async function sendQuizResults(summary_data) {
     const res = await fetchWithRefresh(`${BASE_URL}/send-quiz-results`, {
       method: "POST",
       headers: getAuthHeaders(),
-      body: JSON.stringify(answers),
+      body: JSON.stringify(summary_data),
     });
     if (!res.ok) throw new Error(`Failed to send answers. Status: ${res.status}`);
     const json = await res.json();
     return json;
   }
+
+export async function sendChatData(messages) {
+  const res = await fetchWithRefresh(`${BASE_URL}/send-chat-log`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({
+      messages: messages
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to send chat logs. Status: ${res.status}`);
+  }
+
+  return await res.json();
+}
+
 
 export async function getStudentDashboard() {
   const res = await fetchWithRefresh(`${BASE_URL}/student-profile`, {

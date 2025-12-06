@@ -427,7 +427,7 @@ def send_chat_data():
         chat = ChatLog(
             user_id=user_id,
             user_message=msg.get("user_message"),
-            bot_message=msg.get("bot_message")
+            bot_response=msg.get("bot_response")
         )
         db.session.add(chat)
 
@@ -441,28 +441,20 @@ def get_student_profile():
     current_user_id = get_jwt_identity()
 
     # Fetch DB data
-    quiz_results = QuizResult.query.filter_by(user_id=current_user_id).all()
     chat_logs = ChatLog.query.filter_by(user_id=current_user_id).all()
+    latest = QuizResult.query.filter_by(user_id=current_user_id)\
+    .order_by(QuizResult.taken_at.desc())\
+    .first()
 
-    # Extract + merge quiz summary data
     quiz_data = []
-    today = datetime.utcnow().date()   # Use UTC since your model uses utcnow()
-    logging.info(today)
-    
-    for result in quiz_results:
-        try:
-            # Check whether quiz was taken today
-            if result.taken_at.date() != today:
-                logging.info(result.taken_at.date())
-                continue  # Skip quizzes not taken today
-            
-            summary = json.loads(result.summary_data)
-            quiz_data.extend(summary)  # Append today's topic performance summaries
-    
-        except Exception:
-            pass  # Avoid breaking profile if 1 bad quiz entry exists
+
+    if latest and latest.summary_data:
+        quiz_data = list(latest.summary_data.values()) if isinstance(latest.summary_data, dict) else list(json.loads(latest.summary_data).values())
+
 
     logging.info(quiz_data)
+
+
     # Extract chat messages
     chat_data = []
     for chat in chat_logs:
