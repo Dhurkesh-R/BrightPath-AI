@@ -19,7 +19,7 @@ export default function Books() {
   const [notification, setNotification] = useState({ message: '', type: '' });
   
   // Use getThemeClasses to apply theme styles
-  const { bg, text, textSecondary, primary } = getThemeClasses(theme);
+  const { bg, text, textSecondary, primary, inputBg } = getThemeClasses(theme);
 
   useEffect(() => {
     fetchBooks();
@@ -118,7 +118,7 @@ export default function Books() {
   }
 
   return (
-    <div className={`p-6 min-h-screen ${bg} ${text}`}>
+    <div className={`p-6 min-h-screen ${bg} ${text} w-full`}>
         
       {/* Notification Bar */}
       {notification.message && (
@@ -137,25 +137,25 @@ export default function Books() {
 
 
       {/* Upload Section */}
-      <Card className={`p-6 mb-10 shadow-xl border border-gray-700 bg-card`}>
+      <Card className={`p-6 mb-10 shadow-xl border border-gray-700 bg-card`} theme={theme}>
         <CardContent className="p-0">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             <input
               type="text"
               placeholder="Title (e.g., Algebra I)"
-              className={`p-3 border border-gray-700 rounded-xl bg-input ${textSecondary} placeholder-gray-500 focus:ring-2 focus:ring-blue-500 transition-all`}
+              className={`p-3 border border-gray-700 rounded-xl ${inputBg} ${textSecondary} placeholder-gray-500 focus:ring-2 focus:ring-blue-500 transition-all`}
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
             />
             <input
               type="text"
               placeholder="Subject (e.g., Mathematics)"
-              className={`p-3 border border-gray-700 rounded-xl bg-input ${textSecondary} placeholder-gray-500 focus:ring-2 focus:ring-blue-500 transition-all`}
+              className={`p-3 border border-gray-700 rounded-xl bg-input ${inputBg} ${textSecondary} placeholder-gray-500 focus:ring-2 focus:ring-blue-500 transition-all`}
               value={form.subject}
               onChange={(e) => setForm({ ...form, subject: e.target.value })}
             />
             <select
-              className={`p-3 border border-gray-700 rounded-xl bg-input ${textSecondary} focus:ring-2 focus:ring-blue-500 transition-all`}
+              className={`p-3 border border-gray-700 rounded-xl bg-input ${inputBg} ${textSecondary} focus:ring-2 focus:ring-blue-500 transition-all`}
               value={form.grade}
               onChange={(e) => setForm({ ...form, grade: e.target.value })}
             >
@@ -165,7 +165,7 @@ export default function Books() {
               ))}
             </select>
             <select
-              className={`p-3 border border-gray-700 rounded-xl bg-input ${textSecondary} focus:ring-2 focus:ring-blue-500 transition-all`}
+              className={`p-3 border border-gray-700 rounded-xl bg-input ${inputBg} ${textSecondary} focus:ring-2 focus:ring-blue-500 transition-all`}
               value={form.section}
               onChange={(e) => setForm({ ...form, section: e.target.value })}
             >
@@ -208,7 +208,7 @@ export default function Books() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {books && books.length > 0 ? (
           books.map((book) => (
-            <Card key={book.id} className={`p-5 shadow-lg border border-gray-700 bg-card`}>
+            <Card key={book.id} className={`p-5 shadow-lg border border-gray-700 bg-card`} theme={theme}>
               <CardContent className="p-0">
                 <div className="flex justify-between items-start mb-3">
                   <h3 className={`font-bold text-xl flex items-center gap-2 text-${primary}-400`}>

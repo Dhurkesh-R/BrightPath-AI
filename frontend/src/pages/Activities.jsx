@@ -12,7 +12,7 @@ import { useTheme, getThemeClasses } from '../contexts/ThemeContext.jsx'; // 1. 
 
 export default function Activities() {
     // 2. Get theme context
-    const { theme } = useTheme(); 
+    const { theme,_,t } = useTheme(); 
     const { bg, text, cardBg, border, inputBg, inputBorder, textSecondary, buttonPrimary, buttonDestructive } = getThemeClasses(theme);
 
     const [activities, setActivities] = useState([]);
@@ -136,15 +136,15 @@ export default function Activities() {
                     <h2 className="text-2xl font-extrabold pl-2">Activity Log</h2>
                 </div>
                 <div className="pr-4">
-                <Dialog open={open} onOpenChange={setOpen}>
-                    <DialogTrigger asChild>
                         {/* Use dynamic buttonPrimary class */}
-                        <Button className={`flex gap-2 ${buttonPrimary}`}>
+                        <Button className={`flex gap-2 ${buttonPrimary}`} theme={theme}>
                             <Plus className="w-4 h-4" /> Add Activity
                         </Button>
+                <Dialog open={open} onOpenChange={setOpen}>
+                    <DialogTrigger asChild>
                     </DialogTrigger>
                     {/* Dialog content needs proper theming for inputs/background/text */}
-                    <DialogContent className={`sm:max-w-md ${cardBg} ${text} ${border}`}>
+                    <DialogContent theme={theme} className={`sm:max-w-md ${cardBg} ${text} ${border}`}>
                     <DialogHeader>
                         <DialogTitle>Add New Activity</DialogTitle>
                     </DialogHeader>
@@ -302,7 +302,7 @@ export default function Activities() {
                 {/* Details Dialog */}
                 <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
                     {/* Themed Dialog Content */}
-                    <DialogContent className={`sm:max-w-lg ${cardBg} ${text} ${border}`}>
+                    <DialogContent theme={theme} className={`sm:max-w-lg ${cardBg} ${text} ${border}`}>
                         <DialogHeader>
                             <DialogTitle className={text}>{editMode ? "Edit Activity" : "Activity Details"}</DialogTitle>
                         </DialogHeader>

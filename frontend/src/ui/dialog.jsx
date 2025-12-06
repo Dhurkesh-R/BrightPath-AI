@@ -1,3 +1,5 @@
+import React from "react";
+import { motion } from "framer-motion";
 import { getThemeClasses } from "../contexts/ThemeContext";
 
 export const Dialog = ({ children, open, onOpenChange }) => {
@@ -23,11 +25,16 @@ export const Dialog = ({ children, open, onOpenChange }) => {
     );
 };
 
-export const DialogTrigger = ({ asChild, children, ...rest }) => {
-    // In a real component, this would clone the child and inject open props.
-    // Here, we assume the trigger button manages its own state via the parent component.
-    return React.cloneElement(children, rest);
+
+export const DialogTrigger = ({ children, onClick }) => {
+    return React.cloneElement(children, {
+        onClick: (e) => {
+            if (children.props.onClick) children.props.onClick(e);
+            if (onClick) onClick(e);
+        }
+    });
 };
+
 
 export const DialogContent = ({ children, className = "", theme }) => {
     const { cardBg, text, border } = getThemeClasses(theme);
