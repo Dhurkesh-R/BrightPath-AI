@@ -13,7 +13,17 @@ export const getThemeClasses = (theme) => ({
     
     // Component specific styles (Card, Input)
     cardBg: theme === 'dark' ? 'bg-gray-800' : 'bg-white',
-    inputBg: theme === 'dark' ? 'bg-gray-700/50' : 'bg-white',
+    inputBg: theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100',
+    inputText: theme === 'dark' ? 'text-gray-100' : 'text-gray-800',
+    // States
+    inputBorder: theme === 'dark' ? 'border-transparent' : 'border-gray-200',
+    inputFocus: theme === 'dark' 
+      ? 'focus:border-blue-500 focus:bg-gray-700/80' 
+      : 'focus:border-blue-600 focus:bg-white',
+    
+    // Disabled states
+    disabledText: theme === 'dark' ? 'disabled:text-gray-500' : 'disabled:text-gray-300',
+    disabledBg: 'disabled:bg-transparent',
     barBg: theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100',
     
     // --- Button Specific Styles (New Additions) ---

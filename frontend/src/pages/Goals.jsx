@@ -135,9 +135,13 @@ export default function Goals({ userId }) {
           <span className="text-lg">Loading Goals data...</span>
       </div>
       ) : error ? (
-        <p className={`${classes.textSecondary}`}>{error}</p>
+        <div className="col-span-full flex justify-center items-center h-[50vh]">
+          <p className={`${classes.textSecondary}`}>{error}</p>
+        </div>
       ) : goals.length === 0 ? (
-        <p className={`${classes.textSecondary}`}>No goals yet. Add your first goal!</p>
+        <div className="col-span-full flex justify-center items-center h-[50vh]">
+          <p className={`${classes.textSecondary}`}>No goals yet. Add your first goal!</p>
+        </div>
       ) : (
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 px-6">
           {goals.map((goal) => (

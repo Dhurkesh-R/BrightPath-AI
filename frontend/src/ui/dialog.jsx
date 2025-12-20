@@ -45,6 +45,6 @@ export const DialogContent = ({ children, className = "", theme }) => {
     );
 };
 
-export const DialogHeader = ({ children }) => <div className="mb-4">{children}</div>;
+export const DialogHeader = ({ children, className }) => <div className={`mb-4 ${className}`}>{children}</div>;
 export const DialogTitle = ({ children }) => <h3 className="text-2xl font-bold">{children}</h3>;
 

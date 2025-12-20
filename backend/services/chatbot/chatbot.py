@@ -1,7 +1,7 @@
-from services.chatbot.conversation.llm_interface import LLMInterface
-from services.chatbot.data.storage import Storage
-from services.chatbot.conversation.planner import Planner
-from services.chatbot.conversation.memory import ConversationBufferMemory, SummarizedMemory, HybridMemory, VectorMemory
+from .conversation.llm_interface import LLMInterface
+from .data.storage import Storage
+from .conversation.planner import Planner
+from .conversation.memory import ConversationBufferMemory, SummarizedMemory, HybridMemory, VectorMemory
 
 
 class ChatBot:

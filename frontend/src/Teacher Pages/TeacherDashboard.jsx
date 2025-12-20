@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Card, CardContent } from "@/ui/card";
+import { Card, CardContent } from "../ui/card";
 import { Book, Users, BarChart3, Brain, LayoutDashboardIcon } from "lucide-react";
-import { Button } from "@/ui/button";
+import { Button } from "../ui/button";
 import { motion } from "framer-motion";
 import {
   ResponsiveContainer,
@@ -78,7 +78,7 @@ export default function TeacherDashboard() {
 
   return (
     // FIX 3: Apply theme classes to the main container
-    <div className={`p-6 space-y-8 min-h-screen ${bg} ${text}`}>
+    <div className={`p-6 space-y-8 min-h-screen ${bg} ${text} w-full`}>
       
       {/* Header */}
       <header className={`flex items-center justify-between pb-6 mb-6 border-b ${border}`}>

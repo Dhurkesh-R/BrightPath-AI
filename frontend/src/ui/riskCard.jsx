@@ -11,7 +11,7 @@ const getRiskLevel = (score) => {
 
 
 // --- RISK CARD COMPONENT ---
-export const RiskCard = ({ title, riskData, type, theme }) => {
+export const RiskCard = ({ title, riskData, type, theme, className }) => {
     const risk = getRiskLevel(riskData?.risk_score || 0);
     const { textSecondary } = getThemeClasses(theme);
 
@@ -19,7 +19,7 @@ export const RiskCard = ({ title, riskData, type, theme }) => {
     const riskBgClass = theme === 'dark' ? risk.bg.replace('/20', '/30') : risk.bg.replace('900/20', '100');
 
     return (
-        <Card theme={theme} className="flex flex-col h-full border-2">
+        <Card theme={theme} className={`flex flex-col h-full border-2 ${className}`}>
             <CardContent className="flex-1">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold">{title}</h3>

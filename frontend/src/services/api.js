@@ -400,16 +400,23 @@ export const getBooks = async () => {
     return res.json();
 };
 
-export const uploadBook = async (book) => {
+export const uploadBook = async (formData) => {
   const res = await fetchWithRefresh(`${BASE_URL}/upload-book`, {
-        method: "POST",
-        headers: getAuthHeaders(),
-        body: JSON.stringify(book),
-      });
-      if (!res.ok) throw new Error(`Failed to send book. Status: ${res.status}`);
-      const json = await res.json();
-      return json;
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || `Upload failed (${res.status})`);
+  }
+
+  return res.json();
 };
+
 
 export const deleteBook = async (bookId) => {
   const res = await fetchWithRefresh(`${BASE_URL}/books/${bookId}`, {
@@ -419,3 +426,33 @@ export const deleteBook = async (bookId) => {
       if (!res.ok) throw new Error("Failed to delete book");
       return res.json();
 };
+
+export const changePassword = async (payload) => {
+  const res = await fetchWithRefresh(`${BASE_URL}/change-password`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to change password");
+  }
+
+  return res.json();
+};
+
+export const fetchStudents = async ({ grade, section, search }) => {
+  const params = new URLSearchParams();
+
+  if (grade) params.append("grade", grade);
+  if (section) params.append("section", section);
+  if (search) params.append("search", search);
+
+  const res = await fetchWithRefresh(`${BASE_URL}/students?${params.toString()}`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  return res.data.data;
+};
+

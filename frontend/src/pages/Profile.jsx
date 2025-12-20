@@ -13,7 +13,7 @@ export default function App() {
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState(null); // State for custom modal message
 
-    const { bg, text, cardBg, border, inputBg, inputBorder, textSecondary, buttonPrimary, buttonDestructive } = getThemeClasses(theme);
+    const { bg, text, cardBg, border, inputBg, inputBorder, textSecondary, buttonPrimary, buttonDestructive, inputFocus, inputText, disabledText, disabledBg } = getThemeClasses(theme);
     
     // Ref for the hidden file input
     const fileInputRef = useRef(null);
@@ -149,7 +149,7 @@ export default function App() {
                         {editing && (
                             <button
                                 onClick={() => setEditing(false)}
-                                className={`flex items-center gap-2 bg-gray-700 ${text} px-4 py-2 rounded-xl hover:bg-gray-600 transition`}
+                                className={`flex items-center gap-2 bg-gray-700 text-gray-200 px-4 py-2 rounded-xl hover:bg-gray-600 transition`}
                             >
                                 Cancel
                             </button>
@@ -157,7 +157,7 @@ export default function App() {
                         {!editing ? (
                             <button
                                 onClick={() => setEditing(true)}
-                                className={`flex items-center gap-2 bg-blue-500 ${text} px-4 py-2 rounded-xl hover:bg-blue-600 transition`}
+                                className={`flex items-center gap-2 bg-blue-500 text-gray-200 px-4 py-2 rounded-xl hover:bg-blue-600 transition`}
                             >
                                 <Edit3 size={18} />
                                 Edit
@@ -166,7 +166,7 @@ export default function App() {
                             <button
                                 onClick={handleSave}
                                 disabled={saving}
-                                className={`flex items-center gap-2 bg-green-500 ${text} px-4 py-2 rounded-xl hover:bg-green-600 transition disabled:opacity-50`}
+                                className={`flex items-center gap-2 bg-green-500 text-gray-200 px-4 py-2 rounded-xl hover:bg-green-600 transition disabled:opacity-50`}
                             >
                                 {saving ? (
                                     <Loader2 size={18} className="animate-spin" />
@@ -231,7 +231,16 @@ export default function App() {
                                 onChange={handleChange}
                                 disabled={!editing}
                                 rows={4}
-                                className={`w-full text-base disabled:bg-transparent disabled:text-gray-300 rounded-lg outline-none resize-none disabled:cursor-default bg-gray-700 p-2 ${text} border border-transparent focus:border-blue-500 focus:bg-gray-700/80 transition`}
+                                className={`
+                                    w-full text-base rounded-lg outline-none resize-none transition p-2
+                                    border border-transparent
+                                    disabled:bg-transparent disabled:cursor-default
+                                    ${inputBg} 
+                                    ${inputText} 
+                                    ${inputFocus} 
+                                    ${disabledText}
+                                    ${disabledBg ? 'border-transparent' : inputBorder}
+                                  `}
                                 placeholder="Tell us a little about yourself..."
                             />
                         </div>
@@ -268,7 +277,7 @@ export default function App() {
                                 onChange={handleChange}
                                 editable={editing}
                                 type="number"
-                                theme={{ bg, text, border }}
+                                theme={{ inputBg, bg, text, border }}
                             />
                             <InputField
                                 label="Class"
@@ -276,7 +285,7 @@ export default function App() {
                                 value={formData?.class}
                                 onChange={handleChange}
                                 editable={editing}
-                                theme={{ bg, text, border }}
+                                theme={{ inputBg, bg, text, border }}
                             />
                             <InputField
                                 label="School"
@@ -284,7 +293,7 @@ export default function App() {
                                 value={formData?.school}
                                 onChange={handleChange}
                                 editable={editing}
-                                theme={{ bg, text, border }}
+                                theme={{ inputBg, bg, text, border }}
                             />
                             <InputField
                                 label="City"
@@ -292,7 +301,7 @@ export default function App() {
                                 value={formData?.city}
                                 onChange={handleChange}
                                 editable={editing}
-                                theme={{ bg, text, border }}
+                                theme={{ inputBg, bg, text, border }}
                             />
                         </div>
 
@@ -305,7 +314,7 @@ export default function App() {
                             value={formData?.interests || ""}
                             onChange={handleChange}
                             disabled={!editing}
-                            className={`w-full p-4 border ${border} rounded-xl focus:ring-2 focus:ring-blue-400 outline-none min-h-[120px] disabled:${cardBg} disabled:cursor-not-allowed ${bg}/50 ${text} text-base transition`}
+                            className={`w-full p-4 border ${border} rounded-xl focus:ring-2 focus:ring-blue-400 outline-none min-h-[120px] disabled:bg-transparent disabled:cursor-not-allowed ${inputBg} ${text} text-base transition`}
                             placeholder="e.g. Drawing, Robotics, Football, Piano..."
                         />
 
@@ -319,7 +328,7 @@ export default function App() {
                             value={formData?.health_summary || ""} 
                             onChange={handleChange}
                             disabled={true} 
-                            className={`w-full p-4 border ${border} rounded-xl outline-none min-h-[120px] disabled:${cardBg} disabled:cursor-not-allowed ${bg}/50 text-gray-400 text-base`}
+                            className={`w-full p-4 border ${border} rounded-xl outline-none min-h-[120px] disabled:bg-transparent disabled:cursor-not-allowed ${inputBg} text-gray-400 text-base`}
                             placeholder="AI-generated summary or parent notes..."
                         />
                     </div>
@@ -343,17 +352,17 @@ function Badge({ name, icon, color, theme }) {
 
 /* Reusable Input Component */
 function InputField({ label, name, value, onChange, editable, type = "text", theme }) {
-    const { bg, text, border } = theme;
+    const { inputBg, bg, text, border } = theme;
     return (
         <div className="flex flex-col">
-            <label className="text-base text-gray-300 mb-2 font-medium">{label}</label>
+            <label className={`text-base ${text} mb-2 font-medium`}>{label}</label>
             <input
                 type={type}
                 name={name}
                 value={value || ""}
                 onChange={onChange}
                 disabled={!editable}
-                className={`p-3 border ${border} rounded-xl focus:ring-2 focus:ring-blue-400 outline-none disabled:${bg}/50 disabled:cursor-not-allowed ${text} ${bg}/50 transition text-base`}
+                className={`p-3 border ${border} rounded-xl focus:ring-2 focus:ring-blue-400 outline-none disabled:bg-transparent disabled:cursor-not-allowed ${text} ${inputBg} transition text-base`}
             />
         </div>
     );

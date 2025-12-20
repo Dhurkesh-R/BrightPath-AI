@@ -186,7 +186,7 @@ export default function Analytics() {
 
   return (
     // Applying themed classes from the utility function
-    <div className={`p-6 space-y-8 min-h-screen transition-colors duration-500 ${bg} ${text}`}>
+    <div className={`p-6 space-y-8 min-h-screen transition-colors duration-500 ${bg} ${text} w-full`}>
       
       {/* Header and Theme Toggle */}
       <header className={`flex justify-between items-center pb-4 border-b ${border}`}>

@@ -10,6 +10,8 @@ def register():
     required = ["name", "email", "password", "userType"]
     if not all(k in data for k in required):
         return jsonify({"error": "Missing required fields"}), 400
+    if len(data["password"]) < 8:
+        return jsonify({"error": "Password must be at least 8 characters"}), 400
 
     # Import models within the route to ensure proper app context
     from backend.models import db, User
@@ -62,7 +64,7 @@ def login():
             "id": user.id,
             "name": user.name,
             "email": user.email,
-            "user_type": user.user_type
+            "role": user.role
         }
     }), 200
 

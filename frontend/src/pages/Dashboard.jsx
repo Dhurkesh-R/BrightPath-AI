@@ -143,6 +143,7 @@ export default function App() {
                                 riskData={{ ...behavior, risk_score: behavior?.risk_score, behavior }} 
                                 type="behavioral"
                                 theme={theme}
+                                className="mb-5"
                             />
                         </div>
                     </div>
@@ -199,7 +200,7 @@ export default function App() {
                         </Card>
                         
                         {/* Wide Card 1: Skills */}
-                        <Card theme={theme} className="lg:col-span-2 shadow-md">
+                        <Card theme={theme} className="lg:col-span-2 shadow-md mb-5">
                             <CardContent>
                                 <div className="flex items-center mb-4 text-yellow-500">
                                     <BookOpen className="w-6 h-6 mr-3" />
@@ -248,7 +249,7 @@ export default function App() {
                         </Card>
                         
                         {/* Wide Card 2: Success Path */}
-                        <Card theme={theme} className="lg:col-span-1 shadow-md">
+                        <Card theme={theme} className="lg:col-span-1 shadow-md mb-5">
                             <CardContent className="h-full flex flex-col">
                                 <div className="flex items-center mb-4 text-purple-500">
                                     <Compass className="w-6 h-6 mr-3" />

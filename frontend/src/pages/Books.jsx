@@ -19,7 +19,7 @@ export default function Books() {
   const [notification, setNotification] = useState({ message: '', type: '' });
   
   // Use getThemeClasses to apply theme styles
-  const { bg, text, textSecondary, primary, inputBg } = getThemeClasses(theme);
+  const { bg, text, textSecondary, primary, inputBg, border } = getThemeClasses(theme);
 
   useEffect(() => {
     fetchBooks();
@@ -110,7 +110,7 @@ export default function Books() {
 
   if (loading && books.length === 0) {
     return(
-      <div className={`flex items-center justify-center h-screen ${bg} ${text}`}>
+      <div className={`flex items-center justify-center h-screen ${bg} ${text} w-full`}>
           <Loader2 className="animate-spin mr-2 w-6 h-6 text-blue-500" /> 
           <span className="text-lg">Loading books...</span>
       </div>
@@ -150,28 +150,28 @@ export default function Books() {
             <input
               type="text"
               placeholder="Subject (e.g., Mathematics)"
-              className={`p-3 border border-gray-700 rounded-xl bg-input ${inputBg} ${textSecondary} placeholder-gray-500 focus:ring-2 focus:ring-blue-500 transition-all`}
+              className={`p-3 border ${border} rounded-xl ${inputBg} ${textSecondary} placeholder-gray-500 focus:ring-2 focus:ring-blue-500 transition-all`}
               value={form.subject}
               onChange={(e) => setForm({ ...form, subject: e.target.value })}
             />
             <select
-              className={`p-3 border border-gray-700 rounded-xl bg-input ${inputBg} ${textSecondary} focus:ring-2 focus:ring-blue-500 transition-all`}
+              className={`p-3 border ${border} rounded-xl ${inputBg} ${textSecondary} focus:ring-2 focus:ring-blue-500 transition-all`}
               value={form.grade}
               onChange={(e) => setForm({ ...form, grade: e.target.value })}
             >
-              <option value="" disabled>Select Grade</option>
+              <option value="" disabled className={`${text} ${bg}`}>Select Grade</option>
               {[6, 7, 8, 9, 10, 11, 12].map((g) => (
-                <option key={g} value={g}>{g}</option>
+                <option key={g} value={g} className={`${text} ${bg}`}>{g}</option>
               ))}
             </select>
             <select
-              className={`p-3 border border-gray-700 rounded-xl bg-input ${inputBg} ${textSecondary} focus:ring-2 focus:ring-blue-500 transition-all`}
+              className={`p-3 border ${border} rounded-xl ${inputBg} ${textSecondary} focus:ring-2 focus:ring-blue-500 transition-all`}
               value={form.section}
               onChange={(e) => setForm({ ...form, section: e.target.value })}
             >
-              <option value="" disabled>Select Section</option>
+              <option value="" disabled className={`${text} ${bg}`}>Select Section</option>
               {["A", "B", "C", "D", "E"].map((s) => (
-                <option key={s} value={s}>{s}</option>
+                <option key={s} value={s} className={`${text} ${bg}`}>{s}</option>
               ))}
             </select>
             

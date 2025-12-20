@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Settings2, Sun, Moon, User, Trash2, Lock } from 'lucide-react';
+import { Settings as SettingsIcon, Settings2, Sun, Moon, User, Trash2, Lock, HardDrive } from 'lucide-react';
 import { useTheme, getThemeClasses } from '../contexts/ThemeContext.jsx'; 
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card.jsx';
 import { Label } from '../ui/label.jsx';
 import { Input } from '../ui/input.jsx';
 import { Button } from '../ui/button.jsx';
+import { getUserProfile, updateUserProfile, changePassword } from '../services/api.js';
 
 // Mock components (you would replace these with your actual components)
 const Switch = ({ checked, onCheckedChange, theme }) => {
@@ -29,11 +30,73 @@ const Settings = () => {
     const { border, cardBg, text } = getThemeClasses(theme);
 
     // Local states 
-    const [name, setName] = useState("John Doe");
-    const [email, setEmail] = useState("john.doe@example.com");
+    const [user, setUser] =  useState("");
     const [notifications, setNotifications] = useState(true);
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [currentPassword, setCurrentPassword] = useState("");
+
+    
+    useEffect(() => {
+        async function fetchProfile() {
+            try {
+                const res = await getUserProfile(); 
+                setUser(res);
+            } catch (err) {
+                console.error(err);
+                setUser({});
+            }
+        }
+        fetchProfile();
+    }, []);
+
+    const handleChange = (e) => {
+        setUser({ ...user, [e.target.name]: e.target.value });
+    };
+
+    const handlePasswordUpdate = async () => {
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            alert("All fields are required");
+            return;
+        }
+    
+        if (newPassword !== confirmPassword) {
+            alert("Passwords do not match");
+            return;
+        }
+    
+        try {
+            await changePassword({
+                currentPassword,
+                newPassword,
+            });
+    
+            alert("Password updated successfully");
+    
+            setCurrentPassword("");
+            setNewPassword("");
+            setConfirmPassword("");
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+    
+
+    const handleSave = async () => {
+        try {
+            const updatePayload = {
+                ...user,
+                // Mocking the update process:
+                lastUpdated: new Date().toISOString()
+            };
+            
+            const res = await updateUserProfile(updatePayload); 
+            
+            setUser(res);
+        } catch (err) {
+            console.error(err);
+        } 
+    };
 
     // Connect Dark Mode switch to Theme Context
     const handleThemeChange = (isDark) => {
@@ -58,13 +121,13 @@ const Settings = () => {
                 <CardContent className="space-y-4">
                     <div>
                         <Label>Full Name</Label>
-                        <Input theme={theme} value={name} onChange={(e) => setName(e.target.value)} />
+                        <Input theme={theme} value={user.name} name="name" onChange={handleChange} />
                     </div>
                     <div>
                         <Label>Email Address</Label>
-                        <Input theme={theme} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <Input theme={theme} type="email" name="email" value={user.email} onChange={handleChange} />
                     </div>
-                    <Button className="mt-2">Save Profile</Button>
+                    <Button className="mt-2" onClick={handleSave}>Save Profile</Button>
                 </CardContent>
             </Card>
 
@@ -111,6 +174,16 @@ const Settings = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div>
+                      <Label>Current Password</Label>
+                      <Input
+                        theme={theme}
+                        type="password"
+                        placeholder="••••••••"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                      />
+                    </div>
+                    <div>
                         <Label>New Password</Label>
                         <Input theme={theme} type="password" placeholder="••••••••" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
                     </div>
@@ -118,12 +191,14 @@ const Settings = () => {
                         <Label>Confirm Password</Label>
                         <Input theme={theme} type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                     </div>
-                    <Button className="mt-2">Update Password</Button>
+                    <Button className="mt-2" onClick={handlePasswordUpdate}>
+                      Update Password
+                    </Button>
                 </CardContent>
             </Card>
 
             {/* 4. Danger Zone  */}
-            <Card className="shadow-2xl border-2 border-red-500/50" theme={theme}>
+            <Card className="shadow-2xl border-2 border-red-500/50 mb-5" theme={theme}>
                 <CardHeader>
                     <CardTitle className="flex items-center text-red-600">
                         <Trash2 className="w-5 h-5 mr-2" />

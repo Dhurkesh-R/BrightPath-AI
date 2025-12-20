@@ -9,6 +9,6 @@ export const Card = ({ children, className = "", theme }) => {
   );
 };
 
-export const CardHeader = ({ children }) => <div className="p-6 pb-4">{children}</div>;
+export const CardHeader = ({ children, className = "" }) => <div className={`p-6 pb-4 ${className}`}>{children}</div>;
 export const CardTitle = ({ children, className = "" }) => <h2 className={`text-xl font-bold ${className}`}>{children}</h2>;
 export const CardContent = ({ children, className = "" }) => <div className={`p-6 ${className}`}>{children}</div>;

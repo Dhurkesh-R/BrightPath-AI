@@ -30,7 +30,7 @@ from flask_migrate import Migrate
 import pandas as pd
 from werkzeug.utils import secure_filename
 
-from datetime import datetime
+from datetime import date, datetime
 from datetime import timedelta
 from backend.services.chatbot.chatbot import ChatBot
 from backend import create_app
@@ -45,8 +45,8 @@ from backend.models import *
 # from ml_service.services.risks_alerts import predict_academic_risk, predict_emotional_risk, predict_health_risk
 
 
-from services.quiz_generator import generate_daily_quiz, generate_custom_quiz
-from services.ai_pipeline import build_student_profile
+from backend.services.quiz_generator import generate_daily_quiz, generate_custom_quiz
+from backend.services.ai_pipeline import build_student_profile
 
 from dotenv import load_dotenv
 
@@ -221,6 +221,8 @@ def chat_bot():
 @app.route("/activities", methods=["POST"])
 @jwt_required()
 def add_activity():
+    user_id = get_jwt_identity()
+
     data = request.get_json()
     if not data or "title" not in data or "description" not in data:
         return jsonify({"error": "Missing required fields"}), 400
@@ -229,6 +231,9 @@ def add_activity():
         title=data["title"],
         description=data["description"],
         category=data.get("category", "general"),
+        time_spent=data["timeSpent"],
+        created_at=datetime.utcnow(),
+        user_id=user_id
     )
     db.session.add(activity)
     db.session.commit()
@@ -237,8 +242,10 @@ def add_activity():
 @app.route("/activities", methods=["GET"])
 @jwt_required()
 def fetch_activities():
-    activities = Activity.query.all()
-    return jsonify({"activities": [a.to_dict() for a in activities]})
+    user_id = get_jwt_identity()
+
+    activities = Activity.query.filter_by(user_id=user_id).all()
+    return jsonify([activity.to_dict() for activity in activities]), 200
 
 # -------------------
 # READ (GET ONE by ID)
@@ -287,7 +294,7 @@ def delete_activity(activity_id):
 
     db.session.delete(activity)
     db.session.commit()
-    return jsonify({"message": f"Activity {activity_id} deleted"}).accept_ranges
+    return jsonify({"message": f"Activity {activity_id} deleted"})
 
 @app.route("/profile", methods=['GET'])
 @jwt_required()
@@ -299,7 +306,7 @@ def get_user_profile():
         "id": user.id,
         "name": user.name,
         "email": user.email,
-        "role": user.user_type,
+        "role": user.role,
         "age": user.age,
         "class": user.class_name,
         "school": user.school,
@@ -555,6 +562,95 @@ def delete_book(book_id):
 @app.route("/books/files/<path:filename>")
 def serve_book_file(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
+@app.route("/change-password", methods=["POST"])
+@jwt_required()
+def change_password():
+    user_id = get_jwt_identity()
+    data = request.get_json()
+
+    current_password = data.get("currentPassword")
+    new_password = data.get("newPassword")
+
+    if not current_password or not new_password:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    if len(new_password) < 8:
+        return jsonify({"error": "Password must be at least 8 characters"}), 400
+
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # 🔐 Verify current password
+    if not check_password_hash(user.password_hash, current_password):
+        return jsonify({"error": "Current password is incorrect"}), 401
+
+    # 🔐 Hash and update new password
+    user.password_hash = generate_password_hash(new_password)
+    db.session.commit()
+
+    return jsonify({"message": "Password updated successfully"}), 200
+
+from flask import jsonify, request
+from flask_jwt_extended import jwt_required
+from sqlalchemy import and_
+
+@app.route("/students", methods=["GET"])
+@jwt_required()
+def get_students():
+    """
+    Fetch all students with optional filters:
+    - grade
+    - section
+    - search (by name)
+    """
+
+    # Query params
+    grade = request.args.get("grade")        # e.g. "9"
+    section = request.args.get("section")    # e.g. "A"
+    search = request.args.get("search")      # e.g. "ravi"
+
+    # Base query: ONLY students
+    query = (
+        db.session.query(User, StudentProfile)
+        .join(StudentProfile, StudentProfile.user_id == User.id)
+        .filter(User.role == "student")
+    )
+
+    # Apply grade filter
+    if grade and grade != "all":
+        query = query.filter(StudentProfile.grade == grade)
+
+    # Apply section filter
+    if section and section != "all":
+        query = query.filter(StudentProfile.section == section)
+
+    # Apply search filter (case-insensitive)
+    if search:
+        query = query.filter(
+            User.name.ilike(f"%{search.strip()}%")
+        )
+
+    results = query.all()
+
+    students = []
+    for user, profile in results:
+        students.append({
+            "id": user.id,
+            "name": user.name,
+            "grade": profile.grade,
+            "section": profile.section,
+            "avatar": "".join([w[0] for w in user.name.split()][:2]).upper(),
+            "performance": profile.performance if hasattr(profile, "performance") else "Average"
+        })
+
+    return jsonify({
+        "success": True,
+        "count": len(students),
+        "data": students
+    }), 200
 
 
 

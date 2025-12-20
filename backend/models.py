@@ -1,54 +1,114 @@
-from ast import BinOp
-from threading import _profile_hook
 from flask_sqlalchemy import SQLAlchemy 
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
 db = SQLAlchemy()
 
+# class User(db.Model):
+#     __tablename__ = "users"
+
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(120), nullable=False)
+#     email = db.Column(db.String(120), unique=True, nullable=False)
+#     password_hash = db.Column(db.String(255), nullable=False)
+#     user_type = db.Column(db.String(50), nullable=False)
+#     age = db.Column(db.Integer)
+#     class_name = db.Column(db.String(10))
+#     section = db.Column(db.String(5))
+#     school = db.Column(db.String(255))
+#     city = db.Column(db.String(100))
+#     interests = db.Column(db.Text)
+#     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+#     bio = db.Column(db.Text)
+#     profile_pic_url = db.Column(db.Text)
+
+#     def to_dict(self):
+#         return {
+#         "id": self.id,
+#         "name": self.name,
+#         "email": self.email,
+#         "role": self.user_type,
+#         "age": self.age,
+#         "class": self.class_name,
+#         "section": self.section,
+#         "school": self.school,
+#         "city": self.city,
+#         "interests": self.interests,
+#         "bio": self.bio if self.bio else "Bio not set",
+#         "profilePicUrl": self.profile_pic_url if self.profile_pic_url else None,
+#     }
+
 class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
-    user_type = db.Column(db.String(50), nullable=False)
-    age = db.Column(db.Integer)
-    class_name = db.Column(db.String(10))
-    school = db.Column(db.String(255))
-    city = db.Column(db.String(100))
-    interests = db.Column(db.Text)
+    role = db.Column(db.String(20), nullable=False, index=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    bio = db.Column(db.Text)
-    profile_pic_url = db.Column(db.Text)
 
-    def to_dict(self):
-        return {
-        "id": self.id,
-        "name": self.name,
-        "email": self.email,
-        "role": self.user_type,
-        "age": self.age,
-        "class": self.class_name,
-        "school": self.school,
-        "city": self.city,
-        "interests": self.interests,
-        "bio": self.bio if self.bio else "Bio not set",
-        "profilePicUrl": self.profile_pic_url if self.profile_pic_url else None,
-    }
+    student_profile = db.relationship(
+        "StudentProfile", uselist=False, back_populates="user"
+    )
+    teacher_profile = db.relationship(
+        "TeacherProfile", uselist=False, back_populates="user"
+    )
+
+
+class StudentProfile(db.Model):
+    __tablename__ = "student_profiles"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        unique=True,
+        nullable=False,
+        index=True
+    )
+
+    grade = db.Column(db.String(10))
+    section = db.Column(db.String(5))
+    school = db.Column(db.String(255))
+    age = db.Column(db.Integer)
+
+    user = db.relationship("User", back_populates="student_profile")
+
+class TeacherProfile(db.Model):
+    __tablename__ = "teacher_profiles"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        unique=True,
+        nullable=False,
+        index=True
+    )
+
+    department = db.Column(db.String(100))
+    designation = db.Column(db.String(100))
+    experience_years = db.Column(db.Integer)
+
+    user = db.relationship("User", back_populates="teacher_profile")
 
 
 
 class Activity(db.Model):
+    __tablename__ = "activities"
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text, nullable=False)
     category = db.Column(db.String(80), default="general")
+    time_spent = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Optional: Link activities to a user (if you want user-specific activities)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True, index=True)
 
     def to_dict(self):
         """Helper to return dict (useful for JSON responses)."""
@@ -57,6 +117,7 @@ class Activity(db.Model):
             "title": self.title,
             "description": self.description,
             "category": self.category,
+            "timeSpent": self.time_spent,
             "created_at": self.created_at.isoformat(),
             "user_id": self.user_id,
         }
@@ -72,7 +133,7 @@ class Goal(db.Model):
     status = db.Column(db.String(50), default="in-progress")  # in-progress, completed, etc.
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
     user = db.relationship("User", backref=db.backref("goals", lazy=True))
 
     def to_dict(self):
@@ -93,7 +154,7 @@ class QuizResult(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     summary_data = db.Column(db.Text)
     taken_at = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
     user = db.relationship("User", backref=db.backref("quiz_logs", lazy=True))
     def to_dict(self):
         return {
@@ -108,7 +169,7 @@ class ChatLog(db.Model):
     __tablename__ = "chat_logs"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
     user = db.relationship("User", backref=db.backref("chat_logs", lazy=True))
     user_message = db.Column(db.Text)
     bot_response = db.Column(db.Text)
@@ -131,7 +192,7 @@ class Book(db.Model):
     subject = db.Column(db.String(100), nullable=False)
     grade = db.Column(db.String(10), nullable=False)
     section = db.Column(db.String(10), nullable=False)
-    uploaded_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    uploaded_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True, index=True)
     file_url = db.Column(db.String(500), nullable=False)
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
 

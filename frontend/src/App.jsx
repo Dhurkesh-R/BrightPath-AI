@@ -15,10 +15,15 @@ import Books from "./pages/Books"
 import Quizzes from "./pages/Quizzes"
 import Profile from "./pages/Profile"
 import Settings from "./pages/Settings"
+import TeacherDashboard from "./Teacher Pages/TeacherDashboard"
+import Analytics from "./Teacher Pages/Analytics";
+import Students from "./Teacher Pages/Students";
 
 const App = () => {
   const { theme } = useTheme();
   const [moodCompleted, setMoodCompleted] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user"))
+  const role = user.role
 
   return (
     <Router>
@@ -43,17 +48,32 @@ const App = () => {
               </PrivateRoute>
             }
           />
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <Dashboard />
-                </div>
-              </PrivateRoute>
+          {role === "student" && (
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <div className="flex h-screen relative">
+                    <Sidebar classname="fixed"/>
+                    <Dashboard />
+                  </div>
+                </PrivateRoute>
             }
-          />
+            />
+          )}
+          {role === "teacher" && (
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <div className="flex h-screen relative">
+                    <Sidebar />
+                    <TeacherDashboard />
+                  </div>
+                </PrivateRoute>
+            }
+            />
+          )}
           <Route
             path="/activities"
             element={
@@ -110,16 +130,39 @@ const App = () => {
             }
           />
           <Route
-            path="/Settings"
+            path="/settings"
             element={
               <PrivateRoute>
                 <div className="flex h-screen relative">
-                  <Sidebar />
+                  <Sidebar classname="fixed"/>
                   <Settings />
                 </div>
               </PrivateRoute>
             }
           />
+          <Route
+            path="/analytics"
+            element={
+              <PrivateRoute>
+                <div className="flex h-screen relative">
+                  <Sidebar />
+                  <Analytics />
+                </div>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/students"
+            element={
+              <PrivateRoute>
+                <div className="flex h-screen relative">
+                  <Sidebar />
+                  <Students />
+                </div>
+              </PrivateRoute>
+            }
+          />
+
         </Routes>
       </AuthProvider>
     </Router>

@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Activity, Book, Dumbbell, Music, Palette, Plus, PersonStanding, ChevronDown, ChevronUp } from "lucide-react";
+import { Activity, Book, Dumbbell, Music, Palette, Plus, PersonStanding, ChevronDown, ChevronUp, X } from "lucide-react";
 import { fetchActivities, addActivity, updateActivity, deleteActivity } from "../services/api";
 import { motion } from "framer-motion";
 import { useTheme, getThemeClasses } from '../contexts/ThemeContext.jsx'; // 1. Theme Imports
@@ -120,7 +120,7 @@ export default function Activities() {
     if (loading) {
         return (
             // Use dynamic theme classes here
-            <div className={`flex items-center justify-center h-[100vh] ${bg} ${textSecondary}`}>
+            <div className={`flex items-center justify-center h-[100vh] ${bg} ${textSecondary} w-full`}>
                 <p className="text-lg animate-pulse">Loading activities...</p>
             </div>
         );
@@ -136,18 +136,31 @@ export default function Activities() {
                     <h2 className="text-2xl font-extrabold pl-2">Activity Log</h2>
                 </div>
                 <div className="pr-4">
-                        {/* Use dynamic buttonPrimary class */}
-                        <Button className={`flex gap-2 ${buttonPrimary}`} theme={theme}>
-                            <Plus className="w-4 h-4" /> Add Activity
-                        </Button>
-                <Dialog open={open} onOpenChange={setOpen}>
-                    <DialogTrigger asChild>
-                    </DialogTrigger>
-                    {/* Dialog content needs proper theming for inputs/background/text */}
-                    <DialogContent theme={theme} className={`sm:max-w-md ${cardBg} ${text} ${border}`}>
-                    <DialogHeader>
-                        <DialogTitle>Add New Activity</DialogTitle>
-                    </DialogHeader>
+                    <Button
+                        className={`flex gap-2 ${buttonPrimary}`}
+                        theme={theme}
+                        onClick={() => setOpen(true)}
+                    >
+                        <Plus className="w-4 h-6" />
+                        Add Activity
+                    </Button>
+
+                    <Dialog open={open} onOpenChange={setOpen}>
+                        <DialogContent
+                            theme={theme}
+                            className={`sm:max-w-md ${cardBg} ${text} ${border}`}
+                        >
+                            <DialogHeader className="flex items-center justify-between">
+                                <DialogTitle>Add New Activity</DialogTitle>
+                                <Button
+                                    variant="secondary"
+                                    className="bg-transparent shadow-none"
+                                    theme={theme}
+                                    onClick={() => setOpen(false)}
+                                >
+                                    <X className="w-4 h-4" />
+                                </Button>
+                            </DialogHeader>
                     <form onSubmit={handleSubmit} className="space-y-4 mt-2">      <div>
                         <Label htmlFor="title">Title</Label>
                         <Input
@@ -156,6 +169,7 @@ export default function Activities() {
                           onChange={(e) => setForm({ ...form, title: e.target.value })}
                           required
                           className={`${inputBg} ${inputBorder} ${text}`} // Themed Input
+                          theme={theme}
                         />
                     </div>
                     <div>
@@ -165,15 +179,15 @@ export default function Activities() {
                           value={form.category}
                           onValueChange={(val) => setForm({ ...form, category: val })}
                         >
-                          <SelectTrigger className={`${inputBg} ${inputBorder} ${text}`}>
+                          <SelectTrigger className={`${inputBg} ${inputBorder} ${text}`} theme={theme}>
                             <SelectValue placeholder="Select category" />
                           </SelectTrigger>
-                          <SelectContent className={`${cardBg} ${text} ${border}`}>
-                            <SelectItem value="sports">Sports</SelectItem>
-                            <SelectItem value="academics">Academics</SelectItem>
-                            <SelectItem value="music">Music</SelectItem>
-                            <SelectItem value="art">Art</SelectItem>
-                            <SelectItem value="general">General</SelectItem>
+                          <SelectContent className={`${cardBg} ${text} ${border}`} theme={theme}>
+                            <SelectItem value="sports" theme={theme}>Sports</SelectItem>
+                            <SelectItem value="academics" theme={theme}>Academics</SelectItem>
+                            <SelectItem value="music" theme={theme}>Music</SelectItem>
+                            <SelectItem value="art" theme={theme}>Art</SelectItem>
+                            <SelectItem value="general" theme={theme}>General</SelectItem>
                           </SelectContent>
                         </Select>
                     </div>
@@ -184,6 +198,7 @@ export default function Activities() {
                           value={form.description}
                           onChange={(e) => setForm({ ...form, description: e.target.value })}
                           className={`${inputBg} ${inputBorder} ${text}`} // Themed Input
+                          theme={theme}
                         />
                     </div>
                     <div>
@@ -194,6 +209,7 @@ export default function Activities() {
                           value={form.timeSpent}
                           onChange={(e) => setForm({ ...form, timeSpent: e.target.value })}
                           className={`${inputBg} ${inputBorder} ${text}`} // Themed Input
+                          theme={theme}
                         />
                     </div>
                     <Button type="submit" className={`w-full ${buttonPrimary}`}>Save Activity</Button>
@@ -276,7 +292,7 @@ export default function Activities() {
                     <motion.div key={activity.id || idx} whileHover={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 200 }}>               
                         {/* Apply cardBg and border to individual activity cards */}
                         <Card className={`rounded-2xl shadow-md border hover:border-gray-200 hover:shadow-xl transition-all ${cardBg} ${border}`} theme={theme}>               
-                            <CardHeader className="flex flex-row items-center justify-between">               
+                            <CardHeader className="flex items-center justify-between">               
                                 <CardTitle className="text-lg font-semibold">{activity.title}</CardTitle>               
                                 {activityIcons[activity.category] || activityIcons.general}               
                             </CardHeader>                
@@ -303,8 +319,16 @@ export default function Activities() {
                 <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
                     {/* Themed Dialog Content */}
                     <DialogContent theme={theme} className={`sm:max-w-lg ${cardBg} ${text} ${border}`}>
-                        <DialogHeader>
+                        <DialogHeader className="flex items-center justify-between">
                             <DialogTitle className={text}>{editMode ? "Edit Activity" : "Activity Details"}</DialogTitle>
+                            <Button
+                                    variant="secondary"
+                                    className="bg-transparent shadow-none"
+                                    theme={theme}
+                                    onClick={() => setSelected(false)}
+                                >
+                                    <X className="w-4 h-4" />
+                            </Button>
                         </DialogHeader>
 
                         {selected && !editMode && (
