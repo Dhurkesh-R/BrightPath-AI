@@ -12,6 +12,7 @@ export default function App() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState(null); // State for custom modal message
+    const role = JSON.parse(localStorage.getItem("user")).role
 
     const { bg, text, cardBg, border, inputBg, inputBorder, textSecondary, buttonPrimary, buttonDestructive, inputFocus, inputText, disabledText, disabledBg } = getThemeClasses(theme);
     
@@ -270,7 +271,10 @@ export default function App() {
                         </h3>
                         
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <InputField
+                          {/* Student Fields */}
+                          {role === "student" && (
+                            <>
+                              <InputField
                                 label="Age"
                                 name="age"
                                 value={formData?.age}
@@ -278,59 +282,131 @@ export default function App() {
                                 editable={editing}
                                 type="number"
                                 theme={{ inputBg, bg, text, border }}
-                            />
-                            <InputField
+                              />
+                              <InputField
                                 label="Class"
                                 name="class"
                                 value={formData?.class}
                                 onChange={handleChange}
                                 editable={editing}
                                 theme={{ inputBg, bg, text, border }}
-                            />
-                            <InputField
+                              />
+                              <InputField
                                 label="School"
                                 name="school"
                                 value={formData?.school}
                                 onChange={handleChange}
                                 editable={editing}
                                 theme={{ inputBg, bg, text, border }}
-                            />
-                            <InputField
+                              />
+                              <InputField
                                 label="City"
                                 name="city"
                                 value={formData?.city}
                                 onChange={handleChange}
                                 editable={editing}
                                 theme={{ inputBg, bg, text, border }}
-                            />
+                              />
+                              <div className="col-span-2">
+                                <h3 className={`text-2xl font-bold mt-6 mb-6 ${text} flex items-center gap-3 border-b ${border} pb-2`}>
+                                    <Activity className="w-6 h-6 text-green-500" />
+                                    Skills & Interests
+                                </h3>
+                                <textarea
+                                    name="interests"
+                                    value={formData?.interests || ""}
+                                    onChange={handleChange}
+                                    disabled={!editing}
+                                    className={`w-full p-4 border ${border} rounded-xl focus:ring-2 focus:ring-blue-400 outline-none min-h-[120px] disabled:bg-transparent disabled:cursor-not-allowed ${inputBg} ${text} text-base transition`}
+                                    placeholder="e.g. Drawing, Robotics, Football, Piano..."
+                                />
+                              </div>
+                              <div className="col-span-2">
+                                <h3 className={`text-2xl font-bold mt-6 mb-6 ${text} flex items-center gap-3 border-b ${border} pb-2`}>
+                                    <Heart className="w-6 h-6 text-red-500" />
+                                    Mental & Physical Summary
+                                </h3>
+                                {/* This field is intentionally disabled as it's assumed to be AI-generated/admin-only */}
+                                <textarea
+                                    name="health_summary"
+                                    value={formData?.health_summary || ""} 
+                                    onChange={handleChange}
+                                    disabled={true} 
+                                    className={`w-full p-4 border ${border} rounded-xl outline-none min-h-[120px] disabled:bg-transparent disabled:cursor-not-allowed ${inputBg} text-gray-400 text-base`}
+                                    placeholder="AI-generated summary or parent notes..."
+                                />
+                              </div>
+                            </>
+                          )}
+
+                          {/* Teacher Fields */}
+                          {role === "teacher" && (
+                            <>
+                              <InputField
+                                label="Department"
+                                name="department"
+                                value={formData?.department}
+                                onChange={handleChange}
+                                editable={editing}
+                                theme={{ inputBg, bg, text, border }}
+                              />
+                              <InputField
+                                label="Designation"
+                                name="designation"
+                                value={formData?.designation}
+                                onChange={handleChange}
+                                editable={editing}
+                                theme={{ inputBg, bg, text, border }}
+                              />
+                              <InputField
+                                label="Age"
+                                name="age"
+                                value={formData?.age}
+                                onChange={handleChange}
+                                editable={editing}
+                                theme={{ inputBg, bg, text, border }}
+                              />
+                              <InputField
+                                label="Experience Years"
+                                name="experience_years"
+                                value={formData?.experience_years}
+                                onChange={handleChange}
+                                editable={editing}
+                                theme={{ inputBg, bg, text, border }}
+                              />
+                              <InputField
+                                label="School"
+                                name="school"
+                                value={formData?.school}
+                                onChange={handleChange}
+                                editable={editing}
+                                theme={{ inputBg, bg, text, border }}
+                              />
+                              <InputField
+                                label="City"
+                                name="city"
+                                value={formData?.city}
+                                onChange={handleChange}
+                                editable={editing}
+                                theme={{ inputBg, bg, text, border }}
+                              />
+                              <div className="w-full col-span-2">
+                                <h3 className={`text-2xl font-bold mt-10 mb-6 ${text} flex items-center gap-3 border-b ${border} pb-2`}>
+                                  <Activity className="w-6 h-6 text-green-500" />
+                                  Handling Classes
+                                </h3>
+                                <textarea
+                                  name="handling_classes"
+                                  value={formData?.handling_classes || ""}
+                                  onChange={handleChange}
+                                  disabled={!editing}
+                                  className={`w-full p-4 border ${border} rounded-xl focus:ring-2 focus:ring-blue-400 outline-none min-h-[120px] disabled:bg-transparent disabled:cursor-not-allowed ${inputBg} ${text} text-base transition`}
+                                  placeholder="e.g. Drawing, Robotics, Football, Piano..."
+                                />
+                              </div>
+                            </>
+                          )}
                         </div>
-
-                        <h3 className={`text-2xl font-bold mt-10 mb-6 ${text} flex items-center gap-3 border-b ${border} pb-2`}>
-                            <Activity className="w-6 h-6 text-green-500" />
-                            Skills & Interests
-                        </h3>
-                        <textarea
-                            name="interests"
-                            value={formData?.interests || ""}
-                            onChange={handleChange}
-                            disabled={!editing}
-                            className={`w-full p-4 border ${border} rounded-xl focus:ring-2 focus:ring-blue-400 outline-none min-h-[120px] disabled:bg-transparent disabled:cursor-not-allowed ${inputBg} ${text} text-base transition`}
-                            placeholder="e.g. Drawing, Robotics, Football, Piano..."
-                        />
-
-                        <h3 className={`text-2xl font-bold mt-10 mb-6 ${text} flex items-center gap-3 border-b ${border} pb-2`}>
-                            <Heart className="w-6 h-6 text-red-500" />
-                            Mental & Physical Summary
-                        </h3>
-                        {/* This field is intentionally disabled as it's assumed to be AI-generated/admin-only */}
-                        <textarea
-                            name="health_summary"
-                            value={formData?.health_summary || ""} 
-                            onChange={handleChange}
-                            disabled={true} 
-                            className={`w-full p-4 border ${border} rounded-xl outline-none min-h-[120px] disabled:bg-transparent disabled:cursor-not-allowed ${inputBg} text-gray-400 text-base`}
-                            placeholder="AI-generated summary or parent notes..."
-                        />
                     </div>
                 </div>
             </div>

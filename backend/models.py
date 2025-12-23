@@ -73,6 +73,10 @@ class StudentProfile(db.Model):
     section = db.Column(db.String(5))
     school = db.Column(db.String(255))
     age = db.Column(db.Integer)
+    bio = db.Column(db.Text)
+    city = db.Column(db.String(100))
+    interests = db.Column(db.Text)
+    profile_pic_url = db.Column(db.Text)
 
     user = db.relationship("User", back_populates="student_profile")
 
@@ -92,6 +96,12 @@ class TeacherProfile(db.Model):
     department = db.Column(db.String(100))
     designation = db.Column(db.String(100))
     experience_years = db.Column(db.Integer)
+    bio = db.Column(db.Text)
+    city = db.Column(db.String(100))
+    handling_classes = db.Column(db.Text)
+    profile_pic_url = db.Column(db.Text)
+    school = db.Column(db.String(255))
+    age = db.Column(db.Integer)
 
     user = db.relationship("User", back_populates="teacher_profile")
 

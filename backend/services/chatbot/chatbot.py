@@ -1,3 +1,4 @@
+import logging
 from .conversation.llm_interface import LLMInterface
 from .data.storage import Storage
 from .conversation.planner import Planner
@@ -78,6 +79,7 @@ Assistant:"""
 
         # --- Get LLM response ---
         reply = self.llm.get_reply(final_prompt)
+        logging.info(reply)
 
         # --- Store bot reply in memory ---
         self.memory.update("assistant", reply)

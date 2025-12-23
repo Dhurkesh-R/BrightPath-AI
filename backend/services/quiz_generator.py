@@ -50,6 +50,15 @@ def generate_quiz_with_ai(subject, difficulty="medium", count=5):
         "answer": "12"
       }}
     ]
+    [
+        {{
+            'id': 'English-5',
+            'subject': 'English',
+            'question': 'Which part of speech is a word that functions as both a noun and a verb?',
+            'options': ['Adverb', 'Preposition', 'Interjection', 'Verb/Adjective'],
+            'answer': 'Interjection'
+        }}
+    ]
     """
 
     try:

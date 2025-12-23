@@ -7,10 +7,11 @@ import { Card, CardContent } from "../ui/card";
 import { RiskCard } from "../ui/riskCard";
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext"
 import { getStudentDashboard } from "../services/api";
-
+import { useParams } from "react-router-dom";
 
 // --- MAIN DASHBOARD COMPONENT ---
-export default function App() {
+export default function StudentProfile() {
+    const { userId } = useParams();
     const { theme, _, t } = useTheme()
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState(null);
@@ -20,7 +21,6 @@ export default function App() {
     const [emotions, setEmotions] = useState(null);
     const [health, setHealth] = useState(null);
     const [successPath, setSuccessPath] = useState(null);
-    const user = JSON.parse(localStorage.getItem("user"))
 
     // 2. Dynamic Class Calculation
     const { bg, text, border, textSecondary, progressBarBg } = getThemeClasses(theme);
@@ -36,7 +36,7 @@ export default function App() {
         async function fetchData() {
             try {
                 // call it once
-                const dashboard = await getStudentDashboard(user.id);
+                const dashboard = await getStudentDashboard(userId);
         
                 const {
                     profile,
@@ -63,7 +63,7 @@ export default function App() {
             }
         }        
         fetchData();
-    }, []);
+    }, [userId]);
 
     if (loading) {
         return (

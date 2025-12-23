@@ -18,12 +18,13 @@ import Settings from "./pages/Settings"
 import TeacherDashboard from "./Teacher Pages/TeacherDashboard"
 import Analytics from "./Teacher Pages/Analytics";
 import Students from "./Teacher Pages/Students";
+import StudentProfile from "./Teacher Pages/StudentProfile";
 
 const App = () => {
   const { theme } = useTheme();
   const [moodCompleted, setMoodCompleted] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"))
-  const role = user.role
+  const role = user?.role
 
   return (
     <Router>
@@ -158,6 +159,17 @@ const App = () => {
                 <div className="flex h-screen relative">
                   <Sidebar />
                   <Students />
+                </div>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/students/:userId"
+            element={
+              <PrivateRoute>
+                <div className="flex h-screen relative">
+                  <Sidebar />
+                  <StudentProfile />
                 </div>
               </PrivateRoute>
             }

@@ -99,8 +99,8 @@ export default function TeacherDashboard() {
             transition={{ delay: i * 0.1 }}
           >
             {/* FIX 5: Use theme for card background/border */}
-            <Card className={`shadow-md p-4 border ${border} ${bgCard}`}>
-              <CardContent className="flex items-center gap-3 p-0">
+            <Card className={`shadow-md p-4 border ${border} ${bgCard}`} theme={theme}>
+              <CardContent className="flex items-center gap-3 p-0" theme={theme}>
                 {card.icon}
                 <div>
                   {/* FIX 6: Use textSecondary for labels */}
@@ -115,7 +115,7 @@ export default function TeacherDashboard() {
 
       {/* Chart Section */}
       {/* FIX 7: Apply theme classes to chart container */}
-      <Card className={`shadow-md p-6 border ${border} ${bgCard}`}>
+      <Card className={`shadow-md p-6 border ${border} ${bgCard}`} theme={theme}>
         <h2 className="text-xl font-semibold mb-4">📊 Student Performance Overview</h2>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
@@ -138,7 +138,7 @@ export default function TeacherDashboard() {
 
       {/* Recent Uploads */}
       {/* FIX 10: Apply theme classes to uploads container */}
-      <Card className={`shadow-md p-6 border ${border} ${bgCard}`}>
+      <Card className={`shadow-md p-6 border ${border} ${bgCard}`} theme={theme}>
         <h2 className="text-xl font-semibold mb-4">📚 Recent Book Uploads</h2>
         {recentBooks.length === 0 ? (
           <p className={`${textSecondary} italic`}>No recent uploads yet.</p>
@@ -146,8 +146,8 @@ export default function TeacherDashboard() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {recentBooks.map((book) => (
               // FIX 11: Apply theme classes to individual books
-              <Card key={book.id} className={`p-4 border shadow-sm ${border} ${bgCard}`}>
-                <CardContent className="p-0">
+              <Card key={book.id} className={`p-4 border shadow-sm ${border} ${bgCard}`} theme={theme}>
+                <CardContent className="p-0" theme={theme}>
                   <h3 className="font-semibold mb-1">{book.title}</h3>
                   {/* FIX 12: Use textSecondary for metadata */}
                   <p className={`text-sm ${textSecondary}`}>

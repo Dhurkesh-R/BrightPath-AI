@@ -3,7 +3,7 @@ import { useTheme, getThemeClasses } from "../contexts/ThemeContext";
 import { useNavigate } from "react-router-dom";
 
 const user = JSON.parse(localStorage.getItem("user"))
-const userRole = user.role
+const userRole = user?.role
 
 const topMenu = userRole === "student" 
     ? [

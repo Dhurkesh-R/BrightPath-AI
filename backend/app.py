@@ -47,6 +47,7 @@ from backend.models import *
 
 from backend.services.quiz_generator import generate_daily_quiz, generate_custom_quiz
 from backend.services.ai_pipeline import build_student_profile
+from backend.services.analytics import aggregate_profiles
 
 from dotenv import load_dotenv
 
@@ -296,50 +297,145 @@ def delete_activity(activity_id):
     db.session.commit()
     return jsonify({"message": f"Activity {activity_id} deleted"})
 
-@app.route("/profile", methods=['GET'])
+@app.route("/profile", methods=["GET"])
 @jwt_required()
 def get_user_profile():
     current_user_id = get_jwt_identity()
-    user = User.query.filter_by(id=current_user_id).first()
 
-    return jsonify({
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    base_response = {
         "id": user.id,
         "name": user.name,
         "email": user.email,
         "role": user.role,
-        "age": user.age,
-        "class": user.class_name,
-        "school": user.school,
-        "city": user.city,
-        "interests": user.interests,
         "health_summary": "Bot didn't give summary yet.",
-        "bio": user.bio if user.bio else "Bio not set",
         "badges": [
-            { "name": "Norm Student", "icon": "🧑‍🎓", "color": "text-purple-400" },
+            {"name": "Norm Student", "icon": "🧑‍🎓", "color": "text-purple-400"}
         ],
-        "profilePicUrl": user.profile_pic_url,
-    })
+    }
 
-@app.route("/profile", methods=['POST'])
+    # STUDENT
+    if user.role == "student" and user.student_profile:
+        profile = user.student_profile
+        base_response.update({
+            "age": profile.age,
+            "class": profile.grade,
+            "section": profile.section,
+            "school": profile.school,
+            "bio": profile.bio,
+            "city": profile.city,
+            "interests": profile.interests,
+            "profilePicUrl": profile.profile_pic_url
+        })
+
+    # TEACHER
+    elif user.role == "teacher" and user.teacher_profile:
+        profile = user.teacher_profile
+        base_response.update({
+            "department": profile.department,
+            "designation": profile.designation,
+            "experience_years": profile.experience_years,
+            "age": profile.age,
+            "bio": profile.bio,
+            "city": profile.city,
+            "handling_classes": profile.handling_classes,
+            "profilePicUrl": profile.profile_pic_url,
+            "school": profile.school
+        })
+
+    return jsonify(base_response), 200
+
+
+@app.route("/profile", methods=["POST"])
 @jwt_required()
 def update_user_profile():
     current_user_id = get_jwt_identity()
-    user = User.query.filter_by(id=current_user_id).first()
+    data = request.get_json()
 
-    data=request.get_json()
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
 
-    user.name = data["name"]
-    user.email = data["email"]
-    user.age = data["age"]
-    user.class_name = data["class"]
-    user.interests = data["interests"]
-    user.school = data["school"]
-    user.city = data["city"]
-    user.bio = data["bio"]
-    user.profile_pic_url = data["profilePicUrl"]
+    # ---- Update User (common fields) ----
+    user.name = data.get("name", user.name)
+    user.email = data.get("email", user.email)
 
-    db.session.commit()
-    return jsonify({"message": "User updated", "user": user.to_dict()})
+    # ---- Role-based profile update ----
+    if user.role == "student":
+        profile = user.student_profile
+        if not profile:
+            return jsonify({"error": "Student profile missing"}), 400
+
+        profile.age = data.get("age", profile.age)
+        profile.grade = data.get("class", profile.grade)
+        profile.section = data.get("section", profile.section)
+        profile.school = data.get("school", profile.school)
+        profile.interests = data.get("interests", profile.interests)
+        profile.city = data.get("city", profile.city)
+        profile.bio = data.get("bio", profile.bio)
+        profile.profile_pic_url = data.get("profilePicUrl", profile.profile_pic_url)
+
+        db.session.commit()
+
+        return jsonify({
+            "message": "Profile updated successfully",
+            "user": {
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "role": user.role,
+                "age": profile.age,
+                "class": profile.grade,
+                "section": profile.section,
+                "school": profile.school,
+                "bio": profile.bio,
+                "city": profile.city,
+                "interests": profile.interests,
+                "profilePicUrl": profile.profile_pic_url
+            }
+        }), 200
+
+    elif user.role == "teacher":
+        profile = user.teacher_profile
+        if not profile:
+            return jsonify({"error": "Teacher profile missing"}), 400
+
+        profile.department = data.get("department", profile.department)
+        profile.designation = data.get("designation", profile.designation)
+        profile.experience_years = data.get("experience_years", profile.experience_years)
+        profile.handling_classes = data.get("handling_classes", profile.handling_classes)
+        profile.city = data.get("city", profile.city)
+        profile.bio = data.get("bio", profile.bio)
+        profile.age = data.get("age", profile.age)
+        profile.school = data.get("school", profile.school)
+        
+        profile.profile_pic_url = data.get("profilePicUrl", profile.profile_pic_url)
+
+        db.session.commit()
+
+        return jsonify({
+            "message": "Profile updated successfully",
+            "user": {
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "role": user.role,
+                "department": profile.department,
+                "designation": profile.designation,
+                "experience_years": profile.experience_years,
+                "bio": profile.bio,
+                "city": profile.city,
+                "handling_classes": profile.handling_classes,
+                "age": profile.age,
+                "profilePicUrl": profile.profile_pic_url,
+                "school": profile.school,
+            }
+        }), 200
+
+
 
 # GET all goals for a specific user
 @app.route("/goals", methods=["GET"])
@@ -442,25 +538,36 @@ def send_chat_data():
 
     return jsonify({"status": "Chat logs saved"}), 201
 
-@app.route("/student-profile", methods=["GET"])
+@app.route("/student-profile/<int:user_id>", methods=["GET"])
 @jwt_required()
-def get_student_profile():
-    current_user_id = get_jwt_identity()
+def get_student_profile(user_id):
+    # Fetch user + student profile
+    user = User.query.get(user_id)
+    if not user or user.role != "student":
+        return jsonify({"error": "Student not found"}), 404
+
+    student_profile = user.student_profile
+    if not student_profile:
+        return jsonify({"error": "Student profile missing"}), 404
 
     # Fetch DB data
-    chat_logs = ChatLog.query.filter_by(user_id=current_user_id).all()
-    latest = QuizResult.query.filter_by(user_id=current_user_id)\
-    .order_by(QuizResult.taken_at.desc())\
-    .first()
+    chat_logs = ChatLog.query.filter_by(user_id=user_id).all()
+
+    latest = (
+        QuizResult.query
+        .filter_by(user_id=user_id)
+        .order_by(QuizResult.taken_at.desc())
+        .first()
+    )
 
     quiz_data = []
-
     if latest and latest.summary_data:
-        quiz_data = list(latest.summary_data.values()) if isinstance(latest.summary_data, dict) else list(json.loads(latest.summary_data).values())
-
+        if isinstance(latest.summary_data, dict):
+            quiz_data = list(latest.summary_data.values())
+        else:
+            quiz_data = list(json.loads(latest.summary_data).values())
 
     logging.info(quiz_data)
-
 
     # Extract chat messages
     chat_data = []
@@ -470,13 +577,14 @@ def get_student_profile():
         if chat.bot_response:
             chat_data.append({"message": chat.bot_response})
 
-    student = User.query.filter_by(id=current_user_id).first()
-
+    # ✅ Correct data source
     student_info = {
-        "name": student.name,
-        "age": student.age,
-        "grade": student.class_name,
-        "profilePicUrl": student.profile_pic_url,
+        "name": user.name,
+        "age": student_profile.age,
+        "grade": student_profile.grade,
+        "section": student_profile.section,
+        "school": student_profile.school,
+        "profilePicUrl": student_profile.profile_pic_url
     }
 
     profile = build_student_profile(
@@ -486,6 +594,7 @@ def get_student_profile():
     )
 
     return jsonify(profile), 200
+
 
 
 @app.route("/daily-quiz", methods=["GET"])
@@ -619,6 +728,8 @@ def get_students():
         .filter(User.role == "student")
     )
 
+    logging.info(query)
+
     # Apply grade filter
     if grade and grade != "all":
         query = query.filter(StudentProfile.grade == grade)
@@ -635,6 +746,8 @@ def get_students():
 
     results = query.all()
 
+    logging.info(results)
+
     students = []
     for user, profile in results:
         students.append({
@@ -642,15 +755,78 @@ def get_students():
             "name": user.name,
             "grade": profile.grade,
             "section": profile.section,
-            "avatar": "".join([w[0] for w in user.name.split()][:2]).upper(),
+            "avatar": profile.profile_pic_url if profile.profile_pic_url else "".join([w[0] for w in user.name.split()][:2]).upper(),
             "performance": profile.performance if hasattr(profile, "performance") else "Average"
         })
+
+    logging.info(students)
 
     return jsonify({
         "success": True,
         "count": len(students),
         "data": students
     }), 200
+
+@app.route("/analytics/class-summary", methods=["GET"])
+@jwt_required()
+def class_analytics():
+    grade = request.args.get("grade")
+    section = request.args.get("section")
+
+    students = (
+        User.query
+        .join(StudentProfile)
+        .filter(
+            User.role == "student",
+            StudentProfile.grade == grade,
+            StudentProfile.section == section
+        )
+        .all()
+    )
+
+    profiles = []
+    for user in students:
+        latest_quiz = (
+            QuizResult.query
+            .filter_by(user_id=user.id)
+            .order_by(QuizResult.taken_at.desc())
+            .first()
+        )
+
+        chat_logs = ChatLog.query.filter_by(user_id=user.id).all()
+        quizzes = QuizResult.query.filter_by(user_id=user.id).all()
+        quiz_data = []
+
+        if latest_quiz and latest_quiz.summary_data:
+            if isinstance(latest_quiz.summary_data, dict):
+                quiz_data = list(latest_quiz.summary_data.values())
+            else:
+                quiz_data = list(json.loads(latest_quiz.summary_data).values())
+
+        chat_data = []
+        for chat in chat_logs:
+            if chat.user_message:
+                chat_data.append({"message": chat.user_message})
+            if chat.bot_response:
+                chat_data.append({"message": chat.bot_response})
+
+
+        profile = build_student_profile(
+            quiz_data=quiz_data,
+            chat_data=chat_data,
+            student_info={
+                "name": user.name,
+                "grade": user.student_profile.grade,
+                "age": user.student_profile.age,
+                "profilePicUrl": user.student_profile.profile_pic_url
+            }
+        )
+
+        profiles.append(profile)
+
+    logging.info(quizzes)
+    logging.info(aggregate_profiles(profiles, quizzes))
+    return jsonify(aggregate_profiles(profiles, quizzes)), 200
 
 
 

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Send } from "lucide-react";
-import { chatBot } from "../services/api";
+import { chatBot, sendChatData } from "../services/api";
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext";
 
 const Chatbot = () => {
@@ -71,9 +71,10 @@ const Chatbot = () => {
 
     try {
       const data = await chatBot(input.trim());
+      console.log(data)
       setMessages((prev) => [
         ...prev,
-        { sender: "bot", text: data.reply || "⚠️ No response from AI" },
+        { sender: "bot", text: data || "⚠️ No response from AI" },
       ]);
     } catch (error) {
       console.error("Chat error:", error);

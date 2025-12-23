@@ -123,7 +123,7 @@ export const chatBot = async (prompt) => {
   }
   
   const json = await res.json();
-  return json;
+  return json.response;
 };
 
 // NOTE: The backend did not have a /mood endpoint. Keeping this function as is,
@@ -243,14 +243,18 @@ export const getHealthRisk = async (input) => {
 };
 
 export const fetchActivities = async () => {
-  const res = await fetchWithRefresh(`${BASE_URL}/activities`, {
-    method: "GET",
-    headers: getAuthHeaders(),
-  });
-  if (!res.ok) throw new Error(`Failed to fetch activities. Status: ${res.status}`);
-  const json = await res.json();
-  return json.activities;
+  const res = await fetchWithRefresh(`${BASE_URL}/activities`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch activities. Status: ${res.status}`);
+  }
+
+  return await res.json(); // ✅ return array directly
 };
+
 
 export const addActivity = async (activity) => {
   const res = await fetchWithRefresh(`${BASE_URL}/activities`, {
@@ -341,8 +345,8 @@ export async function sendChatData(messages) {
 }
 
 
-export async function getStudentDashboard() {
-  const res = await fetchWithRefresh(`${BASE_URL}/student-profile`, {
+export async function getStudentDashboard(userId) {
+  const res = await fetchWithRefresh(`${BASE_URL}/student-profile/${userId}`, {
         method: "GET",
         headers: getAuthHeaders(),
       });
@@ -445,14 +449,36 @@ export const changePassword = async (payload) => {
 export const fetchStudents = async ({ grade, section, search }) => {
   const params = new URLSearchParams();
 
-  if (grade) params.append("grade", grade);
-  if (section) params.append("section", section);
+  if (grade && grade !== "all") params.append("grade", grade);
+  if (section && section !== "all") params.append("section", section);
   if (search) params.append("search", search);
 
-  const res = await fetchWithRefresh(`${BASE_URL}/students?${params.toString()}`, {
-    method: "GET",
-    headers: getAuthHeaders(),
-  });
-  return res.data.data;
+  // 1. Fetch the data
+  const response = await fetchWithRefresh(
+    `${BASE_URL}/students?${params.toString()}`,
+    {
+      method: "GET",
+      headers: getAuthHeaders(),
+    }
+  );
+
+  // 2. MUST await the .json() method call
+  const result = await response.json();
+
+  // 3. Log and return
+  console.log("Students API Data:", result.data);
+  
+  // Return the array from the "data" key as defined in your Flask backend
+  return Array.isArray(result?.data) ? result.data : [];
 };
 
+
+export const loadAnalytics = async (gradeFilter, subjectFilter) => {
+  const res = await fetchWithRefresh(
+    `${BASE_URL}/analytics/class-summary?grade=${gradeFilter}&section=B`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    }
+  );
+  return res.json()
+}
