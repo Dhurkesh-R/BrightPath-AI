@@ -16,4 +16,3 @@ apscheduler
 requests
 textblob
 flask-socketio
-eventlet
