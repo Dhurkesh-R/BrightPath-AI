@@ -1,4 +1,4 @@
-const BASE_URL = "http://127.0.0.1:5000";
+const BASE_URL = "https://brightpath-ai.onrender.com";
 const API_BASE = BASE_URL;
 
 // --- Helper function to get Authorization headers ---
