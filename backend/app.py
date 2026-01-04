@@ -1,8 +1,6 @@
 import logging
 import os
 import sys
-import eventlet
-eventlet.monkey_patch()
 
 # Ensure project root is on sys.path so sibling packages like `ml_service` are importable when running backend/app.py directly
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
