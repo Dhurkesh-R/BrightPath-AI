@@ -15,7 +15,7 @@ def create_app():
     # ✅ 1. Initialize CORS globally (for all routes, including /profile)
     CORS(app, supports_credentials=True, resources={
         r"/*": {
-            "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
+            "origins": ["https://bright-path-ai.vercel.app/", "https://bright-path-ht0phbizx-dhurkesh-rs-projects.vercel.app/", "https://bright-path-ai-git-main-dhurkesh-rs-projects.vercel.app/"],
             "allow_headers": ["Content-Type", "Authorization"],
             "expose_headers": ["Content-Type", "Authorization"],
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
