@@ -1109,6 +1109,53 @@ def delete_assignment(assignment_id):
     db.session.commit()
     return jsonify({"message": f"Assignment {assignment_id} deleted"})
 
+@app.route("/assignments/<int:assignment_id>/student/<int:student_id>", methods=["GET"])
+@jwt_required()
+def get_assignment_status(assignment_id, student_id):
+    teacher = User.query.get(get_jwt_identity())
+    if teacher.role != "teacher":
+        return jsonify({"error": "Unauthorized"}), 403
+
+    submission = AssignmentSubmission.query.filter_by(
+        assignment_id=assignment_id,
+        student_id=student_id
+    ).first()
+
+    return jsonify({
+        "status": submission.status if submission else "not_completed"
+    })
+
+@app.route("/assignments/<int:assignment_id>/student/<int:student_id>", methods=["PUT"])
+@jwt_required()
+def update_assignment_status(assignment_id, student_id):
+    teacher = User.query.get(get_jwt_identity())
+    if teacher.role != "teacher":
+        return jsonify({"error": "Unauthorized"}), 403
+
+    data = request.json
+    status = data.get("status")
+
+    submission = AssignmentSubmission.query.filter_by(
+        assignment_id=assignment_id,
+        student_id=student_id
+    ).first()
+
+    if not submission:
+        submission = AssignmentSubmission(
+            assignment_id=assignment_id,
+            student_id=student_id,
+            status=status
+        )
+        db.session.add(submission)
+    else:
+        submission.status = status
+
+    submission.updated_at = datetime.utcnow()
+    db.session.commit()
+
+    return jsonify({"status": submission.status})
+
+
 def conversation_room(user1_id, user2_id):
     low, high = sorted([int(user1_id), int(user2_id)])
     return f"conversation_{low}_{high}"
