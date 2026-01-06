@@ -227,7 +227,7 @@ export default function TeacherMessages() {
                     className={`relative max-w-[80%] md:max-w-[70%] px-4 py-2.5 shadow-sm
                       ${isMe
                         ? "bg-blue-600 text-white rounded-2xl rounded-tr-none"
-                        : "bg-white text-slate-800 border border-slate-100 rounded-2xl rounded-tl-none"
+                        : "bg-slate-800 text-white border border-slate-100 rounded-2xl rounded-tl-none"
                       }
                     `}
                   >
