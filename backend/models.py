@@ -215,6 +215,37 @@ class Assignment(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_completed = db.Column(db.Boolean, default=False)
 
+class AssignmentSubmission(db.Model):
+    __tablename__ = "assignment_submissions"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    assignment_id = db.Column(
+        db.Integer,
+        db.ForeignKey("assignment.id"),
+        nullable=False,
+        index=True
+    )
+
+    student_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=False,
+        index=True
+    )
+
+    status = db.Column(
+        db.String(30),
+        default="not_completed"
+    )
+
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    __table_args__ = (
+        db.UniqueConstraint("assignment_id", "student_id"),
+    )
+
+
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey("users.id"))
