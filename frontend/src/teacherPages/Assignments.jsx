@@ -22,6 +22,9 @@ import {
   addAssignment,
   updateAssignment,
   deleteAssignment,
+  getStudents,
+  loadStatus,
+  updateStatus
 } from "../services/api";
 
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext.jsx";
@@ -98,6 +101,22 @@ export default function TeacherAssignments() {
       grades,
     };
   }, [assignments]);
+
+  const openStudentsPanel = async (assignment) => {
+    setSelectedAssignment(assignment);
+    setStudentsOpen(true);
+  
+    const students = await getStudents(assignment.grade, assignment.section);
+    setStudents(students);
+  
+    const statusObj = {};
+    for (const s of students) {
+      const res = await fetchAssignmentStatus(assignment.id, s.id);
+      statusObj[s.id] = res.status;
+    }
+    setStatusMap(statusObj);
+  };
+
 
   /* -------------------- ACTIONS -------------------- */
 
@@ -241,6 +260,15 @@ export default function TeacherAssignments() {
                     {new Date(a.due_date).toLocaleDateString()}
                   </span>
                 </div>
+
+                <button
+                    onClick={() => openStudentsPanel(a)}
+                    className="flex items-center gap-1 text-xs opacity-80 hover:opacity-100"
+                  >
+                    <Users className="w-4 h-4" />
+                    View Students
+                </button>
+
               </CardContent>
 
               <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100">
@@ -316,6 +344,72 @@ export default function TeacherAssignments() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <AnimatePresence>
+        {studentsOpen && (
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className={`fixed top-0 right-0 h-full w-full sm:w-[420px] z-50 ${cardBg} ${border} shadow-xl`}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <h2 className="font-bold text-lg">
+                {selectedAssignment?.title}
+              </h2>
+              <Button variant="ghost" onClick={() => setStudentsOpen(false)}>
+                ✕
+              </Button>
+            </div>
+      
+            {/* Student list */}
+            <div className="p-4 space-y-4 overflow-y-auto h-[calc(100%-64px)]">
+              {students.map((s) => (
+                <div
+                  key={s.id}
+                  className={`flex items-center justify-between p-3 rounded-lg ${border}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <User className="w-5 h-5 opacity-70" />
+                    <span className="font-medium">{s.name}</span>
+                  </div>
+      
+                  <select
+                    value={statusMap[s.id] || "not_completed"}
+                    onChange={async (e) => {
+                      const value = e.target.value;
+      
+                      setStatusMap((prev) => ({
+                        ...prev,
+                        [s.id]: value,
+                      }));
+      
+                      await updateStatus(
+                        selectedAssignment.id,
+                        s.id,
+                        value
+                      );
+                    }}
+                    className="bg-transparent border rounded px-2 py-1 text-sm"
+                  >
+                    <option value="not_completed">Not completed</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+              ))}
+      
+              {students.length === 0 && (
+                <p className="text-center opacity-60 text-sm">
+                  No students found for this class.
+                </p>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
