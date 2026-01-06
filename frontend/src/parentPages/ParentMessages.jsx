@@ -189,27 +189,52 @@ export default function ParentMessages() {
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 bg-slate-50/50">
           {loading ? (
-            <p className={textSecondary}>Loading messages…</p>
+            // Modern Skeleton Loader
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className={`flex ${i % 2 === 0 ? 'justify-end' : 'justify-start'}`}>
+                  <div className="w-48 h-12 bg-gray-200 animate-pulse rounded-2xl" />
+                </div>
+              ))}
+            </div>
           ) : (
             messages.map((m, idx) => {
               const isMe = m.senderId === user.id;
+              const showAvatar = !isMe; // Only show avatars for the other person
+        
               return (
                 <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`max-w-[70%] px-4 py-2 rounded-2xl
-                    ${isMe
-                      ? "ml-auto bg-blue-600 text-white"
-                      : "mr-auto bg-gray-600 text-white"}
-                  `}
+                  key={m.id || idx}
+                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  className={`flex items-end gap-2 ${isMe ? "flex-row-reverse" : "flex-row"}`}
                 >
-                  <p>{m.content}</p>
-                  <p className="text-[10px] opacity-70 text-right">
-                    {new Date(m.createdAt).toLocaleTimeString()}
-                  </p>
+                  {/* Avatar for the other person */}
+                  {showAvatar && (
+                    <div className="w-8 h-8 rounded-full bg-indigo-500 flex-shrink-0 flex items-center justify-center text-white text-[10px] font-bold shadow-sm">
+                      {m.senderName?.charAt(0) || "U"}
+                    </div>
+                  )}
+        
+                  <div
+                    className={`relative max-w-[80%] md:max-w-[70%] px-4 py-2.5 shadow-sm
+                      ${isMe
+                        ? "bg-blue-600 text-white rounded-2xl rounded-tr-none"
+                        : "bg-white text-slate-800 border border-slate-100 rounded-2xl rounded-tl-none"
+                      }
+                    `}
+                  >
+                    <p className="text-sm leading-relaxed">{m.content}</p>
+                    
+                    <div className={`flex items-center gap-1 mt-1 opacity-70 ${isMe ? "justify-end" : "justify-start"}`}>
+                       <span className="text-[10px] font-medium uppercase tracking-wider">
+                        {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                      {isMe && <span className="text-[10px]">✓✓</span>}
+                    </div>
+                  </div>
                 </motion.div>
               );
             })
