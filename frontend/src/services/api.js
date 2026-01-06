@@ -683,7 +683,7 @@ export const getParentProgress = async (period) => {
 };
 
 export async function fetchParentRecommendations() {
-  const res = await fetch(`${BASE_URL}/parent/recommendations`, {
+  const res = await fetchWithRefresh(`${BASE_URL}/parent/recommendations`, {
     method: "GET",
     headers: getAuthHeaders(),
   });
@@ -692,7 +692,7 @@ export async function fetchParentRecommendations() {
 }
 
 export async function fetchParentNotifications() {
-  const res = await fetch(`${BASE_URL}/parent/notifications`, {
+  const res = await fetchWithRefresh(`${BASE_URL}/parent/notifications`, {
     method: "GET",
     headers: getAuthHeaders(),
   });
@@ -708,4 +708,29 @@ export const markNotificationRead = async (id) => {
   if (!res.ok) throw new Error(`Failed to mark notification. Status: ${res.status}`);
   const json = await res.json();
   return json;
+}
+
+const loadStatus = async (assignmentId, studentId) => {
+  const res = await fetchWithRefresh(`${BASE_URL}`/assignments/${assignmentId}/student/${studentId}``, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to fetch assignment status");
+  return res.json();;
+};
+
+await api.put(
+  `/assignments/${selected.id}/student/${selectedStudent.id}`,
+  { status: studentStatus }
+);
+
+export async function updateStatus(AssignmentId, StudentId, Status) {
+  const res = await fetchWithRefresh(`${BASE_URL}/assignments/${AssignmentId}/student/${StudentId}`, {
+    method: "PUT",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(Status),
+  });
+  if (!res.ok) throw new Error("Failed to update status");
+  const data = await res.json();
+  return data.activity;
 }
