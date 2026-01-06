@@ -189,7 +189,7 @@ export default function ParentMessages() {
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 bg-slate-50/50">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
           {loading ? (
             // Modern Skeleton Loader
             <div className="space-y-4">
@@ -202,7 +202,6 @@ export default function ParentMessages() {
           ) : (
             messages.map((m, idx) => {
               const isMe = m.senderId === user.id;
-              const showAvatar = !isMe; // Only show avatars for the other person
         
               return (
                 <motion.div
@@ -211,13 +210,6 @@ export default function ParentMessages() {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   className={`flex items-end gap-2 ${isMe ? "flex-row-reverse" : "flex-row"}`}
                 >
-                  {/* Avatar for the other person */}
-                  {showAvatar && (
-                    <div className="w-8 h-8 rounded-full bg-indigo-500 flex-shrink-0 flex items-center justify-center text-white text-[10px] font-bold shadow-sm">
-                      {m.senderName?.charAt(0) || "U"}
-                    </div>
-                  )}
-        
                   <div
                     className={`relative max-w-[80%] md:max-w-[70%] px-4 py-2.5 shadow-sm
                       ${isMe
