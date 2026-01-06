@@ -45,6 +45,9 @@ export default function TeacherAssignments() {
   const [editMode, setEditMode] = useState(false);
   const [selected, setSelected] = useState(null);
   const [showStats, setShowStats] = useState(true);
+  const [studentStatus, setStudentStatus] = useState("not_completed");
+  const [selectedStudent, setSelectedStudent] = useState(null);
+
 
   const [form, setForm] = useState({
     title: "",
