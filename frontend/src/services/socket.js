@@ -6,7 +6,7 @@ export const getSocket = () => {
   if (!socket) {
     const token = localStorage.getItem("token");
 
-    socket = io("http://localhost:5000", {
+    socket = io("https://brightpath-ai.onrender.com", {
       auth: { token },
       transports: ["websocket"],
     });
