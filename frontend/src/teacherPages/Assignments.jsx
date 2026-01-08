@@ -286,7 +286,7 @@ const openStudentsPanel = async (assignment) => {
 
                 <button
                     onClick={() => openStudentsPanel(a)}
-                    className="flex items-center gap-1 text-xs opacity-80 hover:opacity-100"
+                    className="flex items-center gap-1 text-xs opacity-80 hover:opacity-100 mt-2"
                   >
                     <Users className="w-4 h-4" />
                     View Students
@@ -388,7 +388,7 @@ const openStudentsPanel = async (assignment) => {
             </div>
       
             {loading1 === true && (
-              <p className={`${textSecondary} animate-pulse`}>
+              <p className={`${textSecondary} animate-pulse p-4`}>
                 Loading assignments…
               </p>
             )}
@@ -428,7 +428,7 @@ const openStudentsPanel = async (assignment) => {
                 </div>
               ))}
       
-              {students.length === 0 && (
+              {students.length === 0 && loading1 === true &&(
                 <p className="text-center opacity-60 text-sm">
                   No students found for this class.
                 </p>
