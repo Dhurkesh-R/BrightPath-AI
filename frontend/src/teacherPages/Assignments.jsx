@@ -415,7 +415,7 @@ const openStudentsPanel = async (assignment) => {
                         value
                       );
                     }}
-                    className="bg-transparent border rounded px-2 py-1 text-sm"
+                    className={`${bg} border rounded px-2 py-1 text-sm`}
                   >
                     <option value="not_completed">Not completed</option>
                     <option value="completed">Completed</option>
