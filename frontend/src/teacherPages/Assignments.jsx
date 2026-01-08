@@ -43,7 +43,7 @@ export default function TeacherAssignments() {
 
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [loading1, setLoading1] = useState(false);
+  const [loading1, setLoading1] = useState(true);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -428,7 +428,7 @@ const openStudentsPanel = async (assignment) => {
                 </div>
               ))}
       
-              {students.length === 0 && loading1 === true &&(
+              {students.length === 0 && loading1 === false &&(
                 <p className="text-center opacity-60 text-sm">
                   No students found for this class.
                 </p>
