@@ -387,11 +387,11 @@ const openStudentsPanel = async (assignment) => {
               </Button>
             </div>
       
-              {loading1 === true && (
-                <p className={`${textSecondary} animate-pulse`}>
-                  Loading assignments…
-                /p>
-              )}
+            {loading1 === true && (
+              <p className={`${textSecondary} animate-pulse`}>
+                Loading assignments…
+              </p>
+            )}
             {/* Student list */}
             <div className="p-4 space-y-4 overflow-y-auto h-[calc(100%-64px)]">
               {students.map((s) => (
