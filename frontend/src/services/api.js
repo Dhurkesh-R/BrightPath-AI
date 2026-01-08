@@ -710,7 +710,7 @@ export const markNotificationRead = async (id) => {
   return json;
 }
 
-const loadStatus = async (assignmentId, studentId) => {
+export const loadStatus = async (assignmentId, studentId) => {
   const res = await fetchWithRefresh(`${BASE_URL}/assignments/${assignmentId}/student/${studentId}`, {
     method: "GET",
     headers: getAuthHeaders(),
