@@ -22,7 +22,7 @@ import {
   addAssignment,
   updateAssignment,
   deleteAssignment,
-  getStudents,
+  fetchStudents,
   loadStatus,
   updateStatus
 } from "../services/api";
