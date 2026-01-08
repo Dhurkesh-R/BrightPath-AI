@@ -43,6 +43,7 @@ export default function TeacherAssignments() {
 
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loading1, setLoading1] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -109,6 +110,7 @@ export default function TeacherAssignments() {
 const openStudentsPanel = async (assignment) => {
   setSelectedAssignment(assignment);
   setStudentsOpen(true);
+  setLoading1(true)
   
   try {
     const studentList = await fetchStudents({
@@ -133,6 +135,8 @@ const openStudentsPanel = async (assignment) => {
     setStatusMap(statusObj);
   } catch (err) {
     console.error("Failed to load student statuses", err);
+  } finally {
+    setLoading1(false)
   }
 };
 
@@ -423,6 +427,11 @@ const openStudentsPanel = async (assignment) => {
                 <p className="text-center opacity-60 text-sm">
                   No students found for this class.
                 </p>
+              )}
+              {loading1 === true && (
+                <p className={`${textSecondary} animate-pulse`}>
+                  Loading assignments…
+                /p>
               )}
             </div>
           </motion.div>
