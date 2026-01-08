@@ -50,6 +50,10 @@ export default function TeacherAssignments() {
   const [showStats, setShowStats] = useState(true);
   const [studentStatus, setStudentStatus] = useState("not_completed");
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [studentsOpen, setStudentsOpen] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [students, setStudents] = useState([]);
+  const [statusMap, setStatusMap] = useState({});
 
 
   const [form, setForm] = useState({
@@ -102,20 +106,32 @@ export default function TeacherAssignments() {
     };
   }, [assignments]);
 
-  const openStudentsPanel = async (assignment) => {
-    setSelectedAssignment(assignment);
-    setStudentsOpen(true);
+const openStudentsPanel = async (assignment) => {
+  setSelectedAssignment(assignment);
+  setStudentsOpen(true);
   
-    const students = await getStudents(assignment.grade, assignment.section);
-    setStudents(students);
-  
+  try {
+    const studentList = await getStudents(assignment.grade, assignment.section);
+    setStudents(studentList);
+    
+    // Fetch all statuses in parallel (much faster!)
+    const statusPromises = studentList.map(s => 
+      loadStatus(assignment.id, s.id).then(res => ({ id: s.id, status: res.status }))
+    );
+    
+    const results = await Promise.all(statusPromises);
+    
+    // Convert array of results back into a mapping object
     const statusObj = {};
-    for (const s of students) {
-      const res = await fetchAssignmentStatus(assignment.id, s.id);
-      statusObj[s.id] = res.status;
-    }
+    results.forEach(item => {
+      statusObj[item.id] = item.status;
+    });
+    
     setStatusMap(statusObj);
-  };
+  } catch (err) {
+    console.error("Failed to load student statuses", err);
+  }
+};
 
 
   /* -------------------- ACTIONS -------------------- */
