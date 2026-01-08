@@ -36,7 +36,7 @@ def academic_progress(quiz_results, period):
     ]
 
     latest = trend[-1]["academic"] if trend else 0
-    return latest, trends
+    return latest, trend
 
 def activity_progress(activities, category, period, key_name):
     # 1. Define constants (assuming time_spent is in minutes)
