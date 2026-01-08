@@ -111,7 +111,10 @@ const openStudentsPanel = async (assignment) => {
   setStudentsOpen(true);
   
   try {
-    const studentList = await fetchStudents(assignment.grade, assignment.section);
+    const studentList = await fetchStudents({
+          grade: assignment.grade,
+          section: assignment.section,
+    });
     setStudents(studentList);
     
     // Fetch all statuses in parallel (much faster!)
