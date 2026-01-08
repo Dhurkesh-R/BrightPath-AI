@@ -719,11 +719,6 @@ export const loadStatus = async (assignmentId, studentId) => {
   return res.json();;
 };
 
-await api.put(
-  `/assignments/${selected.id}/student/${selectedStudent.id}`,
-  { status: studentStatus }
-);
-
 export async function updateStatus(AssignmentId, StudentId, Status) {
   const res = await fetchWithRefresh(`${BASE_URL}/assignments/${AssignmentId}/student/${StudentId}`, {
     method: "PUT",
@@ -732,5 +727,5 @@ export async function updateStatus(AssignmentId, StudentId, Status) {
   });
   if (!res.ok) throw new Error("Failed to update status");
   const data = await res.json();
-  return data.activity;
+  return data;
 }
