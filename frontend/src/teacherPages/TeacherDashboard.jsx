@@ -87,11 +87,11 @@ export default function TeacherDashboard() {
           ? `${stats.avgQuizScore}%`
           : "--",
     },
-    {
-      title: "AI Insights",
-      icon: <Brain className="text-purple-500" size={26} />,
-      value: stats.aiSummary || "No insights yet",
-    },
+    // {
+    //   title: "AI Insights",
+    //   icon: <Brain className="text-purple-500" size={26} />,
+    //   value: stats.aiSummary || "No insights yet",
+    // },
   ];
 
   if (loading) {
