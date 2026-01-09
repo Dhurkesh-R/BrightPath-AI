@@ -120,7 +120,7 @@ export default function TeacherDashboard() {
       </header>
 
       {/* Summary Cards */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid sm:grid-cols-1 lg:grid-cols-3 gap-4">
         {cards.map((card, i) => (
           <motion.div
             key={i}
