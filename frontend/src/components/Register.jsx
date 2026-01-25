@@ -18,7 +18,8 @@ export default function Register() {
     city: "",
     interests: "",
     childEmail: "",
-    childPassword: ""
+    childPassword: "",
+    handling_classes: ""
   });
 
   const [loading, setLoading] = useState(false);
@@ -41,8 +42,8 @@ export default function Register() {
       await registerUser(formData);
       navigate("/login");
     } catch (err) {
-      console.error(err);
-      setError(err);
+      // Extract the message string so React can render it
+      setError(err.response?.data?.message || err.message || "Registration failed");
     } finally {
       setLoading(false);
     }
