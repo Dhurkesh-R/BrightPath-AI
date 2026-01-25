@@ -83,12 +83,12 @@ export default function Login() {
           </a>
         </p>
 
-        <p className="text-center text-xs text-gray-400 mt-3">
+        {/* <p className="text-center text-xs text-gray-400 mt-3">
           Forgotten your password?{" "}
           <a href="/forgot-password" className="text-blue-400 hover:underline">
             Reset it
           </a>
-        </p>
+        </p> */}
       </div>
     </div>
   );
