@@ -38,7 +38,7 @@ export default function Register() {
 
     try {
       setLoading(true);
-      result = await registerUser(formData);
+      await registerUser(formData);
       navigate("/login");
     } catch (err) {
       console.error(err);
