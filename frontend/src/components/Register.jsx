@@ -41,8 +41,8 @@ export default function Register() {
       result = await registerUser(formData);
       navigate("/login");
     } catch (err) {
-      console.error(result);
-      setError("Registration failed. Try again!");
+      console.error(err);
+      setError(err);
     } finally {
       setLoading(false);
     }
