@@ -38,10 +38,10 @@ export default function Register() {
 
     try {
       setLoading(true);
-      await registerUser(formData);
+      result = await registerUser(formData);
       navigate("/login");
     } catch (err) {
-      console.error(err);
+      console.error(result);
       setError("Registration failed. Try again!");
     } finally {
       setLoading(false);
