@@ -54,7 +54,6 @@ def register():
             city=data.get("city"),
             interests=data.get("interests"),
             bio=data.get("bio"),
-            profile_pic_url=data.get("profilePicUrl")
         )
 
     elif user_type == "teacher":
@@ -68,7 +67,6 @@ def register():
             city=data.get("city"),
             bio=data.get("bio"),
             handling_classes=data.get("handlingClasses"),
-            profile_pic_url=data.get("profilePicUrl")
         )
 
     else:  # parent
@@ -80,7 +78,6 @@ def register():
             user_id=user.id,
             child_email=data.get("childEmail"), 
             child_password=data.get("childPassword"),
-            profile_pic_url=data.get("profilePicUrl")
         )
 
     db.session.add(profile)
