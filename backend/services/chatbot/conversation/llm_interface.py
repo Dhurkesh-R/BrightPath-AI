@@ -37,7 +37,7 @@ class LLMInterface:
                 api_endpoint,
                 json=payload,
                 stream=True,
-                timeout=120
+                timeout=300
             )
             response.raise_for_status() # Raises an HTTPError for bad responses (4xx or 5xx)
             
