@@ -10,6 +10,25 @@ import {
 import StartNewChatModal from "../components/StartNewChatT";
 import { getSocket } from "../services/socket";
 
+const formatStickyDate = (dateString) => {
+  const date = new Date(dateString);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  if (date.toDateString() === today.toDateString()) return "Today";
+  if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
+
+  // If within the last 7 days, show the day name (e.g., Monday)
+  const diffDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
+  if (diffDays < 7) {
+    return date.toLocaleDateString([], { weekday: 'long' });
+  }
+
+  // Otherwise show the full date (e.g., January 27)
+  return date.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
+};
+
 export default function TeacherMessages() {
   const { theme } = useTheme();
   const { bg, text, border, bgCard, textSecondary } =
