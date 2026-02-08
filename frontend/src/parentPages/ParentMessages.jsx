@@ -1,4 +1,3 @@
-Now this page only shows the time like 07:50, but I want it to show like today, yesterday, monday, January 27, on top of the messages on the day, like in whatsapp: import React, { useEffect, useState, useRef } from "react";
 import { Send, UserCircle, Plus, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext";
