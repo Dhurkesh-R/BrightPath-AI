@@ -612,11 +612,11 @@ export const getMessageThread = async (userId) => {
 };
 
 
-export const sendMessage = async ( receiverId, content ) => {
+export const sendMessage = async ( message ) => {
   const res = await fetchWithRefresh(`${BASE_URL}/messages/send`, {
     method: "POST",
     headers: getAuthHeaders(),
-    body: JSON.stringify({ receiverId, content }),
+    body: JSON.stringify( message ),
   });
 
   if (!res.ok) {
