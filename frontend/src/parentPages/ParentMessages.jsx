@@ -117,7 +117,7 @@ export default function ParentMessages() {
     setInput("");
 
     try {
-      await sendMessage(activeUser.userId, input);
+      await sendMessage(optimisticMsg);
     } catch (err) {
       console.error("Failed to send message", err);
     }
