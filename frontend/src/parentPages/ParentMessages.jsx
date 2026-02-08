@@ -1,3 +1,4 @@
+import React, { useEffect, useState, useRef } from "react";
 import { Send, UserCircle, Plus, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext";
