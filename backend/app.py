@@ -1268,7 +1268,7 @@ def message_thread(other_user_id):
             "senderId": m.sender_id,
             "receiverId": m.receiver_id,
             "content": m.content,
-            "createdAt": m.created_at.isoformat(),
+            "createdAt": m.created_at,
             "read": m.read
         }
         for m in messages
