@@ -26,6 +26,25 @@ export default function ParentMessages() {
   const user = JSON.parse(localStorage.getItem("user"));
   const messagesEndRef = useRef(null);
 
+  const formatStickyDate = (dateString) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+  
+    if (date.toDateString() === today.toDateString()) return "Today";
+    if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
+  
+    // If within the last 7 days, show the day name (e.g., Monday)
+    const diffDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
+    if (diffDays < 7) {
+      return date.toLocaleDateString([], { weekday: 'long' });
+    }
+  
+    // Otherwise show the full date (e.g., January 27)
+    return date.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
+  };
+
   /* ---------------- Auto Scroll ---------------- */
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -179,60 +198,65 @@ export default function ParentMessages() {
         )}
       </div>
 
-      {/* CHAT WINDOW */}
-      <div className="flex-1 flex flex-col">
-        <div className={`p-4 border-b ${border}`}>
-          {activeUser ? (
-            <p className="font-semibold">{activeUser.name}</p>
-          ) : (
-            <p className={textSecondary}>Select a conversation</p>
-          )}
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-          {loading ? (
-            // Modern Skeleton Loader
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className={`flex ${i % 2 === 0 ? 'justify-end' : 'justify-start'}`}>
-                  <div className="w-48 h-12 bg-gray-200 animate-pulse rounded-2xl" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            messages.map((m, idx) => {
-              const isMe = m.senderId === user.id;
-        
-              return (
-                <motion.div
-                  key={m.id || idx}
-                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  className={`flex items-end gap-2 ${isMe ? "flex-row-reverse" : "flex-row"}`}
-                >
-                  <div
-                    className={`relative max-w-[80%] md:max-w-[70%] px-4 py-2.5 shadow-sm
-                      ${isMe
-                        ? "bg-blue-600 text-white rounded-2xl rounded-tr-none"
-                        : "bg-slate-800 text-white border border-slate-100 rounded-2xl rounded-tl-none"
-                      }
-                    `}
-                  >
-                    <p className="text-sm leading-relaxed">{m.content}</p>
-                    
-                    <div className={`flex items-center gap-1 mt-1 opacity-70 ${isMe ? "justify-end" : "justify-start"}`}>
-                       <span className="text-[10px] font-medium uppercase tracking-wider">
-                        {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                      {isMe && <span className="text-[10px]">✓✓</span>}
-                    </div>
+      {/* CHAT WINDOW CONTENT */}
+          <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+            {loading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className={`flex ${i % 2 === 0 ? 'justify-end' : 'justify-start'}`}>
+                    <div className="w-48 h-12 bg-gray-200 animate-pulse rounded-2xl" />
                   </div>
-                </motion.div>
-              );
-            })
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+                ))}
+              </div>
+            ) : (
+              messages.map((m, idx) => {
+                const isMe = m.senderId === user.id;
+                
+                // Date grouping logic
+                const currentDate = new Date(m.createdAt).toDateString();
+                const previousDate = idx > 0 ? new Date(messages[idx - 1].createdAt).toDateString() : null;
+                const showDateHeader = currentDate !== previousDate;
+          
+                return (
+                  <React.Fragment key={m.id || idx}>
+                    {/* Date Header Tag */}
+                    {showDateHeader && (
+                      <div className="flex justify-center my-4">
+                        <span className={`text-xs font-bold px-3 py-1 rounded-lg uppercase tracking-wider ${bgCard} ${textSecondary} border ${border} shadow-sm`}>
+                          {formatStickyDate(m.createdAt)}
+                        </span>
+                      </div>
+                    )}
+          
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      className={`flex items-end gap-2 ${isMe ? "flex-row-reverse" : "flex-row"}`}
+                    >
+                      <div
+                        className={`relative max-w-[80%] md:max-w-[70%] px-4 py-2.5 shadow-sm
+                          ${isMe
+                            ? "bg-blue-600 text-white rounded-2xl rounded-tr-none"
+                            : "bg-slate-800 text-white border border-slate-700 rounded-2xl rounded-tl-none"
+                          }
+                        `}
+                      >
+                        <p className="text-sm leading-relaxed">{m.content}</p>
+                        
+                        <div className={`flex items-center gap-1 mt-1 opacity-70 ${isMe ? "justify-end" : "justify-start"}`}>
+                          <span className="text-[10px] font-medium uppercase tracking-wider">
+                            {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                          {isMe && <span className="text-[10px]">✓✓</span>}
+                        </div>
+                      </div>
+                    </motion.div>
+                  </React.Fragment>
+                );
+              })
+            )}
+            <div ref={messagesEndRef} />
+          </div>
 
         {activeUser && (
           <div className={`p-4 border-t ${border} flex gap-3`}>
