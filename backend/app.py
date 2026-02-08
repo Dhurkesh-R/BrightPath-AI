@@ -1282,11 +1282,13 @@ def send_message():
 
     receiver_id = data["receiverId"]
     content = data["content"]
+    created_at = data["createdAt"]
 
     message = Message(
         sender_id=sender_id,
         receiver_id=receiver_id,
-        content=content
+        content=content,
+        created_at=created_at
     )
     db.session.add(message)
     db.session.commit()
@@ -1300,7 +1302,7 @@ def send_message():
             "senderId": int(sender_id),
             "receiverId": receiver_id,
             "content": content,
-            "createdAt": message.created_at.isoformat()
+            "createdAt": created_at
         },
         room=room,
     )
