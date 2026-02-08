@@ -257,7 +257,7 @@ export default function ParentMessages() {
         )}
         <div ref={messagesEndRef} />
       </div>
-
+      <div>
         {activeUser && (
           <div className={`p-4 border-t ${border} flex gap-3`}>
             <input
