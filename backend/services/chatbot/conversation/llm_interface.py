@@ -37,8 +37,11 @@ class LLMInterface:
                 api_endpoint,
                 json=payload,
                 stream=True,
-                timeout=600
+                # (Connect timeout, Read timeout)
+                # 10s to connect, 300s (5 mins) wait between chunks
+                timeout=(10, 300) 
             )
+
             response.raise_for_status() # Raises an HTTPError for bad responses (4xx or 5xx)
             
             full_reply = ""
