@@ -247,7 +247,7 @@ export default function ParentMessages() {
                       className={`relative max-w-[80%] md:max-w-[70%] px-4 py-2.5 shadow-sm
                         ${isMe
                           ? "bg-blue-600 text-white rounded-2xl rounded-tr-none"
-                          : "bg-slate-800 text-white border border-slate-700 rounded-2xl rounded-tl-none"
+                          : {`${bgCard} text-white border border-slate-700 rounded-2xl rounded-tl-none`}
                         }
                       `}
                     >
@@ -270,7 +270,7 @@ export default function ParentMessages() {
         {activeUser && (
           <div className={`p-4 border-t ${border} flex gap-3`}>
             <input
-              className="flex-1 rounded-xl px-4 py-2 bg-gray-700 text-white"
+              className={`flex-1 rounded-xl px-4 py-2 ${bgCard} text-white`}
               placeholder="Type a message…"
               value={input}
               onChange={(e) => setInput(e.target.value)}
