@@ -1671,6 +1671,20 @@ def generate_parent_notifications():
 
     db.session.commit()
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    """
+    Simple health check endpoint to wake up the Render free instance
+    and verify the backend is responsive.
+    """
+    return jsonify({
+        "status": "online",
+        "message": "Backend is awake and ready!",
+        "timestamp": datetime.utcnow().isoformat()
+    }), 200
+
+
+
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)
