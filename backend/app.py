@@ -561,7 +561,7 @@ def send_quiz_results():
 def send_chat_data():
 
     data = request.json
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
     messages = data.get("messages")
 
     if not user_id or not messages:
