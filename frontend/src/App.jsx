@@ -34,6 +34,26 @@ const App = () => {
   const user = JSON.parse(localStorage.getItem("user"))
   const role = user?.role
 
+  const [isAwake, setIsAwake] = useState(false);
+
+  useEffect(() => {
+    const wakeUpServer = async () => {
+      try {
+        // Your Render backend URL
+        await fetch('https://brightpath-ai.onrender.com/health');
+        setIsAwake(true);
+      } catch (error) {
+        console.error("Server is still waking up...");
+      }
+    };
+  
+    wakeUpServer();
+  }, []);
+  
+  if (!isAwake) {
+    return <LoadingScreen />;
+  }
+
   return (
     <Router>
       <AuthProvider>
