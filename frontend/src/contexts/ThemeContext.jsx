@@ -7,8 +7,11 @@ const ThemeContext = createContext();
 export const getThemeClasses = (theme) => ({
     // General styles
     bg: theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50',
+    bgSecondary:  theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100',
     text: theme === 'dark' ? 'text-gray-100' : 'text-gray-900',
     textSecondary: theme === 'dark' ? 'text-gray-400' : 'text-gray-600',
+    textThird: theme === 'dark' ? 'text-gray-200' : 'text-gray-800',
+    textFourth: theme === 'dark' ? 'text-gray-300' : 'text-gray-700',
     border: theme === 'dark' ? 'border-gray-700' : 'border-gray-200',
     primary: 'blue',
     
