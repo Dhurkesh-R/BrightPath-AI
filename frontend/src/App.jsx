@@ -28,6 +28,7 @@ import ParentProgress from "./parentPages/Progress";
 import ParentRecommendations from "./parentPages/Recommendations";
 import ParentNotifications from "./parentPages/Notifications";
 import LoadingScreen from "./components/LoadingScreen";
+import api from "./services/logout"
 
 const App = () => {
   const { theme } = useTheme();
@@ -40,14 +41,23 @@ const App = () => {
   useEffect(() => {
     const wakeUpServer = async () => {
       try {
-        // Your Render backend URL
-        await fetch('https://brightpath-ai.onrender.com/health');
-        setIsAwake(true);
+        // Hit the health route we added to app.py
+        await api.get('/health');
+        setIsAwake(true); 
       } catch (error) {
-        console.error("Server is still waking up...");
+        if (error.response) {
+          // If the server responded with ANY status (even an error), it's awake.
+          // If it was a 401, the interceptor already handled the logout.
+          setIsAwake(true);
+        } else {
+          // No response = Server is still booting. 
+          // Wait 5 seconds and try again.
+          console.log("Render is spinning up... retrying in 5s");
+          setTimeout(wakeUpServer, 5000);
+        }
       }
     };
-  
+
     wakeUpServer();
   }, []);
   
