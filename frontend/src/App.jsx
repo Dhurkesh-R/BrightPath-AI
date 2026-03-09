@@ -27,6 +27,7 @@ import ParentReports from "./parentPages/Reports";
 import ParentProgress from "./parentPages/Progress";
 import ParentRecommendations from "./parentPages/Recommendations";
 import ParentNotifications from "./parentPages/Notifications";
+import LoadingScreen from "./components/LoadingScreen";
 
 const App = () => {
   const { theme } = useTheme();
