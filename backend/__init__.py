@@ -50,6 +50,15 @@ def create_app():
     def revoked_token_callback(jwt_header, jwt_payload):
         return jsonify({"msg": "Token has been revoked"}), 401
 
+    @jwt.expired_token_loader
+    def my_expired_token_callback(jwt_header, jwt_payload):
+        return jsonify({
+            "status": "error",
+            "sub_status": "token_expired",
+            "msg": "The token has expired"
+        }), 401
+
+
     # ✅ 4. Setup Migrations
     migrate = Migrate(app, db)
 
