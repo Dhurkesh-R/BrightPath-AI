@@ -128,7 +128,7 @@ const Chatbot = () => {
               className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
                 msg.sender === "user"
                   ? `bg-blue-600 text-white rounded-br-md`
-                  : `${bgSecondary} ${textFourth} rounded-bl-md`
+                  : `${bgSecondary} ${textFourth} rounded-br-md`
               }`}
             >
               <div className="whitespace-pre-wrap break-words">{msg.text}</div>
