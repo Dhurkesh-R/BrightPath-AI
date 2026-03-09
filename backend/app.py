@@ -1684,14 +1684,5 @@ def health_check():
         "timestamp": datetime.utcnow().isoformat()
     }), 200
 
-@jwt.expired_token_loader
-def my_expired_token_callback(jwt_header, jwt_payload):
-    return jsonify({
-        "status": "error",
-        "sub_status": "token_expired",
-        "msg": "The token has expired"
-    }), 401
-
-
 if __name__ == "__main__":
     socketio.run(app, debug=True)
