@@ -270,7 +270,7 @@ export default function ParentMessages() {
         {activeUser && (
           <div className={`p-4 border-t ${border} flex gap-3`}>
             <input
-              className={`flex-1 rounded-xl px-4 py-2 ${bgCard} text-white`}
+              className={`flex-1 rounded-xl px-4 py-2 ${bgCard} ${text}`}
               placeholder="Type a message…"
               value={input}
               onChange={(e) => setInput(e.target.value)}
