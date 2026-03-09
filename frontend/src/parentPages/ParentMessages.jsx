@@ -247,7 +247,7 @@ export default function ParentMessages() {
                       className={`relative max-w-[80%] md:max-w-[70%] px-4 py-2.5 shadow-sm
                         ${isMe
                           ? "bg-blue-600 text-white rounded-2xl rounded-tr-none"
-                          : `${bgCard} text-white border border-slate-700 rounded-2xl rounded-tl-none`
+                          : `${bgCard} ${textSecondary} border border-slate-700 rounded-2xl rounded-tl-none`
                         }
                       `}
                     >
