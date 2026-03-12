@@ -6,7 +6,6 @@ import { useTheme, getThemeClasses } from "../contexts/ThemeContext";
 const Chatbot = () => {
   const { theme } = useTheme();
   const [messages, setMessages] = useState(() => {
-    // ✅ Load saved messages from localStorage
     const saved = localStorage.getItem("chat_messages");
     return saved ? JSON.parse(saved) : [];
   });
@@ -14,9 +13,9 @@ const Chatbot = () => {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  const { bg, text, border, bgSecondary, barBg, textThird, textFourth } =
-    getThemeClasses(theme);
+  const { bg, text, border, bgSecondary, barBg, textThird, textFourth } = getThemeClasses(theme);
 
+  // Sync with Backend
   const persistChat = async (chatHistory) => {
     try {
       await sendChatData(
@@ -31,129 +30,89 @@ const Chatbot = () => {
   };
 
   useEffect(() => {
-  if (messages.length > 1) {
-    persistChat(messages);
-  }
-}, [messages]);
+    if (messages.length > 1) persistChat(messages);
+  }, [messages]);
 
-  // ✅ Save messages to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem("chat_messages", JSON.stringify(messages));
   }, [messages]);
 
-  const scrollToBottom = () => {
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  }, [messages, loading]);
 
   useEffect(() => {
     const storedProfile = JSON.parse(localStorage.getItem("studentProfile"));
     if (storedProfile && messages.length === 0) {
       const favSubject = storedProfile?.interest || null;
       const greetText = favSubject
-        ? `👋 Hey there! I remember you love ${favSubject}. Ready to explore something fun in that area today?`
+        ? `👋 Hey there! I remember you love ${favSubject}. Ready to explore something fun today?`
         : "👋 Hey there! Ready to learn and explore something new today?";
       setMessages([{ sender: "bot", text: greetText }]);
     }
   }, []);
-  
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
-
-    const newMessage = { sender: "user", text: input.trim() };
-    setMessages((prev) => [...prev, newMessage]);
+    const userText = input.trim();
+    setMessages((prev) => [...prev, { sender: "user", text: userText }]);
     setInput("");
     setLoading(true);
 
     try {
-      const data = await chatBot(input.trim());
-      console.log(data)
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: data || "⚠️ No response from AI" },
-      ]);
+      const data = await chatBot(userText);
+      setMessages((prev) => [...prev, { sender: "bot", text: data || "⚠️ No response from AI" }]);
     } catch (error) {
-      console.error("Chat error:", error);
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "❌ Error: Unable to reach the server." },
-      ]);
+      setMessages((prev) => [...prev, { sender: "bot", text: "❌ Error: Unable to reach server." }]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
-
   return (
-    <div className="flex-1 flex flex-col h-full ml-14">
-      {/* Header */}
-      <div
-        className={`p-4 border-b ${border} text-2xl font-semibold ${bg} ${text}`}
-      >
+    // FIX 1: Responsive margin-left (ml-0 for mobile, ml-14 for desktop)
+    // FIX 2: Fixed height for mobile viewport (h-[calc(100dvh)] handles mobile address bars better)
+    <div className={`flex-1 flex flex-col h-screen md:h-full ml-0 md:ml-14 ${bg} transition-all duration-300`}>
+      
+      {/* Header - Scaled text for smaller screens */}
+      <div className={`p-4 border-b ${border} text-xl md:text-2xl font-semibold sticky top-0 z-10 ${bg} ${text}`}>
         🔆 BrightPath AI
       </div>
 
-      {/* Chat messages */}
-      <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${bg}`}>
+      {/* Chat messages Area */}
+      <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-4 custom-scrollbar">
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <div className="text-4xl mb-4">👋</div>
-            <div className="text-2xl font-semibold text-gray-400 mb-2">
-              Hello!
-            </div>
-            <div className="text-lg text-gray-500">
-              How can I help you today?
-            </div>
+          <div className="flex flex-col items-center justify-center h-full text-center px-4">
+            <div className="text-4xl mb-4 animate-bounce">👋</div>
+            <div className="text-xl md:text-2xl font-semibold text-gray-400">Hello!</div>
+            <div className="text-sm md:text-lg text-gray-500">How can I help you today?</div>
           </div>
         )}
 
         {messages.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`flex ${
-              msg.sender === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div
-              className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
-                msg.sender === "user"
-                  ? `bg-blue-600 text-white rounded-br-md`
-                  : `${bgSecondary} ${textFourth} rounded-br-md`
-              }`}
-            >
-              <div className="whitespace-pre-wrap break-words">{msg.text}</div>
+          <div key={idx} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
+            {/* FIX 3: Dynamic width (85% on mobile, max-md on desktop) */}
+            <div className={`max-w-[85%] md:max-w-md px-4 py-3 rounded-2xl shadow-sm ${
+              msg.sender === "user"
+                ? `bg-blue-600 text-white rounded-tr-none`
+                : `${bgSecondary} ${textFourth} rounded-tl-none`
+            }`}>
+              <div className="text-sm md:text-base whitespace-pre-wrap break-words leading-relaxed">
+                {msg.text}
+              </div>
             </div>
           </div>
         ))}
 
         {loading && (
           <div className="flex justify-start">
-            <div
-              className={`${bgSecondary} ${textThird} px-4 py-3 rounded-2xl rounded-bl-md`}
-            >
+            <div className={`${bgSecondary} ${textThird} px-4 py-3 rounded-2xl rounded-tl-none`}>
               <div className="flex items-center space-x-2">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div
-                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                    style={{ animationDelay: "0.1s" }}
-                  ></div>
-                  <div
-                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                    style={{ animationDelay: "0.2s" }}
-                  ></div>
+                  <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
+                  <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                  <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]"></div>
                 </div>
-                <span className="text-sm">Typing...</span>
               </div>
             </div>
           </div>
@@ -161,24 +120,24 @@ const Chatbot = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input area */}
-      <div className={`p-4 border-t ${border} ${bg}`}>
-        <div className="flex items-center space-x-3">
+      {/* Input area - Floating bar feel on mobile */}
+      <div className={`p-3 md:p-4 border-t ${border} ${bg} pb-safe`}>
+        <div className="max-w-4xl mx-auto flex items-center space-x-2 md:space-x-3">
           <input
             type="text"
-            className={`flex-1 px-4 py-3 rounded-xl ${barBg} border border-gray-600 ${text} placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
-            placeholder="Type a message..."
+            className={`flex-1 px-4 py-2.5 md:py-3 text-sm md:text-base rounded-xl ${barBg} border ${border} ${text} focus:ring-2 focus:ring-blue-500 outline-none transition-all`}
+            placeholder="Ask me anything..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyPress}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             disabled={loading}
           />
           <button
-            className={`px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:${barBg} disabled:cursor-not-allowed text-white rounded-xl transition-colors duration-200 flex items-center justify-center`}
+            className="p-2.5 md:p-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center"
             onClick={sendMessage}
             disabled={loading || !input.trim()}
           >
-            <Send size={20} />
+            <Send size={18} className="md:w-5 md:h-5" />
           </button>
         </div>
       </div>
