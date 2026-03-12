@@ -103,8 +103,7 @@ export default function Books() {
 
   return (
     // FIX 1: Responsive Margin-left
-    <div className={`p-4 md:p-8 min-h-screen ${bg} ${text} w-full ml-0 md:ml-14 transition-all duration-300`}>
-      
+    <div className={`min-h-screen ${bg} ${text} transition-all duration-300 p-4 md:p-10 ml-16 md:ml-64`}>
       {/* Notification Bar - Centered on mobile */}
       {notification.message && (
           <div className={`fixed top-4 left-4 right-4 md:left-auto md:right-8 z-50 p-4 rounded-xl shadow-2xl ${notificationClasses} text-white border-2 text-center md:text-left animate-in fade-in slide-in-from-top-4`}>
