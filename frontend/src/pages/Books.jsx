@@ -242,7 +242,3 @@ export default function Books() {
     </div>
   );
 }
-
-    </div>
-  );
-}
