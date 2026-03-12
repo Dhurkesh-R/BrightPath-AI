@@ -83,7 +83,7 @@ const Settings = () => {
     };
 
     return (
-        <div className={`min-h-screen ${bg} ${text} p-4 md:p-10 ml-0 md:ml-16 transition-colors duration-300`}>
+        <div className={`min-h-screen ${bg} ${text} transition-all duration-300 p-4 md:p-10 ml-16 md:ml-64`}>
             
             {/* Custom Toast Notification */}
             {status && (
