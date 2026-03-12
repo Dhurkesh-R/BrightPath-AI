@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Settings2, Sun, Moon, User, Trash2, Lock, HardDrive, LogOut, LogIn, LogInIcon } from 'lucide-react';
-import { useTheme, getThemeClasses } from '../contexts/ThemeContext.jsx'; 
+import { Settings as SettingsIcon, Settings2, Sun, Moon, User, Trash2, Lock, LogOut, X, CheckCircle } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext.jsx'; 
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card.jsx';
 import { Label } from '../ui/label.jsx';
 import { Input } from '../ui/input.jsx';
@@ -8,227 +8,231 @@ import { Button } from '../ui/button.jsx';
 import { getUserProfile, updateUserProfile, changePassword } from '../services/api.js';
 import { useNavigate } from 'react-router-dom';
 
-// Mock components (you would replace these with your actual components)
-const Switch = ({ checked, onCheckedChange, theme }) => {
-    const baseClass = "w-10 h-6 flex items-center rounded-full p-1 transition-colors duration-200 cursor-pointer";
-    const knobClass = "w-4 h-4 rounded-full shadow-md transform transition-transform duration-200";
-
-    return (
-        <div
-            className={`${baseClass} ${checked ? 'bg-blue-500' : 'bg-gray-400'}`}
-            onClick={() => onCheckedChange(!checked)}
-        >
-            <div
-                className={`${knobClass} ${checked ? 'translate-x-4 bg-white' : 'translate-x-0 bg-white'}`}
-            ></div>
-        </div>
-    );
-};
-
+// Modern Switch Component
+const Switch = ({ checked, onCheckedChange }) => (
+    <div
+        className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 cursor-pointer ${checked ? 'bg-blue-600' : 'bg-gray-400 dark:bg-gray-600'}`}
+        onClick={() => onCheckedChange(!checked)}
+    >
+        <div className={`w-4 h-4 rounded-full bg-white shadow-md transform transition-transform duration-300 ${checked ? 'translate-x-6' : 'translate-x-0'}`} />
+    </div>
+);
 
 const Settings = () => {
     const { theme, setTheme, getThemeClasses } = useTheme();
-    const { border, cardBg, text } = getThemeClasses(theme);
+    const { border, cardBg, text, textSecondary, bg } = getThemeClasses(theme);
+    const navigate = useNavigate();
 
-    // Local states 
-    const [user, setUser] =  useState("");
+    // States 
+    const [user, setUser] = useState({ name: '', email: '' });
     const [notifications, setNotifications] = useState(true);
-    const [newPassword, setNewPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [currentPassword, setCurrentPassword] = useState("");
-    const navigate = useNavigate()
+    const [passwords, setPasswords] = useState({ current: '', new: '', confirm: '' });
+    const [status, setStatus] = useState(null); // For custom alerts
 
-    
     useEffect(() => {
         async function fetchProfile() {
             try {
                 const res = await getUserProfile(); 
                 setUser(res);
             } catch (err) {
-                console.error(err);
-                setUser({});
+                console.error("Failed to fetch profile", err);
             }
         }
         fetchProfile();
     }, []);
 
-    const handleChange = (e) => {
-        setUser({ ...user, [e.target.name]: e.target.value });
+    const showToast = (msg, type = 'success') => {
+        setStatus({ msg, type });
+        setTimeout(() => setStatus(null), 4000);
     };
 
-    const handleLogOut = (e) => {
-        localStorage.clear()
-        navigate("/login")
+    const handleLogOut = () => {
+        localStorage.clear();
+        navigate("/login");
     };
 
     const handlePasswordUpdate = async () => {
-        if (!currentPassword || !newPassword || !confirmPassword) {
-            alert("All fields are required");
+        if (!passwords.current || !passwords.new || !passwords.confirm) {
+            showToast("All password fields are required", "error");
             return;
         }
-    
-        if (newPassword !== confirmPassword) {
-            alert("Passwords do not match");
+        if (passwords.new !== passwords.confirm) {
+            showToast("New passwords do not match", "error");
             return;
         }
-    
         try {
             await changePassword({
-                currentPassword,
-                newPassword,
+                currentPassword: passwords.current,
+                newPassword: passwords.new,
             });
-    
-            alert("Password updated successfully");
-    
-            setCurrentPassword("");
-            setNewPassword("");
-            setConfirmPassword("");
+            showToast("Password updated successfully!");
+            setPasswords({ current: '', new: '', confirm: '' });
         } catch (err) {
-            alert(err.message);
+            showToast(err.message || "Failed to update password", "error");
         }
     };
-    
 
-    const handleSave = async () => {
+    const handleSaveProfile = async () => {
         try {
-            const updatePayload = {
-                ...user,
-                // Mocking the update process:
-                lastUpdated: new Date().toISOString()
-            };
-            
-            const res = await updateUserProfile(updatePayload); 
-            
+            const res = await updateUserProfile({ ...user, lastUpdated: new Date().toISOString() });
             setUser(res);
+            showToast("Profile saved!");
         } catch (err) {
-            console.error(err);
+            showToast("Error updating profile", "error");
         } 
     };
 
-    // Connect Dark Mode switch to Theme Context
-    const handleThemeChange = (isDark) => {
-        setTheme(isDark ? 'dark' : 'light');
-    };
-
     return (
-        <div className="p-6 grid gap-6 max-w-4xl mx-auto ml-98">
-            <h1 className={`text-4xl font-extrabold mb-4 flex justify-between items-center${text}`}>
-                <div className='flex items-center'>
-                    <SettingsIcon className="w-8 h-8 mr-3" />
-                    Account Settings
-                </div>
-                <div>
-                    <Button className={`mt-2 bg-transparent hover:bg-transparent ${text}`} onClick={handleLogOut}>
-                      <LogInIcon className={`${text}`}/>
-                    </Button>
-                </div>
-            </h1>
-
-            {/* 1. Profile Section  */}
-            <Card className="shadow-2xl" theme={theme}>
-                <CardHeader>
-                    <CardTitle className={`flex items-center ${text}`}>
-                        <User className="w-5 h-5 mr-2" />
-                        Profile Information
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div>
-                        <Label>Full Name</Label>
-                        <Input theme={theme} value={user.name} name="name" onChange={handleChange} />
+        <div className={`min-h-screen ${bg} ${text} p-4 md:p-10 ml-0 md:ml-16 transition-colors duration-300`}>
+            
+            {/* Custom Toast Notification */}
+            {status && (
+                <div className="fixed top-6 right-6 z-50 animate-in slide-in-from-right-10">
+                    <div className={`flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl border ${status.type === 'error' ? 'bg-red-500 border-red-400' : 'bg-green-600 border-green-500'} text-white`}>
+                        {status.type === 'error' ? <X size={18} /> : <CheckCircle size={18} />}
+                        <span className="font-bold text-sm">{status.msg}</span>
                     </div>
-                    <div>
-                        <Label>Email Address</Label>
-                        <Input theme={theme} type="email" name="email" value={user.email} onChange={handleChange} />
-                    </div>
-                    <Button className="mt-2" onClick={handleSave}>Save Profile</Button>
-                </CardContent>
-            </Card>
+                </div>
+            )}
 
-            {/* 2. Preferences/Theme Section */}
-            <Card className="shadow-2xl" theme={theme}>
-                <CardHeader>
-                    <CardTitle className={`flex items-center ${text}`}>
-                        <Settings2 className="w-5 h-5 mr-2" />
-                        App Preferences
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    
-                    {/* Dark Mode Toggle*/}
-                    <div className={`flex items-center justify-between p-3 rounded-xl ${theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-100/50'} border ${border} transition-colors duration-300`}>
-                        <div className="flex items-center">
-                            {theme === 'dark' 
-                                ? <Moon className="w-5 h-5 mr-3 text-yellow-400" /> 
-                                : <Sun className="w-5 h-5 mr-3 text-yellow-500" />}
-                            <Label className="block text-base font-medium">Dark Mode</Label>
+            <div className="max-w-3xl mx-auto space-y-8">
+                {/* Header */}
+                <div className="flex justify-between items-center border-b pb-6 border-gray-500/20">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-blue-500/10 rounded-2xl">
+                            <SettingsIcon className="w-8 h-8 text-blue-500" />
                         </div>
-                        <Switch 
-                            checked={theme === 'dark'} 
-                            onCheckedChange={handleThemeChange} 
-                        />
+                        <h1 className="text-3xl font-black tracking-tight">Settings</h1>
                     </div>
-                    
-                    {/* Notifications  */}
-                    <div className="flex items-center justify-between p-3">
-                        <Label className="block text-base font-medium">Receive Email Notifications</Label>
-                        <Switch checked={notifications} onCheckedChange={setNotifications} />
-                    </div>
-                    <Button className="mt-2">Save Preferences</Button>
-                </CardContent>
-            </Card>
-
-            {/* 3. Security Section  */}
-            <Card className="shadow-2xl" theme={theme}>
-                <CardHeader>
-                    <CardTitle className={`flex items-center ${text}`}>
-                        <Lock className="w-5 h-5 mr-2" />
-                        Security & Password
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div>
-                      <Label>Current Password</Label>
-                      <Input
-                        theme={theme}
-                        type="password"
-                        placeholder="••••••••"
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                        <Label>New Password</Label>
-                        <Input theme={theme} type="password" placeholder="••••••••" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-                    </div>
-                    <div>
-                        <Label>Confirm Password</Label>
-                        <Input theme={theme} type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-                    </div>
-                    <Button className="mt-2" onClick={handlePasswordUpdate}>
-                      Update Password
+                    <Button 
+                        variant="ghost" 
+                        onClick={handleLogOut}
+                        className="flex items-center gap-2 text-red-500 hover:bg-red-500/10 rounded-xl"
+                    >
+                        <LogOut size={20} />
+                        <span className="hidden sm:inline">Logout</span>
                     </Button>
-                </CardContent>
-            </Card>
+                </div>
 
-            {/* 4. Danger Zone  */}
-            <Card className="shadow-2xl border-2 border-red-500/50 mb-5" theme={theme}>
-                <CardHeader>
-                    <CardTitle className="flex items-center text-red-600">
-                        <Trash2 className="w-5 h-5 mr-2" />
-                        Danger Zone
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-4">
-                    <div className={getThemeClasses(theme).textSecondary}>
-                        <p className="text-sm">
-                            Permanently delete your account and all associated data. This action cannot be undone.
-                        </p>
+                {/* 1. Account Section */}
+                <Card className={`border ${border} ${cardBg} rounded-3xl overflow-hidden shadow-xl`}>
+                    <CardHeader className="border-b border-gray-500/10 pb-4">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <User size={18} className="text-blue-500" /> Account Info
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-6 space-y-5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] uppercase font-black opacity-50 ml-1">Full Name</Label>
+                                <Input 
+                                    className="rounded-xl bg-gray-500/5 border-gray-500/20" 
+                                    value={user.name} 
+                                    onChange={(e) => setUser({...user, name: e.target.value})} 
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] uppercase font-black opacity-50 ml-1">Email</Label>
+                                <Input 
+                                    className="rounded-xl bg-gray-500/5 border-gray-500/20" 
+                                    value={user.email} 
+                                    onChange={(e) => setUser({...user, email: e.target.value})} 
+                                />
+                            </div>
+                        </div>
+                        <Button onClick={handleSaveProfile} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 font-bold">
+                            Save Changes
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                {/* 2. Appearance & Prefs */}
+                <Card className={`border ${border} ${cardBg} rounded-3xl shadow-xl`}>
+                    <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <Settings2 size={18} className="text-purple-500" /> Preferences
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-center justify-between p-4 bg-gray-500/5 rounded-2xl border border-gray-500/10">
+                            <div className="flex items-center gap-3">
+                                {theme === 'dark' ? <Moon className="text-yellow-400" size={20}/> : <Sun className="text-orange-500" size={20}/>}
+                                <div>
+                                    <p className="font-bold text-sm">Dark Mode</p>
+                                    <p className={`text-xs ${textSecondary}`}>Adjust the app's visual theme</p>
+                                </div>
+                            </div>
+                            <Switch checked={theme === 'dark'} onCheckedChange={(isDark) => setTheme(isDark ? 'dark' : 'light')} />
+                        </div>
+
+                        <div className="flex items-center justify-between p-4 bg-gray-500/5 rounded-2xl border border-gray-500/10">
+                            <div>
+                                <p className="font-bold text-sm">Email Notifications</p>
+                                <p className={`text-xs ${textSecondary}`}>Get updates about your progress</p>
+                            </div>
+                            <Switch checked={notifications} onCheckedChange={setNotifications} />
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* 3. Security Section */}
+                <Card className={`border ${border} ${cardBg} rounded-3xl shadow-xl`}>
+                    <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                            <Lock size={18} className="text-green-500" /> Security
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4 pt-2">
+                        <div className="space-y-3">
+                            <Input 
+                                type="password" 
+                                placeholder="Current Password" 
+                                className="rounded-xl" 
+                                value={passwords.current}
+                                onChange={(e) => setPasswords({...passwords, current: e.target.value})}
+                            />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <Input 
+                                    type="password" 
+                                    placeholder="New Password" 
+                                    className="rounded-xl" 
+                                    value={passwords.new}
+                                    onChange={(e) => setPasswords({...passwords, new: e.target.value})}
+                                />
+                                <Input 
+                                    type="password" 
+                                    placeholder="Confirm New Password" 
+                                    className="rounded-xl" 
+                                    value={passwords.confirm}
+                                    onChange={(e) => setPasswords({...passwords, confirm: e.target.value})}
+                                />
+                            </div>
+                        </div>
+                        <Button onClick={handlePasswordUpdate} className="w-full sm:w-auto bg-gray-800 dark:bg-white dark:text-black text-white rounded-xl px-8 font-bold">
+                            Update Password
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                {/* 4. Danger Zone */}
+                <div className="p-6 rounded-3xl border-2 border-red-500/20 bg-red-500/5 space-y-4">
+                    <div className="flex items-center gap-2 text-red-500">
+                        <Trash2 size={20} />
+                        <h3 className="font-black uppercase tracking-widest text-sm">Danger Zone</h3>
                     </div>
-                    <Button variant="destructive" className="w-fit">Delete Account</Button>
-                </CardContent>
-            </Card>
+                    <p className={`text-sm ${textSecondary}`}>
+                        Once you delete your account, there is no going back. Please be certain.
+                    </p>
+                    <Button variant="destructive" className="rounded-xl font-bold px-6">
+                        Delete Account
+                    </Button>
+                </div>
+            </div>
         </div>
+    );
+};
+
+export default Settings;
     );
 };
 
