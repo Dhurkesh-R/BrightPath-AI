@@ -54,8 +54,7 @@ export default function App() {
     const defaultAvatar = "data:image/svg+xml;base64,..."; // Keep your existing avatar string
 
     return (
-        // FIX 1: Responsive Margin (ml-0 on mobile, ml-14 on desktop to accommodate sidebar)
-        <div className={`w-full min-h-screen ${bg} p-4 md:p-8 ${text} transition-colors duration-300 ml-0 md:ml-14`}>
+        <div className={`min-h-screen ${bg} ${text} transition-all duration-300 p-4 md:p-10 ml-16 md:ml-64`}>
             <div className="max-w-7xl mx-auto">
                 
                 {/* Header - Stacked on mobile, row on desktop */}
