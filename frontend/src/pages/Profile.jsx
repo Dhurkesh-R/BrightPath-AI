@@ -1,28 +1,30 @@
 import { useEffect, useState, useRef } from "react";
 import { Loader2, Edit3, Save, User, Activity, Heart, UserRound, Star, Upload, X } from "lucide-react";
-// Assuming these services are defined elsewhere, we'll keep the import paths as standard strings.
-import { getUserProfile, updateUserProfile } from '../services/api' 
+import { getUserProfile, updateUserProfile } from '../services/api';
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
 
-export default function App() {
-    const { theme, _, t } = useTheme()
+export default function Profile() {
+    const { theme } = useTheme();
     const [user, setUser] = useState(null);
     const [editing, setEditing] = useState(false);
     const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState(null); // State for custom modal message
-    const role = JSON.parse(localStorage.getItem("user")).role
-
-    const { bg, text, cardBg, border, inputBg, inputBorder, textSecondary, buttonPrimary, buttonDestructive, inputFocus, inputText, disabledText, disabledBg } = getThemeClasses(theme);
+    const [message, setMessage] = useState(null);
     
-    // Ref for the hidden file input
+    // Safety check for localStorage
+    const getUserRole = () => {
+        try {
+            return JSON.parse(localStorage.getItem("user"))?.role || "student";
+        } catch (e) { return "student"; }
+    };
+    const role = getUserRole();
+
+    const { bg, text, cardBg, border, inputBg, inputBorder, textSecondary, inputFocus, inputText, disabledText } = getThemeClasses(theme);
     const fileInputRef = useRef(null);
 
-    // Custom non-alert modal function
     const showModalMessage = (msg) => {
         setMessage(msg);
-        // Clear message after 4 seconds
         setTimeout(() => setMessage(null), 4000);
     };
 
@@ -33,7 +35,6 @@ export default function App() {
                 setUser(res);
                 setFormData(res);
             } catch (err) {
-                console.error(err);
                 setUser({});
                 setFormData({});
             } finally {
@@ -50,362 +51,201 @@ export default function App() {
     const handleFileSelect = (e) => {
         const file = e.target.files[0];
         if (file) {
-            // Check file size (e.g., limit to 1MB)
             if (file.size > 1024 * 1024) {
-                // Using custom modal instead of alert()
-                showModalMessage("Image size exceeds 1MB limit. Please choose a smaller file.");
+                showModalMessage("Image size exceeds 1MB limit.");
                 return;
             }
-
             const reader = new FileReader();
             reader.onloadend = () => {
-                // Store the Base64 string in the form data
-                setFormData(prev => ({ 
-                    ...prev, 
-                    profilePicUrl: reader.result 
-                }));
+                setFormData(prev => ({ ...prev, profilePicUrl: reader.result }));
             };
             reader.readAsDataURL(file);
         }
     };
-    
-    const triggerFileInput = () => {
-        // Open the native file dialog
-        fileInputRef.current.click();
-    };
-
 
     const handleSave = async () => {
         try {
             setSaving(true);
-            const updatePayload = {
-                ...formData,
-                // Mocking the update process:
-                lastUpdated: new Date().toISOString()
-            };
-            
-            const res = await updateUserProfile(updatePayload); 
-            
+            const res = await updateUserProfile({ ...formData, lastUpdated: new Date().toISOString() });
             setUser(res);
             setFormData(res); 
             setEditing(false);
-            showModalMessage("Profile successfully updated!");
+            showModalMessage("Profile updated!");
         } catch (err) {
-            console.error(err);
-            showModalMessage("Error saving profile. Please try again.");
+            showModalMessage("Error saving profile.");
         } finally {
             setSaving(false);
         }
     };
 
-    if (loading)
-        return (
-            <div className={`flex justify-center items-center h-screen w-screen ${bg} ${text}`}>
-                <Loader2 className="w-8 h-8 animate-spin mr-3 text-blue-400" />
-                Loading profile...
-            </div>
-        );
+    if (loading) return (
+        <div className={`flex flex-col justify-center items-center h-screen w-full ${bg} ${text}`}>
+            <Loader2 className="w-10 h-10 animate-spin text-blue-500 mb-4" />
+            <p className="font-medium">Loading profile...</p>
+        </div>
+    );
 
-    // Fallback/Default image URL (a simple, generic SVG icon)
     const defaultImageUrl = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMTIiIGhlaWdodD0iMTEyIiB2aWV3Qm94PSIwIDAgMTEyIDExMiI+PHJlY3Qgd2lkdGg9IjExMiIgaGVpZ2h0PSIxMTIiIHJ4PSI1NiIgZmlsbD0iIzM2YjVhMiIvPjx0ZXh0IHg9IjU2IiB5PSI2MCIgZm9udC1zaXplPSI2MCIgZm9udC1mYW1pbHk9ImludGVyLCBzYW5zLXNlcmlmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZmZmZmZmIj5QPC90ZXh0Pjwvc3ZnPg==";
-    
+
     return (
-        <div className={`${bg} ${text} w-full h-full p-6 md:p-10 relative ml-16`}>
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-                body { font-family: 'Inter', sans-serif; }
-                .full-viewport-height { min-height: 100vh; }
-            `}</style>
+        <div className={`${bg} ${text} w-full min-h-screen p-4 md:p-10 ml-0 md:ml-16 transition-all duration-300`}>
             
-            {/* Custom Message Modal */}
+            {/* Notification Toast */}
             {message && (
-                <div className="fixed top-5 right-5 z-50">
-                    <div className="flex items-center p-4 bg-green-500/90 backdrop-blur text-white rounded-xl shadow-2xl transition-all duration-300 animate-slide-in-right">
-                        <span className="text-sm font-medium">{message}</span>
-                        <button onClick={() => setMessage(null)} className="ml-4 p-1 rounded-full hover:bg-white/20 transition">
-                            <X size={16} />
+                <div className="fixed top-5 left-4 right-4 md:left-auto md:right-8 z-50 animate-in fade-in slide-in-from-top-5">
+                    <div className="flex items-center justify-between p-4 bg-blue-600 text-white rounded-2xl shadow-2xl border border-blue-400/30">
+                        <span className="text-sm font-bold">{message}</span>
+                        <button onClick={() => setMessage(null)} className="ml-4 p-1 rounded-full hover:bg-white/20">
+                            <X size={18} />
                         </button>
                     </div>
-                    <style>{`
-                        @keyframes slide-in-right {
-                            from { transform: translateX(100%); opacity: 0; }
-                            to { transform: translateX(0); opacity: 1; }
-                        }
-                        .animate-slide-in-right {
-                            animation: slide-in-right 0.3s ease-out forwards;
-                        }
-                    `}</style>
                 </div>
             )}
 
-            <div className="max-w-6xl mx-auto mb-8">
-                {/* Header */}
-                <div className={`flex items-center justify-between mb-8 border-b ${border} pb-4`}>
-                    <div className="flex items-center">
-                        <UserRound className="w-10 h-10 text-blue-300" />
-                        <h2 className="text-3xl font-extrabold pl-3">My Profile</h2>
+            <div className="max-w-5xl mx-auto">
+                {/* Header Section */}
+                <div className={`flex flex-col sm:flex-row items-center justify-between mb-8 gap-4 border-b ${border} pb-6`}>
+                    <div className="flex items-center gap-3">
+                        <div className="p-3 bg-blue-500/10 rounded-2xl">
+                            <UserRound className="w-8 h-8 text-blue-500" />
+                        </div>
+                        <h2 className="text-2xl md:text-3xl font-black">My Profile</h2>
                     </div>
                     
-                    <div className="flex gap-4">
-                        {editing && (
-                            <button
-                                onClick={() => setEditing(false)}
-                                className={`flex items-center gap-2 bg-gray-700 text-gray-200 px-4 py-2 rounded-xl hover:bg-gray-600 transition`}
-                            >
-                                Cancel
-                            </button>
-                        )}
-                        {!editing ? (
-                            <button
-                                onClick={() => setEditing(true)}
-                                className={`flex items-center gap-2 bg-blue-500 text-gray-200 px-4 py-2 rounded-xl hover:bg-blue-600 transition`}
-                            >
-                                <Edit3 size={18} />
-                                Edit
-                            </button>
+                    <div className="flex gap-2 w-full sm:w-auto">
+                        {editing ? (
+                            <>
+                                <button onClick={() => setEditing(false)} className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl bg-gray-500/10 hover:bg-gray-500/20 font-bold transition">
+                                    Cancel
+                                </button>
+                                <button onClick={handleSave} disabled={saving} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-blue-700 disabled:opacity-50">
+                                    {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                                    Save
+                                </button>
+                            </>
                         ) : (
-                            <button
-                                onClick={handleSave}
-                                disabled={saving}
-                                className={`flex items-center gap-2 bg-green-500 text-gray-200 px-4 py-2 rounded-xl hover:bg-green-600 transition disabled:opacity-50`}
-                            >
-                                {saving ? (
-                                    <Loader2 size={18} className="animate-spin" />
-                                ) : (
-                                    <Save size={18} />
-                                )}
-                                Save
+                            <button onClick={() => setEditing(true)} className="w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20">
+                                <Edit3 size={18} /> Edit Profile
                             </button>
                         )}
                     </div>
                 </div>
 
-                {/* Profile Card Layout */}
-                <div className={`rounded-2xl shadow-2xl p-6 ${cardBg} grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8`}>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     
-                    {/* Left Section (1 column on large screens) */}
-                    <div className={`flex flex-col items-center lg:items-start lg:border-r ${border} lg:pr-8 lg:col-span-1`}>
-                        
-                        {/* Profile Pic & Edit Button */}
-                        <div className="relative w-36 h-36 mb-6 group">
-                            <img
-                                src={formData?.profilePicUrl || defaultImageUrl}
-                                alt="Profile"
-                                className="w-full h-full object-cover rounded-full border-4 border-blue-400 shadow-xl transition-all duration-300 group-hover:scale-[1.02]"
-                                onError={(e) => e.currentTarget.src = defaultImageUrl}
-                            />
-                            {editing && (
-                                <button
-                                    onClick={triggerFileInput}
-                                    className={`absolute inset-0 flex items-center justify-center p-2 bg-black/50 ${text} rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                                    title="Upload Profile Picture"
-                                >
-                                    <Upload size={32} />
-                                </button>
-                            )}
-                            <input 
-                                type="file" 
-                                ref={fileInputRef} 
-                                onChange={handleFileSelect} 
-                                accept="image/png, image/jpeg"
-                                className="hidden"
-                            />
-                        </div>
+                    {/* Left Sidebar: Avatar & Bio */}
+                    <div className="lg:col-span-4 flex flex-col gap-6">
+                        <div className={`p-6 rounded-3xl ${cardBg} border ${border} flex flex-col items-center text-center`}>
+                            <div className="relative group mb-4">
+                                <img
+                                    src={formData?.profilePicUrl || defaultImageUrl}
+                                    alt="Profile"
+                                    className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-full border-4 border-blue-500/30 shadow-2xl"
+                                    onError={(e) => e.currentTarget.src = defaultImageUrl}
+                                />
+                                {editing && (
+                                    <button 
+                                        onClick={() => fileInputRef.current.click()}
+                                        className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                    >
+                                        <Upload size={24} className="mb-1" />
+                                        <span className="text-[10px] font-bold uppercase">Change</span>
+                                    </button>
+                                )}
+                                <input type="file" ref={fileInputRef} onChange={handleFileSelect} accept="image/*" className="hidden" />
+                            </div>
 
-                        {/* Basic Info */}
-                        <div className="flex flex-col items-center mb-6 w-full text-center">
-                            <h2 className={`text-2xl font-bold ${text}`}>
-                                {user?.name || "Unnamed User"}
-                            </h2>
-                            <p className="text-gray-400 text-md">{user?.email}</p>
-                            <p className="text-md mt-3 bg-blue-400/20 text-blue-300 px-4 py-1.5 rounded-full font-semibold shadow-md">
+                            <h3 className="text-xl font-bold truncate w-full">{user?.name || "Student User"}</h3>
+                            <p className="text-sm opacity-60 mb-4">{user?.email}</p>
+                            <span className="px-4 py-1 bg-blue-500/10 text-blue-500 text-xs font-black uppercase tracking-widest rounded-full">
                                 {user?.role || "Student"}
-                            </p>
+                            </span>
+
+                            <div className="w-full mt-8 text-left">
+                                <label className="text-xs font-black uppercase tracking-widest opacity-40 mb-2 block">Personal Bio</label>
+                                <textarea
+                                    name="bio"
+                                    value={formData?.bio || ""}
+                                    onChange={handleChange}
+                                    disabled={!editing}
+                                    rows={3}
+                                    className={`w-full p-3 text-sm rounded-xl border ${editing ? 'border-blue-500/50 bg-blue-500/5' : 'border-transparent bg-transparent'} resize-none outline-none transition-all`}
+                                    placeholder="Write something about yourself..."
+                                />
+                            </div>
                         </div>
 
-                        {/* Bio Section */}
-                        <div className={`w-full mt-4 p-4 rounded-xl border ${border} ${bg}/50`}>
-                            <h3 className={`text-lg font-semibold mb-2 border-b border-gray-600 pb-1 ${text}`}>Bio</h3>
-                            <textarea
-                                name="bio"
-                                value={formData?.bio || ""} 
-                                onChange={handleChange}
-                                disabled={!editing}
-                                rows={4}
-                                className={`
-                                    w-full text-base rounded-lg outline-none resize-none transition p-2
-                                    border border-transparent
-                                    disabled:bg-transparent disabled:cursor-default
-                                    ${inputBg} 
-                                    ${inputText} 
-                                    ${inputFocus} 
-                                    ${disabledText}
-                                    ${disabledBg ? 'border-transparent' : inputBorder}
-                                  `}
-                                placeholder="Tell us a little about yourself..."
-                            />
-                        </div>
-                        
-                        {/* Badges Section */}
-                        <div className="w-full mt-6">
-                            <h3 className={`text-lg font-semibold mb-4 ${text} flex items-center gap-2`}>
-                                <Star className="w-5 h-5 text-yellow-500" />
-                                Badges
-                            </h3>
-                            <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                                {user?.badges && user.badges.length > 0 ? (
-                                    user.badges.map((badge, index) => (
-                                        <Badge key={index} name={badge.name} icon={badge.icon} color={badge.color} theme={theme}/>
+                        {/* Badges */}
+                        <div className={`p-6 rounded-3xl ${cardBg} border ${border}`}>
+                            <h4 className="text-sm font-black uppercase tracking-widest opacity-40 mb-4 flex items-center gap-2">
+                                <Star size={14} className="text-yellow-500" /> Achievements
+                            </h4>
+                            <div className="flex flex-wrap gap-2">
+                                {user?.badges?.length > 0 ? (
+                                    user.badges.map((b, i) => (
+                                        <div key={i} className="flex items-center gap-2 px-3 py-1.5 bg-gray-500/10 rounded-lg border border-gray-500/20">
+                                            <span className="text-base">{b.icon}</span>
+                                            <span className="text-xs font-bold">{b.name}</span>
+                                        </div>
                                     ))
                                 ) : (
-                                    <p className="text-sm text-gray-500">No badges earned yet.</p>
+                                    <p className="text-xs opacity-40 italic">Complete milestones to earn badges!</p>
                                 )}
                             </div>
                         </div>
                     </div>
 
-                    {/* Right Section - Details (3 columns on large screens) */}
-                    <div className="lg:col-span-3">
-                        <h3 className={`text-2xl font-bold mb-6 ${text} border-b ${border} pb-2`}>
-                            Personal Details
-                        </h3>
-                        
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                          {/* Student Fields */}
-                          {role === "student" && (
-                            <>
-                              <InputField
-                                label="Age"
-                                name="age"
-                                value={formData?.age}
-                                onChange={handleChange}
-                                editable={editing}
-                                type="number"
-                                theme={{ inputBg, bg, text, border }}
-                              />
-                              <InputField
-                                label="Class"
-                                name="class"
-                                value={formData?.class}
-                                onChange={handleChange}
-                                editable={editing}
-                                theme={{ inputBg, bg, text, border }}
-                              />
-                              <InputField
-                                label="School"
-                                name="school"
-                                value={formData?.school}
-                                onChange={handleChange}
-                                editable={editing}
-                                theme={{ inputBg, bg, text, border }}
-                              />
-                              <InputField
-                                label="City"
-                                name="city"
-                                value={formData?.city}
-                                onChange={handleChange}
-                                editable={editing}
-                                theme={{ inputBg, bg, text, border }}
-                              />
-                              <div className="col-span-2">
-                                <h3 className={`text-2xl font-bold mt-6 mb-6 ${text} flex items-center gap-3 border-b ${border} pb-2`}>
-                                    <Activity className="w-6 h-6 text-green-500" />
-                                    Skills & Interests
-                                </h3>
+                    {/* Right Content: Forms */}
+                    <div className="lg:col-span-8 flex flex-col gap-6">
+                        <div className={`p-6 md:p-8 rounded-3xl ${cardBg} border ${border}`}>
+                            <h4 className="text-lg font-bold mb-6 flex items-center gap-2">
+                                <User size={20} className="text-blue-500" />
+                                General Information
+                            </h4>
+                            
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                {role === "student" ? (
+                                    <>
+                                        <InputField label="Age" name="age" value={formData?.age} onChange={handleChange} editable={editing} type="number" />
+                                        <InputField label="Class / Grade" name="class" value={formData?.class} onChange={handleChange} editable={editing} />
+                                        <InputField label="School Name" name="school" value={formData?.school} onChange={handleChange} editable={editing} />
+                                        <InputField label="Current City" name="city" value={formData?.city} onChange={handleChange} editable={editing} />
+                                    </>
+                                ) : (
+                                    <>
+                                        <InputField label="Department" name="department" value={formData?.department} onChange={handleChange} editable={editing} />
+                                        <InputField label="Designation" name="designation" value={formData?.designation} onChange={handleChange} editable={editing} />
+                                        <InputField label="Years of Experience" name="experience_years" value={formData?.experience_years} onChange={handleChange} editable={editing} type="number" />
+                                        <InputField label="City" name="city" value={formData?.city} onChange={handleChange} editable={editing} />
+                                    </>
+                                )}
+                            </div>
+
+                            <div className="mt-8">
+                                <h4 className="text-sm font-black uppercase tracking-widest opacity-40 mb-4 flex items-center gap-2">
+                                    <Activity size={14} className="text-green-500" /> 
+                                    {role === "student" ? "Interests & Skills" : "Handling Classes"}
+                                </h4>
                                 <textarea
-                                    name="interests"
-                                    value={formData?.interests || ""}
+                                    name={role === "student" ? "interests" : "handling_classes"}
+                                    value={(role === "student" ? formData?.interests : formData?.handling_classes) || ""}
                                     onChange={handleChange}
                                     disabled={!editing}
-                                    className={`w-full p-4 border ${border} rounded-xl focus:ring-2 focus:ring-blue-400 outline-none min-h-[120px] disabled:bg-transparent disabled:cursor-not-allowed ${inputBg} ${text} text-base transition`}
-                                    placeholder="e.g. Drawing, Robotics, Football, Piano..."
+                                    className={`w-full p-4 rounded-2xl border ${editing ? 'border-blue-500/50 bg-blue-500/5' : 'border-transparent bg-gray-500/5'} min-h-[100px] outline-none transition-all`}
+                                    placeholder="e.g. Mathematics, Competitive Gaming, Chess..."
                                 />
-                              </div>
-                              <div className="col-span-2">
-                                <h3 className={`text-2xl font-bold mt-6 mb-6 ${text} flex items-center gap-3 border-b ${border} pb-2`}>
-                                    <Heart className="w-6 h-6 text-red-500" />
-                                    Mental & Physical Summary
-                                </h3>
-                                {/* This field is intentionally disabled as it's assumed to be AI-generated/admin-only */}
-                                <textarea
-                                    name="health_summary"
-                                    value={formData?.health_summary || ""} 
-                                    onChange={handleChange}
-                                    disabled={true} 
-                                    className={`w-full p-4 border ${border} rounded-xl outline-none min-h-[120px] disabled:bg-transparent disabled:cursor-not-allowed ${inputBg} text-gray-400 text-base`}
-                                    placeholder="AI-generated summary or parent notes..."
-                                />
-                              </div>
-                            </>
-                          )}
+                            </div>
 
-                          {/* Teacher Fields */}
-                          {role === "teacher" && (
-                            <>
-                              <InputField
-                                label="Department"
-                                name="department"
-                                value={formData?.department}
-                                onChange={handleChange}
-                                editable={editing}
-                                theme={{ inputBg, bg, text, border }}
-                              />
-                              <InputField
-                                label="Designation"
-                                name="designation"
-                                value={formData?.designation}
-                                onChange={handleChange}
-                                editable={editing}
-                                theme={{ inputBg, bg, text, border }}
-                              />
-                              <InputField
-                                label="Age"
-                                name="age"
-                                value={formData?.age}
-                                onChange={handleChange}
-                                editable={editing}
-                                theme={{ inputBg, bg, text, border }}
-                              />
-                              <InputField
-                                label="Experience Years"
-                                name="experience_years"
-                                value={formData?.experience_years}
-                                onChange={handleChange}
-                                editable={editing}
-                                theme={{ inputBg, bg, text, border }}
-                              />
-                              <InputField
-                                label="School"
-                                name="school"
-                                value={formData?.school}
-                                onChange={handleChange}
-                                editable={editing}
-                                theme={{ inputBg, bg, text, border }}
-                              />
-                              <InputField
-                                label="City"
-                                name="city"
-                                value={formData?.city}
-                                onChange={handleChange}
-                                editable={editing}
-                                theme={{ inputBg, bg, text, border }}
-                              />
-                              <div className="w-full col-span-2">
-                                <h3 className={`text-2xl font-bold mt-10 mb-6 ${text} flex items-center gap-3 border-b ${border} pb-2`}>
-                                  <Activity className="w-6 h-6 text-green-500" />
-                                  Handling Classes
-                                </h3>
-                                <textarea
-                                  name="handling_classes"
-                                  value={formData?.handling_classes || ""}
-                                  onChange={handleChange}
-                                  disabled={!editing}
-                                  className={`w-full p-4 border ${border} rounded-xl focus:ring-2 focus:ring-blue-400 outline-none min-h-[120px] disabled:bg-transparent disabled:cursor-not-allowed ${inputBg} ${text} text-base transition`}
-                                  placeholder="e.g. Drawing, Robotics, Football, Piano..."
-                                />
-                              </div>
-                            </>
-                          )}
+                            {role === "student" && (
+                                <div className="mt-8 p-4 bg-red-500/5 rounded-2xl border border-red-500/10">
+                                    <h4 className="text-xs font-black uppercase tracking-widest text-red-500/60 mb-2 flex items-center gap-2">
+                                        <Heart size={12} /> Health & Wellness Summary
+                                    </h4>
+                                    <p className="text-sm opacity-70 leading-relaxed">
+                                        {formData?.health_summary || "Health assessment data will appear here once updated by an administrator."}
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -414,31 +254,21 @@ export default function App() {
     );
 }
 
-/* Badge Component */
-function Badge({ name, icon, color, theme }) {
-    // Note: The original code for Badge component had the same backtick issue and is now corrected.
-    const { text } = getThemeClasses(theme);
+function InputField({ label, name, value, onChange, editable, type = "text" }) {
     return (
-        <div className={`flex items-center gap-2 bg-gray-700 backdrop-blur-sm ${text} px-4 py-2 rounded-full text-sm border border-gray-600 shadow-lg hover:bg-gray-700/80 transition`}>
-            <span className={`text-xl ${color}`}>{icon}</span>
-            <span className="font-medium text-gray-200">{name}</span>
-        </div>
-    );
-}
-
-/* Reusable Input Component */
-function InputField({ label, name, value, onChange, editable, type = "text", theme }) {
-    const { inputBg, bg, text, border } = theme;
-    return (
-        <div className="flex flex-col">
-            <label className={`text-base ${text} mb-2 font-medium`}>{label}</label>
+        <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">{label}</label>
             <input
                 type={type}
                 name={name}
                 value={value || ""}
                 onChange={onChange}
                 disabled={!editable}
-                className={`p-3 border ${border} rounded-xl focus:ring-2 focus:ring-blue-400 outline-none disabled:bg-transparent disabled:cursor-not-allowed ${text} ${inputBg} transition text-base`}
+                className={`w-full p-3.5 rounded-xl border text-sm font-medium transition-all outline-none
+                    ${editable 
+                        ? 'border-blue-500/30 bg-blue-500/5 focus:border-blue-500' 
+                        : 'border-transparent bg-gray-500/5 opacity-80 cursor-not-allowed'
+                    }`}
             />
         </div>
     );
