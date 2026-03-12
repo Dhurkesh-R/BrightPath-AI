@@ -88,7 +88,7 @@ export default function Profile() {
     const defaultImageUrl = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMTIiIGhlaWdodD0iMTEyIiB2aWV3Qm94PSIwIDAgMTEyIDExMiI+PHJlY3Qgd2lkdGg9IjExMiIgaGVpZ2h0PSIxMTIiIHJ4PSI1NiIgZmlsbD0iIzM2YjVhMiIvPjx0ZXh0IHg9IjU2IiB5PSI2MCIgZm9udC1zaXplPSI2MCIgZm9udC1mYW1pbHk9ImludGVyLCBzYW5zLXNlcmlmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZmZmZmZmIj5QPC90ZXh0Pjwvc3ZnPg==";
 
     return (
-        <div className={`${bg} ${text} w-full min-h-screen p-4 md:p-10 ml-0 md:ml-16 transition-all duration-300`}>
+         <div className={`min-h-screen w-full ${bg} ${text} transition-all duration-300 p-4 md:p-10 ml-16 md:ml-64`}>
             
             {/* Notification Toast */}
             {message && (
