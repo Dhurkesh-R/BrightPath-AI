@@ -115,7 +115,7 @@ export default function App() {
                     </div>
 
                     {/* Column 2, 3 & 4: Main Data Points */}
-                    <div className="md:col-span-2 lg:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="md:col-span-2 lg:col-span-3 flex flex-cols-1 lg:flex-cols-3 gap-6">
                         {/* Metric 1: Learning Style */}
                         <Card theme={theme} className="shadow-md">
                             <CardContent className="pt-6">
