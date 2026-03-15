@@ -76,7 +76,8 @@ const Chatbot = () => {
     <div className={`flex-1 flex flex-col h-screen md:h-full md:ml-64 ${bg} transition-all duration-300`}>
       
       {/* Header - Scaled text for smaller screens */}
-      <div className={`p-4 border-b ${border} text-xl md:text-2xl font-semibold sticky top-0 z-10 ${bg} ${text}`}>
+      <div className={`p-4 border-b ${border} text-xl md:text-2xl font-semibold sticky top-0 z-10 ${bg} ${text} flex items-center`}>
+        <div className="w-12 h-10 md:hidden" />
         🔆 BrightPath AI
       </div>
 
