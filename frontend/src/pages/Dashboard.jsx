@@ -70,7 +70,7 @@ return (
             
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <header className={`flex items-center pb-6 mb-6 border-b ${border} md:relative fixed md:transparent ${bg} md:w-auto w-full top-0`}>
+                <header className={`flex items-center pb-6 mb-6 border-b ${border} md:relative fixed md:transparent ${bg} md:w-auto w-full top-4`}>
                     <div className="flex items-center">
                         <div className="w-12 h-10 md:hidden" />
                         <LayoutDashboardIcon className={`w-8 h-8 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
