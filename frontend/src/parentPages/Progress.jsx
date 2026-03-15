@@ -213,6 +213,3 @@ function ProgressCard({ title, icon, value, theme }) {
     </Card>
   );
 }
-    </Card>
-  );
-}
