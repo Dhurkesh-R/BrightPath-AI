@@ -65,12 +65,13 @@ export default function ParentProgress() {
 
   return (
     /* Change 1: Responsive margin and width calculation */
-    <div className={`min-h-screen ${bg} ${text} p-4 md:p-8 w-full md:w-[calc(100%-3.5rem)] ml-14`}>
+    <div className={`min-h-screen ${bg} ${text} p-4 md:p-8 w-full md:w-[calc(100%-3.5rem)]`}>
       
       {/* ---------- HEADER ---------- */}
       {/* Change 2: Stack header on mobile (flex-col), row on desktop */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div className="flex items-center gap-3">
+          <div className="w-12 h-10 md:hidden" />
           <div className="p-2 bg-indigo-500/10 rounded-lg">
             <TrendingUp className="w-6 h-6 md:w-8 md:h-8 text-indigo-400" />
           </div>
