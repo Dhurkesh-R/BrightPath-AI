@@ -30,8 +30,6 @@ export default function ParentProgress() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  /* ---------------- FETCH ---------------- */
-
   const loadProgress = async () => {
     setLoading(true);
     try {
@@ -51,7 +49,7 @@ export default function ParentProgress() {
 
   if (loading) {
     return (
-      <div className={`flex items-center justify-center h-screen ${bg} w-full ml-14`}>
+      <div className={`flex items-center justify-center h-screen ${bg} w-full md:ml-14`}>
         <Loader2 className="animate-spin w-6 h-6 text-blue-500" />
       </div>
     );
@@ -59,40 +57,49 @@ export default function ParentProgress() {
 
   if (!data) {
     return (
-      <div className={`p-6 ${bg} ${text} w-full ml-14`}>
+      <div className={`p-6 ${bg} ${text} w-full md:ml-14`}>
         Unable to load progress data.
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen ${bg} ${text} p-6 w-full ml-14`}>
+    /* Change 1: Responsive margin and width calculation */
+    <div className={`min-h-screen ${bg} ${text} p-4 md:p-8 w-full md:w-[calc(100%-3.5rem)] md:ml-14`}>
+      
       {/* ---------- HEADER ---------- */}
-      <div className="flex justify-between items-center mb-6">
+      {/* Change 2: Stack header on mobile (flex-col), row on desktop */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div className="flex items-center gap-3">
-          <TrendingUp className="w-8 h-8 text-indigo-400" />
-          <h1 className="text-3xl font-extrabold">Progress Overview</h1>
+          <div className="p-2 bg-indigo-500/10 rounded-lg">
+            <TrendingUp className="w-6 h-6 md:w-8 md:h-8 text-indigo-400" />
+          </div>
+          <h1 className="text-2xl md:text-3xl font-black">Progress</h1>
         </div>
 
-        <div className="flex gap-2">
-          <Button
-            className={period === "weekly" ? buttonPrimary : ""}
-            variant={period === "weekly" ? "default" : "outline"}
+        {/* Change 3: Full-width buttons on mobile */}
+        <div className="flex w-full sm:w-auto p-1 bg-black/5 rounded-xl border border-white/10">
+          <button
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+              period === "weekly" ? `${buttonPrimary} shadow-md` : "opacity-60"
+            }`}
             onClick={() => setPeriod("weekly")}
           >
             Weekly
-          </Button>
-          <Button
-            className={period === "monthly" ? buttonPrimary : ""}
-            variant={period === "monthly" ? "default" : "outline"}
+          </button>
+          <button
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+              period === "monthly" ? `${buttonPrimary} shadow-md` : "opacity-60"
+            }`}
             onClick={() => setPeriod("monthly")}
           >
             Monthly
-          </Button>
+          </button>
         </div>
       </div>
 
       {/* ---------- SUMMARY CARDS ---------- */}
+      {/* Change 4: Adjusted grid for better mobile flow */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <ProgressCard
           title="Academic"
@@ -115,48 +122,71 @@ export default function ParentProgress() {
       </div>
 
       {/* ---------- TREND CHART ---------- */}
-      <Card className={`${cardBg} ${border} mb-6`} theme={theme}>
-        <CardHeader>
-          <CardTitle>Growth Trend</CardTitle>
+      <Card className={`${cardBg} ${border} mb-6 overflow-hidden`} theme={theme}>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg font-bold">Growth Trend</CardTitle>
         </CardHeader>
 
-        <CardContent theme={theme}>
-          <ResponsiveContainer width="100%" height={320}>
-            <LineChart data={data.trend}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="label" />
-              <YAxis domain={[0, 100]} />
-              <Tooltip />
+        <CardContent theme={theme} className="px-1 sm:px-6">
+          <div className="h-[250px] md:h-[320px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={data.trend} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} />
+                <XAxis 
+                  dataKey="label" 
+                  fontSize={10} 
+                  tickLine={false} 
+                  axisLine={false}
+                  minTickGap={10} 
+                />
+                <YAxis 
+                  domain={[0, 100]} 
+                  fontSize={10} 
+                  tickLine={false} 
+                  axisLine={false} 
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    borderRadius: '12px', 
+                    backgroundColor: theme === 'dark' ? '#1f2937' : '#fff',
+                    border: 'none',
+                    boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)'
+                  }} 
+                />
 
-              <Line
-                type="monotone"
-                dataKey="academic"
-                stroke="#3b82f6"
-                strokeWidth={3}
-              />
-              <Line
-                type="monotone"
-                dataKey="creative"
-                stroke="#ec4899"
-                strokeWidth={3}
-              />
-              <Line
-                type="monotone"
-                dataKey="sports"
-                stroke="#22c55e"
-                strokeWidth={3}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+                <Line
+                  type="monotone"
+                  dataKey="academic"
+                  stroke="#3b82f6"
+                  strokeWidth={3}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="creative"
+                  stroke="#ec4899"
+                  strokeWidth={3}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="sports"
+                  stroke="#22c55e"
+                  strokeWidth={3}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
 
       {/* ---------- INSIGHT ---------- */}
       {data.insight && (
-        <Card className={`${cardBg} ${border}`} theme={theme}>
-          <CardContent theme={theme}>
-            <p className={`italic ${textSecondary}`}>
-              {data.insight}
+        <Card className={`${cardBg} ${border} border-l-4 border-l-indigo-500`} theme={theme}>
+          <CardContent theme={theme} className="py-4">
+            <p className={`text-sm italic leading-relaxed ${textSecondary}`}>
+              "{data.insight}"
             </p>
           </CardContent>
         </Card>
@@ -168,15 +198,21 @@ export default function ParentProgress() {
 /* ================= COMPONENTS ================= */
 
 function ProgressCard({ title, icon, value, theme }) {
+  const { cardBg, border } = getThemeClasses(theme);
   return (
-    <Card className="p-4" theme={theme}>
-      <div className="flex items-center gap-3">
-        {icon}
+    <Card className={`${cardBg} ${border} p-5 shadow-sm`} theme={theme}>
+      <div className="flex items-center gap-4">
+        <div className="p-3 bg-black/5 rounded-xl">
+          {React.cloneElement(icon, { size: 24 })}
+        </div>
         <div>
-          <p className="text-xs opacity-60">{title}</p>
-          <p className="text-xl font-bold">{value}</p>
+          <p className="text-[10px] uppercase font-bold tracking-wider opacity-50">{title}</p>
+          <p className="text-2xl font-black">{value}</p>
         </div>
       </div>
+    </Card>
+  );
+}
     </Card>
   );
 }
