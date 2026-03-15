@@ -74,7 +74,7 @@ return (
                     <div className="flex items-center">
                         <div className="w-12 h-10 md:hidden" />
                         <LayoutDashboardIcon className={`w-8 h-8 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
-                        <h1 className="text-3xl font-extrabold pl-3">Student Dashboard</h1>
+                        <h1 className="text-3xl font-extrabold pl-3">Dashboard</h1>
                     </div>
                 </header>
 
