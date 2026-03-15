@@ -61,11 +61,12 @@ export default function ParentReports() {
   if (!report) return <div className={`p-6 ${bg} ${text} w-full ml-14`}>Failed to load report.</div>;
 
   return (
-    <div className={`min-h-screen ${bg} ${text} p-6 md:p-10 w-[calc(100%-3.5rem)] ml-14`}>
+    <div className={`min-h-screen ${bg} ${text} p-6 md:p-10 w-[calc(100%-3.5rem)]`}>
       {/* ---------- HEADER ---------- */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
           <div className="flex items-center gap-3 mb-1">
+            <div className="w-12 h-10 md:hidden" />
             <div className="p-2 bg-indigo-500/10 rounded-lg">
               <FileText className="w-6 h-6 text-indigo-500" />
             </div>
