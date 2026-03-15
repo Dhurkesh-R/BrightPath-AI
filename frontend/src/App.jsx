@@ -1,21 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Menu, X } from "lucide-react";
+
+// Components
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Chatbot from "./pages/Chatbot";
 import PrivateRoute from "./components/PrivateRoute";
+import Sidebar from "./components/SideBar";
+import MoodCheck from "./components/MoodCheck";
+import LoadingScreen from "./components/LoadingScreen";
+
+// Contexts & Services
 import { AuthProvider } from "./contexts/AuthContext";
 import { useTheme } from "./contexts/ThemeContext";
-import Sidebar from "./components/SideBar";
-import MoodCheck from "./components/MoodCheck"; // 👈 Import our MoodCheck
-import Dashboard from "./pages/Dashboard"
+import api from "./services/logout";
+
+// Pages
+import Dashboard from "./pages/Dashboard";
 import Activities from "./studentPages/Activities";
-import Goals from "./studentPages/Goals"
-import Books from "./pages/Books"
-import Quizzes from "./studentPages/Quizzes"
-import Profile from "./pages/Profile"
-import Settings from "./pages/Settings"
-import TeacherDashboard from "./teacherPages/TeacherDashboard"
+import Goals from "./studentPages/Goals";
+import Books from "./pages/Books";
+import Quizzes from "./studentPages/Quizzes";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import TeacherDashboard from "./teacherPages/TeacherDashboard";
 import Analytics from "./teacherPages/Analytics";
 import Students from "./teacherPages/Students";
 import StudentProfile from "./teacherPages/StudentProfile";
@@ -27,288 +36,129 @@ import ParentReports from "./parentPages/Reports";
 import ParentProgress from "./parentPages/Progress";
 import ParentRecommendations from "./parentPages/Recommendations";
 import ParentNotifications from "./parentPages/Notifications";
-import LoadingScreen from "./components/LoadingScreen";
-import api from "./services/logout"
 
 const App = () => {
-  const { theme } = useTheme();
-  const [moodCompleted, setMoodCompleted] = useState(false);
-  const user = JSON.parse(localStorage.getItem("user"))
-  const role = user?.role
+    const { theme } = useTheme();
+    const [moodCompleted, setMoodCompleted] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isAwake, setIsAwake] = useState(false);
 
-  const [isAwake, setIsAwake] = useState(false);
+    const user = JSON.parse(localStorage.getItem("user"));
+    const role = user?.role;
 
-  useEffect(() => {
-    const wakeUpServer = async () => {
-      try {
-        // Hit the health route we added to app.py
-        await api.get('/health');
-        setIsAwake(true); 
-      } catch (error) {
-        if (error.response) {
-          // If the server responded with ANY status (even an error), it's awake.
-          // If it was a 401, the interceptor already handled the logout.
-          setIsAwake(true);
-        } else {
-          // No response = Server is still booting. 
-          // Wait 5 seconds and try again.
-          console.log("Render is spinning up... retrying in 5s");
-          setTimeout(wakeUpServer, 5000);
-        }
-      }
+    // --- Server Wakeup Logic ---
+    useEffect(() => {
+        const wakeUpServer = async () => {
+            try {
+                await api.get('/health');
+                setIsAwake(true);
+            } catch (error) {
+                if (error.response) {
+                    setIsAwake(true);
+                } else {
+                    console.log("Server spinning up... retrying in 5s");
+                    setTimeout(wakeUpServer, 5000);
+                }
+            }
+        };
+        wakeUpServer();
+    }, []);
+
+    // --- Layout Wrapper for Sidebar Logic ---
+    const LayoutWrapper = ({ children }) => {
+        return (
+            <div className="flex h-screen relative overflow-hidden">
+                {/* Mobile Hamburger Button */}
+                <button
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    className="md:hidden fixed top-4 left-4 z-[100] p-2.5 bg-indigo-600 text-white rounded-xl shadow-lg hover:scale-105 active:scale-95 transition-all"
+                >
+                    {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+                </button>
+
+                {/* Sidebar Component */}
+                <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+
+                {/* Mobile Backdrop Overlay */}
+                {isSidebarOpen && (
+                    <div
+                        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[55] md:hidden transition-opacity"
+                        onClick={() => setIsSidebarOpen(false)}
+                    />
+                )}
+
+                {/* Main Content Area */}
+                <main className="flex-1 h-screen overflow-auto relative">
+                    {children}
+                    
+                    {/* Global MoodCheck Modal */}
+                    {!moodCompleted && (
+                        <MoodCheck onComplete={() => setMoodCompleted(true)} />
+                    )}
+                </main>
+            </div>
+        );
     };
 
-    wakeUpServer();
-  }, []);
-  
-  if (!isAwake) {
-    return <LoadingScreen />;
-  }
+    if (!isAwake) {
+        return <LoadingScreen />;
+    }
 
-  return (
-    <Router>
-      <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login theme={theme} />} />
-          <Route path="/register" element={<Register />} />
+    return (
+        <Router>
+            <AuthProvider>
+                <Routes>
+                    {/* Public Routes */}
+                    <Route path="/login" element={<Login theme={theme} />} />
+                    <Route path="/register" element={<Register />} />
 
-          <Route
-            path="/"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <Chatbot />
+                    {/* Private Routes with Sidebar Layout */}
+                    <Route path="/" element={<PrivateRoute><LayoutWrapper><Chatbot /></LayoutWrapper></PrivateRoute>} />
+                    
+                    <Route path="/dashboard" element={
+                        <PrivateRoute>
+                            <LayoutWrapper>
+                                {role === "teacher" ? <TeacherDashboard /> : <Dashboard />}
+                            </LayoutWrapper>
+                        </PrivateRoute>
+                    } />
 
-                  {/* MoodCheck modal overlays everything */}
-                  {!moodCompleted && (
-                    <MoodCheck onComplete={() => setMoodCompleted(true)} />
-                  )}
-                </div>
-              </PrivateRoute>
-            }
-          />
-          {role !== "teacher" && (
-            <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute>
-                  <div className="flex h-screen relative">
-                    <Sidebar />
-                    <Dashboard />
-                  </div>
-                </PrivateRoute>
-            }
-            />
-          )}
-          {role === "teacher" && (
-            <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute>
-                  <div className="flex h-screen relative">
-                    <Sidebar />
-                    <TeacherDashboard />
-                  </div>
-                </PrivateRoute>
-            }
-            />
-          )}
-          <Route
-            path="/activities"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <Activities />
-                </div>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/goals"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <Goals />
-                </div>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/books"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <Books />
-                </div>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/quizzes"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <Quizzes />
-                </div>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <Profile />
-                </div>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <Settings />
-                </div>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/analytics"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <Analytics />
-                </div>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/students"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <Students />
-                </div>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/students/:userId"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <StudentProfile />
-                </div>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/interventions"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <TeacherInterventions />
-                </div>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/assignments"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <TeacherAssignments />
-                </div>
-              </PrivateRoute>
-            }
-          />
-          {role === "teacher" && (
-            <Route
-              path="/messages"
-              element={
-                <PrivateRoute>
-                  <div className="flex h-screen relative">
-                    <Sidebar />
-                    <TeacherMessages />
-                  </div>
-                </PrivateRoute>
-              }
-            />
-          )}
-          {role === "parent" && (
-            <Route
-              path="/messages"
-              element={
-                <PrivateRoute>
-                  <div className="flex h-screen relative">
-                    <Sidebar />
-                    <ParentMessages />
-                  </div>
-                </PrivateRoute>
-              }
-            />
-          )}
-          <Route
-            path="/reports"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <ParentReports />
-                </div>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/progress"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <ParentProgress />
-                </div>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/recommendations"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <ParentRecommendations />
-                </div>
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/notifications"
-            element={
-              <PrivateRoute>
-                <div className="flex h-screen relative">
-                  <Sidebar />
-                  <ParentNotifications />
-                </div>
-              </PrivateRoute>
-            }
-          />
-        </Routes>
-      </AuthProvider>
-    </Router>
-  );
+                    <Route path="/activities" element={<PrivateRoute><LayoutWrapper><Activities /></LayoutWrapper></PrivateRoute>} />
+                    <Route path="/goals" element={<PrivateRoute><LayoutWrapper><Goals /></LayoutWrapper></PrivateRoute>} />
+                    <Route path="/books" element={<PrivateRoute><LayoutWrapper><Books /></LayoutWrapper></PrivateRoute>} />
+                    <Route path="/quizzes" element={<PrivateRoute><LayoutWrapper><Quizzes /></LayoutWrapper></PrivateRoute>} />
+                    <Route path="/profile" element={<PrivateRoute><LayoutWrapper><Profile /></LayoutWrapper></PrivateRoute>} />
+                    <Route path="/settings" element={<PrivateRoute><LayoutWrapper><Settings /></LayoutWrapper></PrivateRoute>} />
+
+                    {/* Teacher Specific Routes */}
+                    <Route path="/analytics" element={<PrivateRoute><LayoutWrapper><Analytics /></LayoutWrapper></PrivateRoute>} />
+                    <Route path="/students" element={<PrivateRoute><LayoutWrapper><Students /></LayoutWrapper></PrivateRoute>} />
+                    <Route path="/students/:userId" element={<PrivateRoute><LayoutWrapper><StudentProfile /></LayoutWrapper></PrivateRoute>} />
+                    <Route path="/interventions" element={<PrivateRoute><LayoutWrapper><TeacherInterventions /></LayoutWrapper></PrivateRoute>} />
+                    <Route path="/assignments" element={<PrivateRoute><LayoutWrapper><TeacherAssignments /></LayoutWrapper></PrivateRoute>} />
+                    
+                    {/* Unified Messaging Route */}
+                    <Route path="/messages" element={
+                        <PrivateRoute>
+                            <LayoutWrapper>
+                                {role === "teacher" ? <TeacherMessages /> : <ParentMessages />}
+                            </LayoutWrapper>
+                        </PrivateRoute>
+                    } />
+
+                    {/* Parent Specific Routes */}
+                    <Route path="/reports" element={<PrivateRoute><LayoutWrapper><ParentReports /></LayoutWrapper></PrivateRoute>} />
+                    <Route path="/progress" element={<PrivateRoute><LayoutWrapper><ParentProgress /></LayoutWrapper></PrivateRoute>} />
+                    <Route path="/recommendations" element={<PrivateRoute><LayoutWrapper><ParentRecommendations /></LayoutWrapper></PrivateRoute>} />
+                    <Route path="/notifications" element={<PrivateRoute><LayoutWrapper><ParentNotifications /></LayoutWrapper></PrivateRoute>} />
+                    
+                </Routes>
+            </AuthProvider>
+        </Router>
+    );
+};
+
+export default App;
 };
 
 export default App;
