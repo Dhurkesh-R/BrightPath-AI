@@ -73,7 +73,7 @@ const Chatbot = () => {
     // FIX 1: Responsive margin-left (ml-0 for mobile, ml-14 for desktop)
     // FIX 2: Fixed height for mobile viewport (h-[calc(100dvh)] handles mobile address bars better)
 
-    <div className={`flex-1 flex flex-col h-screen md:h-full ml-16 md:ml-64 ${bg} transition-all duration-300`}>
+    <div className={`flex-1 flex flex-col h-screen md:h-full md:ml-64 ${bg} transition-all duration-300`}>
       
       {/* Header - Scaled text for smaller screens */}
       <div className={`p-4 border-b ${border} text-xl md:text-2xl font-semibold sticky top-0 z-10 ${bg} ${text}`}>
