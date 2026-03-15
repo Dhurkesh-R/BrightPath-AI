@@ -54,7 +54,7 @@ export default function App() {
     const defaultAvatar = "data:image/svg+xml;base64,..."; // Keep your existing avatar string
 
     return (
-        <div className={`min-h-screen ${bg} ${text} transition-all duration-300 p-4 md:p-10 ml-16 md:ml-64`}>
+        <div className={`min-h-screen ${bg} ${text} transition-all duration-300 p-4 md:p-10 ml-16 md:ml-64 w-full`}>
             <div className="max-w-7xl mx-auto">
                 
                 {/* Header - Stacked on mobile, row on desktop */}
