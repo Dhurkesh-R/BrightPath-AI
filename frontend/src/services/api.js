@@ -17,49 +17,48 @@ const getAuthHeaders = () => {
 // --- Core fetch utility with automatic token refresh ---
 // NOTE: This function needs to be used by all other authenticated endpoints.
 export const fetchWithRefresh = async (url, options = {}) => {
-  try {
-    // 1. Initial attempt
-    let res = await fetch(url, options);
+  try {
+    let res = await fetch(url, options);
 
-    // 2. If access token is expired (401), attempt refresh
-    if (res.status === 401) {
-      const refreshToken = localStorage.getItem("refresh_token");
-      if (!refreshToken) {
-        throw new Error("Session expired. No refresh token found. Please login again.");
-      }
+    // If access token is expired (401)
+    if (res.status === 401) {
+      const refreshToken = localStorage.getItem("refresh_token");
+      
+      if (!refreshToken) {
+        handleGlobalLogout(); // Trigger logout if no refresh token
+        throw new Error("Session expired.");
+      }
 
-      const refreshRes = await fetch(`${API_BASE}/refresh`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${refreshToken}`,
-        },
-      });
+      const refreshRes = await fetch(`${API_BASE}/refresh`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${refreshToken}` },
+      });
 
-      const refreshJson = await refreshRes.json();
-      
-      // FIX 1: Ensure new tokens exist on successful refresh
-      if (refreshRes.ok && refreshJson.token && refreshJson.refresh_token) {
-        // Store new tokens
-        localStorage.setItem("token", refreshJson.token);
-        localStorage.setItem("refresh_token", refreshJson.refresh_token);
-
-        // Update the authorization header for the original request
-        options.headers = options.headers || {};
-        options.headers["Authorization"] = `Bearer ${refreshJson.token}`;
-
-        // Retry the original failed request
-        res = await fetch(url, options);
-      } else {
-        // If refresh fails, session is truly expired
-        throw new Error("Session expired. Please login again.");
-      }
-    }
-    return res;
-  } catch (err) {
-    throw err;
-  }
+      const refreshJson = await refreshRes.json();
+      
+      if (refreshRes.ok && refreshJson.token) {
+        localStorage.setItem("token", refreshJson.token);
+        // Retry
+        options.headers = { ...options.headers, Authorization: `Bearer ${refreshJson.token}` };
+        res = await fetch(url, options);
+      } else {
+        // Refresh token itself is expired or invalid
+        handleGlobalLogout();
+        throw new Error("Session expired. Please login again.");
+      }
+    }
+    return res;
+  } catch (err) {
+    throw err;
+  }
 };
 
+// Add this helper function at the bottom of api.js
+const handleGlobalLogout = () => {
+  localStorage.clear();
+  // This forces the whole browser to the login page
+  window.location.href = "/login"; 
+};
 // ------------------------------------------------------------------
 // AUTHENTICATION ENDPOINTS (Do not use fetchWithRefresh)
 // ------------------------------------------------------------------
