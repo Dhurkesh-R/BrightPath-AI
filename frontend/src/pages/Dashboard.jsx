@@ -62,7 +62,7 @@ export default function App() {
     const defaultAvatar = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMTIiIGhlaWdodD0iMTEyIiB2aWV3Qm94PSIwIDAgMTI4IDEyOCI+PHJlY3Qgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIHI9IjY0IiBmaWxsPSIjZWRlZGVkIi8+PHBhdGggZD0iTTc3LjQgMzkuOGExMy43IDEzLjcgMCAxIDAgLTE3LjMgMGwxLjYgNDMuNEg3NS44eiIgc3R5bGU9ImZpbGw6IzY2Njc3YSIgLz48Y2lyY2xlIGN4PSI2NCIgY3k9IjM5LjgiIHI9IjEzLjciIHN0eWxlPSJmaWxsOiMyYWFlOTMiIC8+PHBhdGggZD0iTTExNS42IDExNS41YzAgLTI2LjMtMjEuMy00Ny42LTQ3LjYtNDcuNlM0My4zIDg5LjIgNDMuMyAxMTUuNnoiIHN0eWxlPSJmaWxsOiMzYjhkZjIifSAvPjwvc3ZnPg==";
 
 return (
-        <div className={`min-h-screen ${bg} p-4 md:p-10 ${text} transition-colors duration-300 md:ml-16 w-full md:w-[calc(100%-4rem)]`}>
+        <div className={`min-h-screen ${bg} md:p-10 ${text} transition-colors duration-300 md:ml-16 w-full md:w-[calc(100%-4rem)]`}>
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
                 body { font-family: 'Inter', sans-serif; }
@@ -79,7 +79,7 @@ return (
                 </header>
 
                 {/* FIXED GRID ALIGNMENT */}
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start md:mt-0 mt-40">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start md:mt-0 mt-6">
                     
                     {/* LEFT Column: Profile & Risks */}
                     <div className="lg:col-span-1 space-y-6">
