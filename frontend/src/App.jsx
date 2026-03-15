@@ -71,9 +71,9 @@ const App = () => {
                 {/* Mobile Hamburger Button */}
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="md:hidden fixed top-4 left-4 z-[100] p-2.5 bg-indigo-600 text-white rounded-xl shadow-lg hover:scale-105 active:scale-95 transition-all"
+                    className="md:hidden fixed top-5 left-5 z-[100] p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
                 >
-                    {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+                    {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
 
                 {/* Sidebar Component */}
