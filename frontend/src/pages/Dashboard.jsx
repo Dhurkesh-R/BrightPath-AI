@@ -62,7 +62,7 @@ export default function App() {
     const defaultAvatar = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMTIiIGhlaWdodD0iMTEyIiB2aWV3Qm94PSIwIDAgMTI4IDEyOCI+PHJlY3Qgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIHI9IjY0IiBmaWxsPSIjZWRlZGVkIi8+PHBhdGggZD0iTTc3LjQgMzkuOGExMy43IDEzLjcgMCAxIDAgLTE3LjMgMGwxLjYgNDMuNEg3NS44eiIgc3R5bGU9ImZpbGw6IzY2Njc3YSIgLz48Y2lyY2xlIGN4PSI2NCIgY3k9IjM5LjgiIHI9IjEzLjciIHN0eWxlPSJmaWxsOiMyYWFlOTMiIC8+PHBhdGggZD0iTTExNS42IDExNS41YzAgLTI2LjMtMjEuMy00Ny42LTQ3LjYtNDcuNlM0My4zIDg5LjIgNDMuMyAxMTUuNnoiIHN0eWxlPSJmaWxsOiMzYjhkZjIifSAvPjwvc3ZnPg==";
 
 return (
-        <div className={`min-h-screen ${bg} p-6 md:p-10 ${text} transition-colors duration-300 ml-14 w-[calc(100%-3.5rem)]`}>
+        <div className={`min-h-screen ${bg} p-4 md:p-10 ${text} transition-colors duration-300 md:ml-16 w-full md:w-[calc(100%-4rem)]`}>
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
                 body { font-family: 'Inter', sans-serif; }
@@ -72,6 +72,7 @@ return (
                 {/* Header */}
                 <header className={`flex items-center pb-6 mb-6 border-b ${border}`}>
                     <div className="flex items-center">
+                        <div className="w-12 h-10 md:hidden" />
                         <LayoutDashboardIcon className={`w-8 h-8 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                         <h1 className="text-3xl font-extrabold pl-3">Student Dashboard</h1>
                     </div>
