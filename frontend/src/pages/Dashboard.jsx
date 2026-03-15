@@ -70,7 +70,7 @@ return (
             
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <header className={`flex items-center pb-6 mb-6 border-b ${border} fixed ${bg}`}>
+                <header className={`flex items-center pb-6 mb-6 border-b ${border} sm:fixed sm:${bg} sm:w-full`}>
                     <div className="flex items-center">
                         <div className="w-12 h-10 md:hidden" />
                         <LayoutDashboardIcon className={`w-8 h-8 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
@@ -79,7 +79,7 @@ return (
                 </header>
 
                 {/* FIXED GRID ALIGNMENT */}
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start sm:mt-20">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start sm:mt-40">
                     
                     {/* LEFT Column: Profile & Risks */}
                     <div className="lg:col-span-1 space-y-6">
