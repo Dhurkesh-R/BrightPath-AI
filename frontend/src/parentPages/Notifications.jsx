@@ -96,9 +96,10 @@ export default function ParentNotifications() {
   }
 
   return (
-    <div className={`min-h-screen ${bg} ${text} p-6 w-full ml-14`}>
+    <div className={`min-h-screen ${bg} ${text} p-6 w-full`}>
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
+        <div className="w-12 h-10 md:hidden" />
         <Bell className="w-8 h-8 text-indigo-400" />
         <h1 className="text-3xl font-extrabold">
           Notifications
