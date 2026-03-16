@@ -192,6 +192,3 @@ function SummaryCard({ title, value, theme }) {
     </Card>
   );
 }
-    </Card>
-  );
-}
