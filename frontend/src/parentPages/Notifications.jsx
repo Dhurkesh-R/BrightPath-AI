@@ -96,7 +96,7 @@ export default function ParentNotifications() {
   }
 
   return (
-    <div className={`min-h-screen ${bg} ${text} p-6 w-full`}>
+    <div className={`min-h-screen ${bg} ${text} p-6 w-full md:ml-14`}>
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-12 h-10 md:hidden" />
