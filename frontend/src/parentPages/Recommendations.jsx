@@ -6,6 +6,7 @@ import {
   Dumbbell,
   HeartPulse,
   AlertTriangle,
+  Sparkles // Added for a consistent header icon
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -46,8 +47,6 @@ export default function ParentRecommendations() {
   const [summary, setSummary] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
 
-  /* -------------------- DATA -------------------- */
-
   const loadRecommendations = async () => {
     setLoading(true);
     try {
@@ -71,7 +70,7 @@ export default function ParentRecommendations() {
 
   if (loading) {
     return (
-      <div className={`flex items-center justify-center h-screen ${bg} w-full ml-14`}>
+      <div className={`flex items-center justify-center h-screen ${bg} w-full md:ml-16`}>
         <p className={`${textSecondary} animate-pulse`}>
           Generating personalized recommendations…
         </p>
@@ -83,7 +82,7 @@ export default function ParentRecommendations() {
 
   if (!recommendations.length) {
     return (
-      <div className={`min-h-screen ${bg} ${text} p-6 ml-14 w-full`}>
+      <div className={`min-h-screen ${bg} ${text} p-6 md:p-10 md:ml-16 w-full`}>
         <Card className={`${cardBg} ${border}`} theme={theme}>
           <CardContent className="py-10 text-center" theme={theme}>
             <Lightbulb className="w-10 h-10 mx-auto mb-4 opacity-50" />
@@ -102,15 +101,25 @@ export default function ParentRecommendations() {
   /* -------------------- RENDER -------------------- */
 
   return (
-    <div className={`min-h-screen ${bg} ${text} p-6 ml-14 w-full`}>
+    /* Change 1: md:ml-16 for desktop, ml-0 for mobile, w-full with md calc */
+    <div className={`min-h-screen ${bg} ${text} p-6 md:p-10 md:ml-16 w-full md:w-[calc(100%-4rem)] transition-all duration-300`}>
+      
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-extrabold mb-1">
-          Recommendations
-        </h1>
-        <p className={`${textSecondary}`}>
-          Personalized guidance based on your child’s recent activity and progress.
-        </p>
+      <div className="mb-8 border-b border-white/10 pb-6 flex items-start">
+        {/* Change 2: Spacer for mobile hamburger menu */}
+        <div className="w-12 h-10 md:hidden flex-shrink-0" />
+
+        <div>
+          <div className="flex items-center gap-3">
+             <Sparkles className="w-6 h-6 text-indigo-400 hidden md:block" />
+             <h1 className="text-2xl md:text-3xl font-extrabold">
+               Recommendations
+             </h1>
+          </div>
+          <p className={`${textSecondary} mt-2 text-sm md:text-base`}>
+            Personalized guidance based on your child’s recent activity and progress.
+          </p>
+        </div>
       </div>
 
       {/* Summary */}
@@ -127,7 +136,7 @@ export default function ParentRecommendations() {
         {recommendations.map((r, idx) => (
           <Card
             key={idx}
-            className={`${cardBg} ${border} relative`}
+            className={`${cardBg} ${border} relative hover:shadow-lg transition-shadow`}
             theme={theme}
           >
             <CardHeader className="flex flex-row items-start gap-3" theme={theme}>
@@ -175,11 +184,14 @@ export default function ParentRecommendations() {
 
 function SummaryCard({ title, value, theme }) {
   return (
-    <Card theme={theme} className="p-4">
-      <p className="text-xs uppercase opacity-60">{title}</p>
-      <p className="text-2xl font-bold mt-1">
+    <Card theme={theme} className="p-4 shadow-sm">
+      <p className="text-xs uppercase opacity-60 font-semibold tracking-wider">{title}</p>
+      <p className="text-2xl font-bold mt-1 text-indigo-400">
         {Math.round(value)}%
       </p>
+    </Card>
+  );
+}
     </Card>
   );
 }
