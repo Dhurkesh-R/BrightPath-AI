@@ -159,7 +159,7 @@ export default function ParentMessages() {
     <div className={`flex h-screen ${bg} ${text} md:ml-16 flex-1 min-w-0 overflow-hidden transition-all duration-300`}>
       
       {/* LEFT SIDEBAR - Responsive Toggle */}
-      <div className={`${activeUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 flex-col border-r ${border} ${bgCard} flex-shrink-0`}>
+      <div className={`${activeUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 flex-col border-r ${border} ${cardBg} flex-shrink-0`}>
         <div className="flex items-center p-4 border-b h-[73px]">
            <div className="w-12 md:hidden" /> {/* Hamburger Spacer */}
            <h1 className="text-xl font-bold flex-1">Messages</h1>
@@ -220,7 +220,7 @@ export default function ParentMessages() {
               <React.Fragment key={m.id || idx}>
                 {showDateHeader && (
                   <div className="flex justify-center my-4">
-                    <span className={`text-xs font-bold px-3 py-1 rounded-lg uppercase tracking-wider ${bgCard} ${textSecondary} border ${border}`}>
+                    <span className={`text-xs font-bold px-3 py-1 rounded-lg uppercase tracking-wider ${cardBg} ${textSecondary} border ${border}`}>
                       {formatStickyDate(m.createdAt)}
                     </span>
                   </div>
@@ -228,7 +228,7 @@ export default function ParentMessages() {
                 <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
                   className={`flex items-end gap-2 ${isMe ? "flex-row-reverse" : "flex-row"}`}>
                   <div className={`relative max-w-[80%] md:max-w-[70%] px-4 py-2.5 shadow-sm
-                    ${isMe ? "bg-blue-600 text-white rounded-2xl rounded-tr-none" : `${bgCard} ${textSecondary} border border-slate-700 rounded-2xl rounded-tl-none`}`}>
+                    ${isMe ? "bg-blue-600 text-white rounded-2xl rounded-tr-none" : `${cardBg} ${textSecondary} border border-slate-700 rounded-2xl rounded-tl-none`}`}>
                     <p className="text-sm leading-relaxed">{m.content}</p>
                     <div className={`flex items-center gap-1 mt-1 opacity-70 ${isMe ? "justify-end" : "justify-start"}`}>
                       <span className="text-[10px] uppercase tracking-wider">
