@@ -99,6 +99,7 @@ const Settings = () => {
                 {/* Header */}
                 <div className="flex justify-between items-center border-b pb-6 border-gray-500/20">
                     <div className="flex items-center gap-4">
+                        <div className="w-12 h-10 md:hidden" />
                         <div className="p-3 bg-blue-500/10 rounded-2xl">
                             <SettingsIcon className="w-8 h-8 text-blue-500" />
                         </div>
