@@ -156,10 +156,10 @@ export default function ParentMessages() {
   }
 
   return (
-    <div className={`flex h-screen ${bg} ${text} md:ml-16 w-full n transition-all duration-300`}>
+    <div className={`flex h-screen ${bg} ${text} md:ml-16 w-full overflow-hidden transition-all duration-300`}>
       
       {/* LEFT SIDEBAR - Responsive Toggle */}
-      <div className={`${activeUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 flex-col border-r ${border} ${bgCard}`}>
+      <div className={`${activeUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 min-w-0 flex-col border-r ${border} ${bgCard}`}>
         <div className="flex items-center p-4 border-b h-[73px]">
            <div className="w-12 md:hidden" /> {/* Hamburger Spacer */}
            <h1 className="text-xl font-bold flex-1">Messages</h1>
