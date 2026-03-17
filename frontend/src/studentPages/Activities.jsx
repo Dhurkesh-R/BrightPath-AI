@@ -175,8 +175,7 @@ export default function Activities() {
             <h1 className="text-2xl md:text-3xl font-extrabold truncate">Activity Log</h1>
           </div>
           <Button className={`${buttonPrimary} w-full sm:w-auto shadow-lg`} onClick={openAdd}>
-            <Plus className="w-4 h-4 mr-2" />
-            Add Activity
+            <Plus className="w-4 h-4 mr-2" /> Add Activity
           </Button>
         </div>
 
@@ -242,7 +241,7 @@ export default function Activities() {
                   </CardContent>
 
                   {/* Actions - Visible on hover (Desktop) or always (Mobile) */}
-                  <div className="absolute top-3 right-3 flex gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                  <div className="absolute top-5 right-3 flex gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                     <button onClick={() => openEdit(a)} className="p-1 hover:bg-white/10 rounded">
                       <Edit2 className="w-4 h-4" />
                     </button>
