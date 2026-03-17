@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Send, UserCircle, Plus, Loader2, ChevronLeft } from "lucide-react"; // Added ChevronLeft
-import { motion, AnimatePresence } from "framer-motion";
+import { Send, UserCircle, Plus, Loader2, ChevronLeft } from "lucide-react";
+import { motion } from "framer-motion";
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext";
 import {
   getMessages,
@@ -10,7 +10,26 @@ import {
 import StartNewChatModal from "../components/StartNewChatP";
 import { getSocket } from "../services/socket";
 
-// ... keep formatStickyDate function same ...
+/* -------------------- DATE FORMATTER -------------------- */
+
+const formatStickyDate = (dateString) => {
+  const date = new Date(dateString);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  if (date.toDateString() === today.toDateString()) return "Today";
+  if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
+
+  const diffDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
+  if (diffDays < 7) {
+    return date.toLocaleDateString([], { weekday: 'long' });
+  }
+
+  return date.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
+};
+
+/* -------------------- COMPONENT -------------------- */
 
 export default function ParentMessages() {
   const { theme } = useTheme();
@@ -32,35 +51,54 @@ export default function ParentMessages() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  /* ---------------- Socket & Load logic (Keep exactly as is) ---------------- */
+  /* ---------------- Socket Listener ---------------- */
   useEffect(() => {
     const socket = getSocket();
     setSocket(socket);
+
     const handleIncoming = (message) => {
       if (!activeUser) return;
-      const isFromActiveChat = message.senderId === activeUser.userId && message.receiverId === user.id;
-      if (isFromActiveChat) setMessages((prev) => [...prev, message]);
+      const currentUserId = user.id;
+      const isFromActiveChat =
+        message.senderId === activeUser.userId &&
+        message.receiverId === currentUserId;
+
+      if (isFromActiveChat) {
+        setMessages((prev) => [...prev, message]);
+      }
     };
+
     socket.on("new_message", handleIncoming);
-    return () => socket.off("new_message", handleIncoming);
-  }, [activeUser]);
+    return () => {
+      socket.off("new_message", handleIncoming);
+    };
+  }, [activeUser, user.id]);
 
   useEffect(() => {
     if (!activeUser || !socket) return;
-    socket.emit("join_conversation", { otherUserId: activeUser.userId, auth: localStorage.getItem("token") });
+    socket.emit("join_conversation", {
+      otherUserId: activeUser.userId,
+      auth: localStorage.getItem("token")
+    });
   }, [activeUser, socket]);
 
+  /* ---------------- Load Conversations ---------------- */
   useEffect(() => {
     async function loadConversations() {
       try {
         setLoading(true);
         const data = await getMessages();
         setConversations(data);
-      } catch (err) { console.error(err); } finally { setLoading(false); }
+      } catch (err) {
+        console.error("Failed to load conversations", err);
+      } finally {
+        setLoading(false);
+      }
     }
     loadConversations();
   }, []);
 
+  /* ---------------- Load Message Thread ---------------- */
   useEffect(() => {
     if (!activeUser) return;
     async function loadThread() {
@@ -68,21 +106,42 @@ export default function ParentMessages() {
         setLoading(true);
         const data = await getMessageThread(activeUser.userId);
         setMessages(data);
-      } catch (err) { console.error(err); } finally { setLoading(false); }
+      } catch (err) {
+        console.error("Failed to load messages", err);
+      } finally {
+        setLoading(false);
+      }
     }
     loadThread();
   }, [activeUser]);
 
+  /* ---------------- Send Message ---------------- */
   const handleSend = async () => {
     if (!input.trim() || !activeUser) return;
-    const optimisticMsg = { senderId: user.id, receiverId: activeUser.userId, content: input, createdAt: new Date().toISOString() };
+
+    const optimisticMsg = {
+      senderId: user.id,
+      receiverId: activeUser.userId,
+      content: input,
+      createdAt: new Date().toISOString(),
+    };
+
     setMessages((prev) => [...prev, optimisticMsg]);
     setInput("");
-    try { await sendMessage(optimisticMsg); } catch (err) { console.error(err); }
+
+    try {
+      await sendMessage(optimisticMsg);
+    } catch (err) {
+      console.error("Failed to send message", err);
+    }
   };
 
+  /* ---------------- Select Teacher ---------------- */
   const handleSelectTeacher = (teacher) => {
-    setActiveUser({ userId: teacher.userId, name: teacher.name });
+    setActiveUser({
+      userId: teacher.userId,
+      name: teacher.name,
+    });
     setMessages([]);
     setShowNewChat(false);
   };
@@ -99,33 +158,32 @@ export default function ParentMessages() {
   return (
     <div className={`flex h-screen ${bg} ${text} md:ml-16 w-full overflow-hidden transition-all duration-300`}>
       
-      {/* LEFT SIDEBAR - Responsive: Hidden on mobile if a chat is active */}
+      {/* LEFT SIDEBAR - Responsive Toggle */}
       <div className={`${activeUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 flex-col border-r ${border} ${bgCard}`}>
         <div className="flex items-center p-4 border-b h-[73px]">
-           {/* Header Spacer for Hamburger */}
-           <div className="w-12 md:hidden" /> 
+           <div className="w-12 md:hidden" /> {/* Hamburger Spacer */}
            <h1 className="text-xl font-bold flex-1">Messages</h1>
-           <button onClick={() => setShowNewChat(true)} className="p-2 text-blue-500 hover:bg-blue-500/10 rounded-full transition-colors">
+           <button onClick={() => setShowNewChat(true)} className="p-2 text-blue-500">
             <Plus size={24} />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto">
           {conversations.length === 0 ? (
-            <p className={`p-6 text-center ${textSecondary} text-sm`}>No conversations yet</p>
+            <p className={`p-4 ${textSecondary}`}>No conversations yet</p>
           ) : (
             conversations.map((c) => (
               <button
                 key={c.userId}
                 onClick={() => setActiveUser(c)}
-                className={`w-full flex items-center gap-3 px-4 py-4 transition border-b ${border} last:border-0
-                  ${activeUser?.userId === c.userId ? "bg-blue-600/10 border-r-4 border-r-blue-500" : "hover:bg-gray-700/10"}
+                className={`w-full flex items-center gap-3 px-4 py-3 border-b ${border}
+                  ${activeUser?.userId === c.userId ? "bg-blue-600/10" : "hover:bg-gray-700/20"}
                 `}
               >
-                <UserCircle className="w-12 h-12 text-gray-400" />
-                <div className="text-left overflow-hidden">
-                  <p className="font-semibold truncate">{c.name}</p>
-                  <p className={`text-xs ${textSecondary}`}>Teacher</p>
+                <UserCircle className="w-10 h-10 text-gray-400" />
+                <div className="text-left">
+                  <p className="font-semibold">{c.name}</p>
+                  <p className={`text-sm ${textSecondary}`}>Teacher</p>
                 </div>
               </button>
             ))
@@ -133,85 +191,70 @@ export default function ParentMessages() {
         </div>
       </div>
 
-      {/* CHAT WINDOW - Responsive: Hidden on mobile if no chat selected */}
+      {/* CHAT WINDOW */}
       <div className={`${!activeUser ? 'hidden md:flex' : 'flex'} flex-1 flex-col h-full`}>
         <div className={`p-4 border-b ${border} flex items-center h-[73px]`}>
-          {/* Back button for Mobile */}
-          <button 
-            onClick={() => setActiveUser(null)} 
-            className="md:hidden mr-3 p-1 hover:bg-gray-700/20 rounded-lg"
-          >
+          <button onClick={() => setActiveUser(null)} className="md:hidden mr-3">
             <ChevronLeft size={24} />
           </button>
-          
           {activeUser ? (
-            <div className="flex items-center gap-2">
-              <UserCircle className="w-8 h-8 text-blue-500" />
-              <p className="font-bold">{activeUser.name}</p>
-            </div>
+            <p className="font-semibold">{activeUser.name}</p>
           ) : (
-            <div className="flex items-center gap-2">
-                <div className="w-12 md:hidden" /> {/* Spacer if nothing selected */}
+            <div className="flex items-center">
+                <div className="w-12 md:hidden" />
                 <p className={textSecondary}>Select a conversation</p>
             </div>
           )}
         </div>
 
-        {/* MESSAGES AREA */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-black/5">
-          {activeUser ? (
-             messages.map((m, idx) => {
-                const isMe = m.senderId === user.id;
-                const currentDate = new Date(m.createdAt).toDateString();
-                const previousDate = idx > 0 ? new Date(messages[idx - 1].createdAt).toDateString() : null;
-                const showDateHeader = currentDate !== previousDate;
-                
-                return (
-                  <React.Fragment key={m.id || idx}>
-                    {showDateHeader && (
-                      <div className="flex justify-center my-6">
-                        <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter ${bgCard} ${textSecondary} border ${border}`}>
-                          {formatStickyDate(m.createdAt)}
-                        </span>
-                      </div>
-                    )}
-                    <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}
-                      className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
-                      <div className={`max-w-[85%] md:max-w-[70%] px-4 py-2 rounded-2xl shadow-sm
-                        ${isMe ? "bg-blue-600 text-white rounded-tr-none" : `${bgCard} border ${border} rounded-tl-none`}`}>
-                        <p className="text-sm whitespace-pre-wrap">{m.content}</p>
-                        <p className={`text-[9px] mt-1 opacity-60 text-right uppercase`}>
-                          {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                      </div>
-                    </motion.div>
-                  </React.Fragment>
-                );
-              })
-          ) : (
-            <div className="h-full flex flex-col items-center justify-center opacity-30">
-                <UserCircle size={64} />
-                <p className="mt-4">Pick a teacher to start chatting</p>
-            </div>
-          )}
+        {/* MESSAGES */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+          {messages.map((m, idx) => {
+            const isMe = m.senderId === user.id;
+            const currentDate = new Date(m.createdAt).toDateString();
+            const previousDate = idx > 0 ? new Date(messages[idx - 1].createdAt).toDateString() : null;
+            const showDateHeader = currentDate !== previousDate;
+
+            return (
+              <React.Fragment key={m.id || idx}>
+                {showDateHeader && (
+                  <div className="flex justify-center my-4">
+                    <span className={`text-xs font-bold px-3 py-1 rounded-lg uppercase tracking-wider ${bgCard} ${textSecondary} border ${border}`}>
+                      {formatStickyDate(m.createdAt)}
+                    </span>
+                  </div>
+                )}
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+                  className={`flex items-end gap-2 ${isMe ? "flex-row-reverse" : "flex-row"}`}>
+                  <div className={`relative max-w-[80%] md:max-w-[70%] px-4 py-2.5 shadow-sm
+                    ${isMe ? "bg-blue-600 text-white rounded-2xl rounded-tr-none" : `${bgCard} ${textSecondary} border border-slate-700 rounded-2xl rounded-tl-none`}`}>
+                    <p className="text-sm leading-relaxed">{m.content}</p>
+                    <div className={`flex items-center gap-1 mt-1 opacity-70 ${isMe ? "justify-end" : "justify-start"}`}>
+                      <span className="text-[10px] uppercase tracking-wider">
+                        {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              </React.Fragment>
+            );
+          })}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* INPUT AREA */}
+        {/* INPUT */}
         {activeUser && (
-          <div className={`p-4 bg-transparent`}>
-            <div className={`flex gap-2 p-1.5 rounded-2xl border ${border} ${bgCard} shadow-lg`}>
-                <input
-                  className="flex-1 bg-transparent px-3 py-2 text-sm focus:outline-none"
-                  placeholder="Type a message…"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                />
-                <button onClick={handleSend} className="p-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white transition-transform active:scale-95">
-                  <Send size={18} />
-                </button>
-            </div>
+          <div className={`p-4 border-t ${border} flex gap-3`}>
+            <input
+              className={`flex-1 rounded-xl px-4 py-2 ${bgCard} ${text} outline-none border focus:border-blue-500`}
+              placeholder="Type a message…"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            />
+            <button onClick={handleSend} className="px-4 rounded-xl bg-blue-600 hover:bg-blue-500 transition-colors">
+              <Send className="w-5 h-5 text-white" />
+            </button>
           </div>
         )}
       </div>
