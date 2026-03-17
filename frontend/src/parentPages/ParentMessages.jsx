@@ -168,7 +168,7 @@ export default function ParentMessages() {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-x-hidden overflow-y-auto">
           {conversations.length === 0 ? (
             <p className={`p-4 ${textSecondary}`}>No conversations yet</p>
           ) : (
