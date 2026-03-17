@@ -138,8 +138,16 @@ const MenuItem = ({ item, closeSidebar }) => {
         <Icon size={22} />
       </button>
       {/* Tooltip: Hidden on mobile to avoid clutter */}
-      <span className={`hidden md:block absolute left-16 px-3 py-1.5 ...`}>
+      <span className={`
+        absolute left-16 px-3 py-1.5 
+        ${classes.cardBg} ${classes.text} 
+        text-xs font-bold rounded-lg shadow-xl border ${classes.border}
+        opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0
+        transition-all duration-200 whitespace-nowrap z-[100] pointer-events-none
+
+      `}>
         {item.name}
+
       </span>
     </div>
   );
