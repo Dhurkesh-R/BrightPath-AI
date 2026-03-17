@@ -194,6 +194,7 @@ export default function ParentMessages() {
       {/* CHAT WINDOW */}
       <div className={`${!activeUser ? 'hidden md:flex' : 'flex'} flex-1 flex-col h-full min-w-0`}>
         <div className={`p-4 border-b ${border} flex items-center h-[73px]`}>
+          <div className="w-12 h-10 md:hidden" />
           <button onClick={() => setActiveUser(null)} className="md:hidden mr-3">
             <ChevronLeft size={24} />
           </button>
