@@ -34,17 +34,14 @@ import {
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext.jsx";
 
 export default function Activities() {
-  const { theme, _, t } = useTheme();
+  const { theme } = useTheme();
   const {
     bg,
     text,
     cardBg,
     border,
-    inputBg,
-    inputBorder,
     textSecondary,
     buttonPrimary,
-    buttonDestructive,
   } = getThemeClasses(theme);
 
   const [activities, setActivities] = useState([]);
@@ -95,11 +92,9 @@ export default function Activities() {
     if (!activities.length) {
       return { totalTime: 0, count: 0, longest: null, recent: null };
     }
-
     const totalTime = activities.reduce((s, a) => s + a.timeSpent, 0);
     const longest = [...activities].sort((a, b) => b.timeSpent - a.timeSpent)[0];
     const recent = activities[0];
-
     return { totalTime, count: activities.length, longest, recent };
   }, [activities]);
 
@@ -126,11 +121,7 @@ export default function Activities() {
 
   const saveActivity = async (e) => {
     e.preventDefault();
-    const payload = {
-      ...form,
-      timeSpent: Number(form.timeSpent),
-    };
-
+    const payload = { ...form, timeSpent: Number(form.timeSpent) };
     try {
       if (editMode && selected) {
         await updateActivity(selected.id, payload);
@@ -139,21 +130,15 @@ export default function Activities() {
       }
       setModalOpen(false);
       loadActivities();
-    } catch (err) {
-      console.error("Save failed", err);
-    }
+    } catch (err) { console.error("Save failed", err); }
   };
 
   const removeActivity = async (id) => {
     try {
       await deleteActivity(id);
       loadActivities();
-    } catch (err) {
-      console.error("Delete failed", err);
-    }
+    } catch (err) { console.error("Delete failed", err); }
   };
-
-  /* -------------------- ICONS -------------------- */
 
   const activityIcons = {
     sports: <Dumbbell className="w-5 h-5 text-blue-400" />,
@@ -163,159 +148,183 @@ export default function Activities() {
     general: <Activity className="w-5 h-5 text-yellow-400" />,
   };
 
-  /* -------------------- RENDER -------------------- */
-
   if (loading) {
     return (
-      <div className={`flex items-center justify-center h-screen ${bg} w-full`}>
+      <div className={`flex items-center justify-center h-screen ${bg} w-full md:ml-16`}>
         <p className={`${textSecondary} animate-pulse`}>Loading activities…</p>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen ${bg} ${text} p-6 w-full ml-14`}>
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-3">
-          <PersonStanding className="w-8 h-8 text-indigo-400" />
-          <h1 className="text-3xl font-extrabold">Activity Log</h1>
-        </div>
-        <Button className={buttonPrimary} onClick={openAdd}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Activity
-        </Button>
-      </div>
+    /* FIX: Added flex and overflow-hidden to parent. Removed ml-14 */
+    <div className={`flex min-h-screen ${bg} ${text} overflow-hidden`}>
+      
+      {/* 1. Desktop Sidebar Spacer */}
+      <div className="hidden md:block w-16 flex-shrink-0" />
 
-      {/* Stats */}
-      <div className="mb-8">
-        <div
-          className="flex items-center gap-2 cursor-pointer"
-          onClick={() => setShowStats(!showStats)}
-        >
-          <h2 className="font-bold text-lg">Quick Stats</h2>
-          {showStats ? <ChevronUp /> : <ChevronDown />}
+      {/* 2. Main Content Wrapper */}
+      <div className="flex-1 flex flex-col min-w-0 p-6 md:p-10 transition-all duration-300">
+        
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div className="flex items-center gap-3">
+            {/* 3. Hamburger Spacer for Mobile */}
+            <div className="w-10 h-10 md:hidden flex-shrink-0" />
+            <PersonStanding className="w-8 h-8 text-indigo-400" />
+            <h1 className="text-2xl md:text-3xl font-extrabold truncate">Activity Log</h1>
+          </div>
+          <Button className={`${buttonPrimary} w-full sm:w-auto shadow-lg`} onClick={openAdd}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add Activity
+          </Button>
         </div>
 
-        <AnimatePresence>
-          {showStats && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4"
-            >
-              <Stat title="Recent" value={stats.recent?.title || "—"} theme={theme}/>
-              <Stat title="Longest" value={stats.longest?.title || "—"} theme={theme}/>
-              <Stat title="Count" value={stats.count} theme={theme}/>
-              <Stat title="Total Time" value={`${stats.totalTime} mins`} theme={theme}/>
-            </motion.div>
+        {/* Stats */}
+        <div className="mb-8">
+          <div
+            className="flex items-center gap-2 cursor-pointer w-fit hover:opacity-80 transition-opacity"
+            onClick={() => setShowStats(!showStats)}
+          >
+            <h2 className="font-bold text-lg">Quick Stats</h2>
+            {showStats ? <ChevronUp size={20}/> : <ChevronDown size={20}/>}
+          </div>
+
+          <AnimatePresence>
+            {showStats && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4 overflow-hidden"
+              >
+                <Stat title="Recent" value={stats.recent?.title || "—"} theme={theme}/>
+                <Stat title="Longest" value={stats.longest?.title || "—"} theme={theme}/>
+                <Stat title="Count" value={stats.count} theme={theme}/>
+                <Stat title="Total Time" value={`${stats.totalTime} mins`} theme={theme}/>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Grid */}
+        <div className="flex-1">
+          {activities.length === 0 ? (
+            <div className="flex flex-col items-center justify-center mt-20 opacity-40">
+                <Activity size={48} />
+                <p className="mt-4">No activities yet. Start logging.</p>
+            </div>
+          ) : (
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+              {activities.map((a) => (
+                <Card key={a.id} className={`${cardBg} ${border} relative group hover:shadow-md transition-all`} theme={theme}>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-lg font-bold truncate pr-8">{a.title}</CardTitle>
+                    <div className="flex-shrink-0">
+                        {activityIcons[a.category]}
+                    </div>
+                  </CardHeader>
+
+                  <CardContent theme={theme}>
+                    <p className={`${textSecondary} text-sm mb-4 line-clamp-2 min-h-[40px]`}>
+                      {a.description || "No description provided."}
+                    </p>
+
+                    <div className="flex justify-between text-xs font-medium opacity-70">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5 text-indigo-400" /> {a.timeSpent}m
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+                        {new Date(a.date).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </CardContent>
+
+                  {/* Actions - Visible on hover (Desktop) or always (Mobile) */}
+                  <div className="absolute top-3 right-3 flex gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => openEdit(a)} className="p-1 hover:bg-white/10 rounded">
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => removeActivity(a.id)} className="p-1 hover:bg-red-500/10 rounded">
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </button>
+                  </div>
+                </Card>
+              ))}
+            </div>
           )}
-        </AnimatePresence>
+        </div>
       </div>
 
-      {/* Grid */}
-      {activities.length === 0 ? (
-        <p className={`${textSecondary} text-center mt-20`}>
-          No activities yet. Start logging.
-        </p>
-      ) : (
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {activities.map((a) => (
-            <Card key={a.id} className={`${cardBg} ${border} relative group`} theme={theme}>
-              <CardHeader className="flex">
-                <CardTitle>{a.title}</CardTitle>
-                <div className="ml-2 mt-1">
-                    {activityIcons[a.category]}
-                </div>
-              </CardHeader>
-
-              <CardContent theme={theme}>
-                <p className={`${textSecondary} text-sm mb-4`}>
-                  {a.description || "No description"}
-                </p>
-
-                <div className="flex justify-between text-xs">
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> {a.timeSpent}m
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3 h-3" />
-                    {new Date(a.date).toLocaleDateString()}
-                  </span>
-                </div>
-              </CardContent>
-
-              <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100">
-                <button onClick={() => openEdit(a)}>
-                  <Edit2 className="w-4 h-4" />
-                </button>
-                <button onClick={() => removeActivity(a.id)}>
-                  <Trash2 className="w-4 h-4 text-red-500" />
-                </button>
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {/* Modal */}
+      {/* Modal - Keeping your Dialog structure */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen} theme={theme}>
-        <DialogContent className={`${cardBg} ${border}`} theme={theme}>
+        <DialogContent className={`${cardBg} ${border} sm:max-w-[425px]`} theme={theme}>
           <DialogHeader>
             <DialogTitle>
               {editMode ? "Edit Activity" : "Add Activity"}
             </DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={saveActivity} className="space-y-4">
-            <Input
-              placeholder="Title"
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              required
-              theme={theme}
-            />
+          <form onSubmit={saveActivity} className="space-y-4 mt-4">
+            <div className="space-y-2">
+                <Label>Activity Title</Label>
+                <Input
+                  placeholder="e.g., Morning Jog"
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  required
+                  theme={theme}
+                />
+            </div>
 
-            <Select 
-              value={form.category || ""} // Ensures value is never undefined
-              onValueChange={(v) => setForm(prev => ({ ...prev, category: v }))}
-            >
-              <SelectTrigger theme={theme} className="w-full">
-                <SelectValue placeholder="Choose Category" />
-              </SelectTrigger>
+            <div className="space-y-2">
+                <Label>Category</Label>
+                <Select 
+                  value={form.category || ""} 
+                  onValueChange={(v) => setForm(prev => ({ ...prev, category: v }))}
+                >
+                  <SelectTrigger theme={theme} className="w-full">
+                    <SelectValue placeholder="Choose Category" />
+                  </SelectTrigger>
+                  <SelectContent theme={theme}>
+                    <SelectItem value="sports" theme={theme}>Sports</SelectItem>
+                    <SelectItem value="academics" theme={theme}>Academics</SelectItem>
+                    <SelectItem value="music" theme={theme}>Music</SelectItem>
+                    <SelectItem value="art" theme={theme}>Art</SelectItem>
+                    <SelectItem value="general" theme={theme}>General</SelectItem>
+                  </SelectContent>
+                </Select>
+            </div>
 
-              <SelectContent theme={theme}>
-                <SelectItem value="sports" theme={theme}>Sports</SelectItem>
-                <SelectItem value="academics" theme={theme}>Academics</SelectItem>
-                <SelectItem value="music" theme={theme}>Music</SelectItem>
-                <SelectItem value="art" theme={theme}>Art</SelectItem>
-                <SelectItem value="general" theme={theme}>General</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="space-y-2">
+                <Label>Duration (Minutes)</Label>
+                <Input
+                  type="number"
+                  placeholder="45"
+                  value={form.timeSpent}
+                  onChange={(e) => setForm({ ...form, timeSpent: e.target.value })}
+                  required
+                  theme={theme}
+                />
+            </div>
 
-            <Input
-              type="number"
-              placeholder="Time spent (minutes)"
-              value={form.timeSpent}
-              onChange={(e) => setForm({ ...form, timeSpent: e.target.value })}
-              required
-              theme={theme}
-            />
+            <div className="space-y-2">
+                <Label>Description</Label>
+                <Input
+                  placeholder="What did you achieve?"
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  theme={theme}
+                />
+            </div>
 
-            <Input
-              placeholder="Description"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-              theme={theme}
-            />
-
-            <div className="flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setModalOpen(false)}>
+            <div className="flex justify-end gap-3 pt-4">
+              <Button variant="outline" type="button" onClick={() => setModalOpen(false)}>
                 Cancel
               </Button>
               <Button type="submit" className={buttonPrimary}>
-                Save
+                {editMode ? "Update" : "Save Activity"}
               </Button>
             </div>
           </form>
@@ -325,13 +334,11 @@ export default function Activities() {
   );
 }
 
-/* -------------------- STATS CARD -------------------- */
-
 function Stat({ title, value, theme }) {
   return (
-    <Card className="p-4" theme={theme}>
-      <p className="text-xs uppercase opacity-60">{title}</p>
-      <p className="text-lg font-bold truncate">{value}</p>
+    <Card className="p-4 shadow-sm" theme={theme}>
+      <p className="text-[10px] uppercase opacity-50 font-bold tracking-wider">{title}</p>
+      <p className="text-base md:text-lg font-bold truncate mt-1 text-indigo-400">{value}</p>
     </Card>
   );
 }
