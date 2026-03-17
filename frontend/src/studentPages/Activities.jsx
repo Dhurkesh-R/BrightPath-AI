@@ -174,7 +174,7 @@ export default function Activities() {
             <PersonStanding className="w-8 h-8 text-indigo-400" />
             <h1 className="text-2xl md:text-3xl font-extrabold truncate">Activity Log</h1>
           </div>
-          <Button className={`${buttonPrimary} w-full sm:w-auto shadow-lg`} onClick={openAdd}>
+          <Button className={`w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20`} onClick={openAdd}>
             <Plus className="w-4 h-4 mr-2" /> Add Activity
           </Button>
         </div>
