@@ -218,8 +218,8 @@ export default function Activities() {
             <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
               {activities.map((a) => (
                 <Card key={a.id} className={`${cardBg} ${border} relative group hover:shadow-md transition-all`} theme={theme}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-lg font-bold truncate pr-8">{a.title}</CardTitle>
+                  <CardHeader className="flex flex-row items-center space-y-0 pb-2">
+                    <CardTitle className="text-lg font-bold truncate pr-2">{a.title}</CardTitle>
                     <div className="flex-shrink-0">
                         {activityIcons[a.category]}
                     </div>
