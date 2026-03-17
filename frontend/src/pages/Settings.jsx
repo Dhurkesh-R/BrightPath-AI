@@ -116,7 +116,7 @@ const Settings = () => {
                 </div>
 
                 {/* 1. Account Section */}
-                <Card className={`border ${border} ${cardBg} rounded-3xl overflow-hidden shadow-xl`}>
+                <Card className={`border ${border} ${cardBg} rounded-3xl overflow-hidden shadow-xl`} theme={theme}>
                     <CardHeader className="border-b border-gray-500/10 pb-4">
                         <CardTitle className="text-lg flex items-center gap-2">
                             <User size={18} className="text-blue-500" /> Account Info
@@ -148,7 +148,7 @@ const Settings = () => {
                 </Card>
 
                 {/* 2. Appearance & Prefs */}
-                <Card className={`border ${border} ${cardBg} rounded-3xl shadow-xl`}>
+                <Card className={`border ${border} ${cardBg} rounded-3xl shadow-xl`} theme={theme}>
                     <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2">
                             <Settings2 size={18} className="text-purple-500" /> Preferences
@@ -177,7 +177,7 @@ const Settings = () => {
                 </Card>
 
                 {/* 3. Security Section */}
-                <Card className={`border ${border} ${cardBg} rounded-3xl shadow-xl`}>
+                <Card className={`border ${border} ${cardBg} rounded-3xl shadow-xl`} theme={theme}>
                     <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2">
                             <Lock size={18} className="text-green-500" /> Security
