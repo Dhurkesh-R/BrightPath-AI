@@ -33,7 +33,7 @@ const formatStickyDate = (dateString) => {
 
 export default function ParentMessages() {
   const { theme } = useTheme();
-  const { bg, text, border, bgCard, textSecondary } = getThemeClasses(theme);
+  const { bg, text, border, cardBg , textSecondary } = getThemeClasses(theme);
 
   const [conversations, setConversations] = useState([]);
   const [activeUser, setActiveUser] = useState(null);
@@ -247,7 +247,7 @@ export default function ParentMessages() {
         {activeUser && (
           <div className={`p-4 border-t ${border} flex gap-3`}>
             <input
-              className={`flex-1 rounded-xl px-4 py-2 ${bgCard} ${text} outline-none border focus:border-blue-500`}
+              className={`flex-1 rounded-xl px-4 py-2 ${cardBg} ${text} outline-none border focus:border-blue-500`}
               placeholder="Type a message…"
               value={input}
               onChange={(e) => setInput(e.target.value)}
