@@ -148,7 +148,7 @@ export default function ParentMessages() {
 
   if (loading && conversations.length === 0) {
     return (
-      <div className={`flex items-center justify-center h-screen ${bg} ${textSecondary} w-full md:ml-16`}>
+      <div className={`flex items-center justify-center h-screen ${bg} ${textSecondary} w-full md:ml-18`}>
         <Loader2 className="animate-spin mr-2 w-6 h-6 text-blue-500" />
         <span className="text-lg">Loading conversations...</span>
       </div>
