@@ -156,10 +156,10 @@ export default function ParentMessages() {
   }
 
   return (
-    <div className={`flex h-screen ${bg} ${text} md:ml-16 w-full overflow-hidden transition-all duration-300`}>
+    <div className={`flex h-screen ${bg} ${text} md:ml-16 flex-1 min-w-0 overflow-hidden transition-all duration-300`}>
       
       {/* LEFT SIDEBAR - Responsive Toggle */}
-      <div className={`${activeUser ? 'hidden md:flex' : 'flex-1'} w-full md:w-80 min-w-0 flex-col border-r ${border} ${bgCard}`}>
+      <div className={`${activeUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 flex-col border-r ${border} ${bgCard} flex-shrink-0`}>
         <div className="flex items-center p-4 border-b h-[73px]">
            <div className="w-12 md:hidden" /> {/* Hamburger Spacer */}
            <h1 className="text-xl font-bold flex-1">Messages</h1>
@@ -168,7 +168,7 @@ export default function ParentMessages() {
           </button>
         </div>
 
-        <div className="flex-1 overflow-x-hidden overflow-y-auto">
+        <div className="flex-1 overflow-y-auto">
           {conversations.length === 0 ? (
             <p className={`p-4 ${textSecondary}`}>No conversations yet</p>
           ) : (
@@ -192,7 +192,7 @@ export default function ParentMessages() {
       </div>
 
       {/* CHAT WINDOW */}
-      <div className={`${!activeUser ? 'hidden md:flex' : 'flex'} flex-1 flex-col h-full`}>
+      <div className={`${!activeUser ? 'hidden md:flex' : 'flex'} flex-1 flex-col h-full min-w-0`}>
         <div className={`p-4 border-b ${border} flex items-center h-[73px]`}>
           <button onClick={() => setActiveUser(null)} className="md:hidden mr-3">
             <ChevronLeft size={24} />
