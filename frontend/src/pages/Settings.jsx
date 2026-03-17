@@ -130,6 +130,7 @@ const Settings = () => {
                                     className="rounded-xl bg-gray-500/5 border-gray-500/20" 
                                     value={user.name} 
                                     onChange={(e) => setUser({...user, name: e.target.value})} 
+                                    theme={theme}
                                 />
                             </div>
                             <div className="space-y-2">
@@ -138,6 +139,7 @@ const Settings = () => {
                                     className="rounded-xl bg-gray-500/5 border-gray-500/20" 
                                     value={user.email} 
                                     onChange={(e) => setUser({...user, email: e.target.value})} 
+                                    theme={theme}
                                 />
                             </div>
                         </div>
@@ -191,6 +193,7 @@ const Settings = () => {
                                 className="rounded-xl" 
                                 value={passwords.current}
                                 onChange={(e) => setPasswords({...passwords, current: e.target.value})}
+                                theme={theme}
                             />
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <Input 
@@ -199,6 +202,7 @@ const Settings = () => {
                                     className="rounded-xl" 
                                     value={passwords.new}
                                     onChange={(e) => setPasswords({...passwords, new: e.target.value})}
+                                    theme={theme}
                                 />
                                 <Input 
                                     type="password" 
@@ -206,6 +210,7 @@ const Settings = () => {
                                     className="rounded-xl" 
                                     value={passwords.confirm}
                                     onChange={(e) => setPasswords({...passwords, confirm: e.target.value})}
+                                    theme={theme}
                                 />
                             </div>
                         </div>
