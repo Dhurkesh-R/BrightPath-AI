@@ -148,7 +148,7 @@ export default function ParentMessages() {
 
   if (loading && conversations.length === 0) {
     return (
-      <div className={`flex items-center justify-center h-screen ${bg} ${textSecondary} w-full md:ml-18`}>
+      <div className={`flex items-center justify-center h-screen ${bg} ${textSecondary} w-full md:ml-16`}>
         <Loader2 className="animate-spin mr-2 w-6 h-6 text-blue-500" />
         <span className="text-lg">Loading conversations...</span>
       </div>
@@ -156,7 +156,7 @@ export default function ParentMessages() {
   }
 
   return (
-    <div className={`flex h-screen ${bg} ${text} md:ml-16 w-full overflow-hidden transition-all duration-300`}>
+    <div className={`flex h-screen ${bg} ${text} md:ml-16 w-full n transition-all duration-300`}>
       
       {/* LEFT SIDEBAR - Responsive Toggle */}
       <div className={`${activeUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 flex-col border-r ${border} ${bgCard}`}>
