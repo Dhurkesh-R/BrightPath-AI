@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Send, UserCircle, Plus, Loader2 } from "lucide-react";
+import { Send, UserCircle, Plus, Loader2, ChevronLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext";
 import {
@@ -10,6 +10,7 @@ import {
 import StartNewChatModal from "../components/StartNewChatT";
 import { getSocket } from "../services/socket";
 
+/* -------------------- DATE FORMATTER -------------------- */
 const formatStickyDate = (dateString) => {
   const date = new Date(dateString);
   const today = new Date();
@@ -19,20 +20,18 @@ const formatStickyDate = (dateString) => {
   if (date.toDateString() === today.toDateString()) return "Today";
   if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
 
-  // If within the last 7 days, show the day name (e.g., Monday)
   const diffDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
   if (diffDays < 7) {
     return date.toLocaleDateString([], { weekday: 'long' });
   }
 
-  // Otherwise show the full date (e.g., January 27)
   return date.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
 };
 
+/* -------------------- COMPONENT -------------------- */
 export default function TeacherMessages() {
   const { theme } = useTheme();
-  const { bg, text, border, bgCard, textSecondary } =
-    getThemeClasses(theme);
+  const { bg, text, border, bgCard, textSecondary } = getThemeClasses(theme);
 
   const [conversations, setConversations] = useState([]);
   const [activeUser, setActiveUser] = useState(null);
@@ -50,53 +49,48 @@ export default function TeacherMessages() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  /* ---------------- Socket Listener (ONCE) ---------------- */
-  
-  
+  /* ---------------- Socket Listener ---------------- */
   useEffect(() => {
-    const socket = getSocket();
-    setSocket(socket)
-    
+    const socketInstance = getSocket();
+    setSocket(socketInstance);
+
     const handleIncoming = (message) => {
       if (!activeUser) return;
-        
-      const currentUserId = user.id; // logged-in user
-        
+      const currentUserId = user.id;
       const isFromActiveChat =
         message.senderId === activeUser.userId &&
         message.receiverId === currentUserId;
-        
+
       if (isFromActiveChat) {
         setMessages((prev) => [...prev, message]);
       }
     };
-      socket.on("new_message", handleIncoming);
-      
-      return () => {
-        socket.off("new_message", handleIncoming);
-      };
-    }, [activeUser]);
-    
-    useEffect(() => {
-      if (!activeUser || !socket) return;
-  
-      socket.emit("join_conversation", {
-        otherUserId: activeUser.userId,
-        auth: localStorage.getItem("token")
-      });
-  
-    }, [activeUser]);
+
+    socketInstance.on("new_message", handleIncoming);
+    return () => {
+      socketInstance.off("new_message", handleIncoming);
+    };
+  }, [activeUser, user.id]);
+
+  useEffect(() => {
+    if (!activeUser || !socket) return;
+    socket.emit("join_conversation", {
+      otherUserId: activeUser.userId,
+      auth: localStorage.getItem("token")
+    });
+  }, [activeUser, socket]);
+
   /* ---------------- Load Conversations ---------------- */
   useEffect(() => {
     async function loadConversations() {
       try {
-        setLoading(true)
+        setLoading(true);
         const data = await getMessages();
         setConversations(data);
       } catch (err) {
         console.error("Failed to load conversations", err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
     loadConversations();
@@ -105,7 +99,6 @@ export default function TeacherMessages() {
   /* ---------------- Load Message Thread ---------------- */
   useEffect(() => {
     if (!activeUser) return;
-
     async function loadThread() {
       try {
         setLoading(true);
@@ -117,7 +110,6 @@ export default function TeacherMessages() {
         setLoading(false);
       }
     }
-
     loadThread();
   }, [activeUser]);
 
@@ -152,146 +144,129 @@ export default function TeacherMessages() {
     setShowNewChat(false);
   };
 
-  if (loading) {
-      return (
-          <div className={`flex items-center justify-center h-screen ${bg} ${textSecondary} w-full`}>
-              <Loader2 className="animate-spin mr-2 w-6 h-6 text-blue-500" /> 
-              <span className="text-lg">Loading conversations...</span>
-          </div>
-      );
+  if (loading && conversations.length === 0) {
+    return (
+      <div className={`flex items-center justify-center h-screen ${bg} ${textSecondary} w-full md:pl-16`}>
+        <Loader2 className="animate-spin mr-2 w-6 h-6 text-blue-500" />
+        <span className="text-lg">Loading conversations...</span>
+      </div>
+    );
   }
 
   return (
-    <div className={`flex h-screen ${bg} ${text} ml-16 w-full`}>
-
-      {/* ================= LEFT SIDEBAR ================= */}
-      <div className={`w-80 border-r ${border} ${bgCard} overflow-y-auto`}>
-        <div className="flex items-center justify-between p-4 text-xl font-bold border-b">
-          Messages
-          <button
-            onClick={() => setShowNewChat(true)}
-            className="text-blue-500 hover:text-blue-400"
-            title="Start new chat"
-          >
-            <Plus />
+    <div className={`flex h-screen ${bg} ${text} md:pl-16 flex-1 min-w-0 overflow-hidden transition-all duration-300`}>
+      
+      {/* LEFT SIDEBAR - Responsive Logic (Hidden when chat active on mobile) */}
+      <div className={`${activeUser ? 'hidden md:flex' : 'flex'} w-full md:w-80 flex-col border-r ${border} ${bgCard} flex-shrink-0`}>
+        <div className="flex items-center p-4 border-b h-[73px]">
+           <div className="w-12 md:hidden" /> {/* Spacer for Hamburger */}
+           <h1 className="text-xl font-bold flex-1">Messages</h1>
+           <button onClick={() => setShowNewChat(true)} className="p-2 text-blue-500 hover:bg-blue-500/10 rounded-lg transition-colors">
+            <Plus size={24} />
           </button>
         </div>
 
-        {conversations.length === 0 ? (
-          <p className={`p-4 ${textSecondary}`}>No conversations yet</p>
-        ) : (
-          conversations.map((c) => (
-            <button
-              key={c.userId}
-              onClick={() => setActiveUser(c)}
-              className={`w-full flex items-center gap-3 px-4 py-3 transition
-                hover:bg-gray-700/20
-                ${activeUser?.userId === c.userId ? "bg-gray-700/30" : ""}
-              `}
-            >
-              <UserCircle className="w-10 h-10 text-gray-400" />
-              <div className="text-left">
-                <p className="font-semibold">{c.name}</p>
-                <p className={`text-sm ${textSecondary}`}>Parent</p>
-              </div>
-            </button>
-          ))
-        )}
+        <div className="flex-1 overflow-y-auto">
+          {conversations.length === 0 ? (
+            <p className={`p-4 ${textSecondary} italic`}>No conversations yet</p>
+          ) : (
+            conversations.map((c) => (
+              <button
+                key={c.userId}
+                onClick={() => setActiveUser(c)}
+                className={`w-full flex items-center gap-3 px-4 py-4 border-b ${border} transition-colors
+                  ${activeUser?.userId === c.userId ? "bg-blue-600/10" : "hover:bg-gray-500/5"}
+                `}
+              >
+                <UserCircle className="w-12 h-12 text-gray-400" />
+                <div className="text-left overflow-hidden">
+                  <p className="font-bold truncate">{c.name}</p>
+                  <p className={`text-xs uppercase tracking-widest font-semibold ${textSecondary}`}>Parent</p>
+                </div>
+              </button>
+            ))
+          )}
+        </div>
       </div>
 
-      {/* ================= CHAT WINDOW ================= */}
-      <div className="flex-1 flex flex-col">
-
-        {/* ---------- Header ---------- */}
-        <div className={`p-4 border-b ${border} flex items-center gap-3`}>
+      {/* CHAT WINDOW - Responsive Logic (Visible when active on mobile) */}
+      <div className={`${!activeUser ? 'hidden md:flex' : 'flex'} flex-1 flex-col h-full min-w-0`}>
+        <div className={`p-4 border-b ${border} flex items-center h-[73px] sticky top-0 z-10 ${bg}`}>
+          {/* Mobile Back Button */}
+          <button onClick={() => setActiveUser(null)} className="md:hidden mr-3 p-1 hover:bg-gray-500/10 rounded-full">
+            <ChevronLeft size={28} />
+          </button>
+          
           {activeUser ? (
-            <>
-              <UserCircle className="w-8 h-8 text-gray-400" />
+            <div className="flex items-center gap-3">
+              <UserCircle className="w-8 h-8 text-blue-500" />
               <div>
-                <p className="font-semibold">{activeUser.name}</p>
-                <p className={`text-sm ${textSecondary}`}>
-                  Parent conversation
-                </p>
+                <p className="font-bold leading-tight">{activeUser.name}</p>
+                <p className={`text-[10px] uppercase font-bold ${textSecondary}`}>Active Chat</p>
               </div>
-            </>
+            </div>
           ) : (
-            <p className={textSecondary}>Select a conversation</p>
+            <div className="flex items-center">
+                <div className="w-12 md:hidden" />
+                <p className={textSecondary}>Select a conversation to start messaging</p>
+            </div>
           )}
         </div>
 
-        {/* ---------- Messages ---------- */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-          {loading ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className={`flex ${i % 2 === 0 ? 'justify-end' : 'justify-start'}`}>
-                  <div className="w-48 h-12 bg-gray-200 animate-pulse rounded-2xl" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            messages.map((m, idx) => {
-              const isMe = m.senderId === user.id;
-              
-              // Date grouping logic
-              const currentDate = new Date(m.createdAt).toDateString();
-              const previousDate = idx > 0 ? new Date(messages[idx - 1].createdAt).toDateString() : null;
-              const showDateHeader = currentDate !== previousDate;
-        
-              return (
-                <React.Fragment key={m.id || idx}>
-                  {/* Date Header Tag */}
-                  {showDateHeader && (
-                    <div className="flex justify-center my-4">
-                      <span className={`text-xs font-bold px-3 py-1 rounded-lg uppercase tracking-wider ${bgCard} ${textSecondary} border ${border} shadow-sm`}>
-                        {formatStickyDate(m.createdAt)}
+        {/* MESSAGES AREA */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 bg-transparent">
+          {messages.map((m, idx) => {
+            const isMe = m.senderId === user.id;
+            const currentDate = new Date(m.createdAt).toDateString();
+            const previousDate = idx > 0 ? new Date(messages[idx - 1].createdAt).toDateString() : null;
+            const showDateHeader = currentDate !== previousDate;
+
+            return (
+              <React.Fragment key={m.id || idx}>
+                {showDateHeader && (
+                  <div className="flex justify-center my-6">
+                    <span className={`text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-tighter ${bgCard} ${textSecondary} border ${border} shadow-sm`}>
+                      {formatStickyDate(m.createdAt)}
+                    </span>
+                  </div>
+                )}
+                <motion.div 
+                  initial={{ opacity: 0, y: 5 }} 
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`flex items-end gap-2 ${isMe ? "flex-row-reverse" : "flex-row"}`}
+                >
+                  <div className={`relative max-w-[85%] md:max-w-[70%] px-4 py-3 shadow-sm
+                    ${isMe 
+                      ? "bg-blue-600 text-white rounded-2xl rounded-tr-none" 
+                      : `${bgCard} ${text} border ${border} rounded-2xl rounded-tl-none`}`}>
+                    <p className="text-sm leading-relaxed">{m.content}</p>
+                    <div className={`flex items-center gap-1 mt-1 opacity-60 ${isMe ? "justify-end" : "justify-start"}`}>
+                      <span className="text-[9px] font-bold">
+                        {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
-                  )}
-        
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className={`flex items-end gap-2 ${isMe ? "flex-row-reverse" : "flex-row"}`}
-                  >
-                    <div
-                      className={`relative max-w-[80%] md:max-w-[70%] px-4 py-2.5 shadow-sm
-                        ${isMe
-                          ? "bg-blue-600 text-white rounded-2xl rounded-tr-none"
-                          : `${bgCard} ${textSecondary} border border-slate-700 rounded-2xl rounded-tl-none`
-                        }
-                      `}
-                    >
-                      <p className="text-sm leading-relaxed">{m.content}</p>
-                      
-                      <div className={`flex items-center gap-1 mt-1 opacity-70 ${isMe ? "justify-end" : "justify-start"}`}>
-                        <span className="text-[10px] font-medium uppercase tracking-wider">
-                          {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                        {isMe && <span className="text-[10px]">✓✓</span>}
-                      </div>
-                    </div>
-                  </motion.div>
-                </React.Fragment>
-              );
-            })
-          )}
+                  </div>
+                </motion.div>
+              </React.Fragment>
+            );
+          })}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* ---------- Input ---------- */}
+        {/* INPUT AREA */}
         {activeUser && (
-          <div className={`p-4 border-t ${border} flex gap-3`}>
+          <div className={`p-4 border-t ${border} ${bg} flex gap-3 items-center`}>
             <input
-              className={`flex-1 rounded-xl px-4 py-2 ${bgCard} ${text}`}
-              placeholder="Type a message…"
+              className={`flex-1 rounded-2xl px-5 py-3 ${bgCard} ${text} outline-none border ${border} focus:border-blue-500 transition-all shadow-inner`}
+              placeholder="Write your message..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
             />
-            <button
-              onClick={handleSend}
-              className="px-4 rounded-xl bg-blue-600 hover:bg-blue-500 transition"
+            <button 
+              onClick={handleSend} 
+              disabled={!input.trim()}
+              className="p-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/20"
             >
               <Send className="w-5 h-5 text-white" />
             </button>
@@ -299,11 +274,10 @@ export default function TeacherMessages() {
         )}
       </div>
 
-      {/* ================= NEW CHAT MODAL ================= */}
-      <StartNewChatModal
-        open={showNewChat}
-        onClose={() => setShowNewChat(false)}
-        onSelectParent={handleSelectParent}
+      <StartNewChatModal 
+        open={showNewChat} 
+        onClose={() => setShowNewChat(false)} 
+        onSelectParent={handleSelectParent} 
       />
     </div>
   );
