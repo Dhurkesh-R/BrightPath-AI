@@ -100,18 +100,22 @@ export default function TeacherDashboard() {
         {/* Header - Improved Mobile Scaling */}
         <header className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b ${border}`}>
           <div className="flex items-center gap-3">
+            <div className="w-12 h-10 md:hidden" />
             <div className={`p-2 rounded-lg bg-blue-500/10`}>
                 <LayoutDashboardIcon className={`w-7 h-7 text-blue-500`} />
             </div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight">
-              Teacher Dashboard
+              Dashboard
             </h1>
           </div>
           
           <div className="flex items-center gap-2 w-full sm:w-auto">
              <Button variant="outline" size="sm" onClick={fetchDashboardData} className="flex-1 sm:flex-none gap-2">
-                <RefreshCw size={16} /> Refresh
+                <RefreshCw size={16} />
              </Button>
+            <span>
+              Refresh
+            </span>
           </div>
         </header>
 
