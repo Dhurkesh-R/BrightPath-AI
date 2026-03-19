@@ -103,7 +103,7 @@ export default function Books() {
 
   return (
     // FIX 1: Responsive Margin-left
-    <div className={`min-h-screen ${bg} ${text} transition-all duration-300 p-4 md:p-10 ml-16 md:ml-64`}>
+    <div className={`min-h-screen ${bg} ${text} transition-all duration-300 p-4 md:p-10 md:ml-16`}>
       {/* Notification Bar - Centered on mobile */}
       {notification.message && (
           <div className={`fixed top-4 left-4 right-4 md:left-auto md:right-8 z-50 p-4 rounded-xl shadow-2xl ${notificationClasses} text-white border-2 text-center md:text-left animate-in fade-in slide-in-from-top-4`}>
@@ -113,6 +113,7 @@ export default function Books() {
 
       <header className="mb-8">
         <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
+          <div className="w-12 h-10 md:hidden" />
           📚 <span className="hidden xs:inline">Books Management</span>
           <span className="xs:hidden">Books</span>
         </h1>
