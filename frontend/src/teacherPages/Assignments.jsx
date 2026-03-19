@@ -207,7 +207,7 @@ const openStudentsPanel = async (assignment) => {
   }
 
   return (
-    <div className={`min-h-screen ${bg} ${text} p-6 w-full ml-14`}>
+    <div className={`min-h-screen ${bg} ${text} p-6 w-full md:ml-16`}>
       {/* Header */}
       {userRole === "teacher" && (
         <div className="flex justify-between items-center mb-6">
@@ -224,6 +224,7 @@ const openStudentsPanel = async (assignment) => {
       {userRole === "student" && (
         <div className="flex mb-6">
           <div className="flex items-center gap-3">
+            <div className="w-12 h-10 md:hidden" />
             <ClipboardList className="w-8 h-8 text-indigo-400" />
             <h1 className="text-3xl font-extrabold">Assignments</h1>
           </div>
@@ -293,15 +294,16 @@ const openStudentsPanel = async (assignment) => {
                 </button>
 
               </CardContent>
-
-              <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100">
-                <button onClick={() => openEdit(a)}>
-                  <Edit2 className="w-4 h-4" />
-                </button>
-                <button onClick={() => removeAssignment(a.id)}>
-                  <Trash2 className="w-4 h-4 text-red-500" />
-                </button>
-              </div>
+              {userRole === "teacher" && (
+                <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100">
+                  <button onClick={() => openEdit(a)}>
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button onClick={() => removeAssignment(a.id)}>
+                    <Trash2 className="w-4 h-4 text-red-500" />
+                  </button>
+                </div>
+              )}
             </Card>
           ))}
         </div>
