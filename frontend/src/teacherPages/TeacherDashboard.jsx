@@ -218,10 +218,10 @@ export default function TeacherDashboard() {
 
         {/* Quick Actions Footer - Mobile Fixed or Stacked */}
         <div className="flex flex-col sm:flex-row gap-3 pt-4">
-          <Button className=className={`w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20`} onClick={() => (window.location.href = "/books")}>
+          <Button className={`w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20`} onClick={() => (window.location.href = "/books")}>
             <PlusCircle size={20} /> Upload New Book
           </Button>
-          <Button variant="outline" className=className={`w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20`} onClick={() => (window.location.href = "/students")}>
+          <Button variant="outline" className={`w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20`} onClick={() => (window.location.href = "/students")}>
             <GraduationCap size={20} /> Student Directory
           </Button>
         </div>
