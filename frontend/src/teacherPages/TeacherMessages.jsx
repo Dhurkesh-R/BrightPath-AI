@@ -193,6 +193,7 @@ export default function TeacherMessages() {
       <div className={`${!activeUser ? 'hidden md:flex' : 'flex'} flex-1 flex-col h-full min-w-0`}>
         <div className={`p-4 border-b ${border} flex items-center h-[73px] sticky top-0 z-10 ${bg}`}>
           {/* Mobile Back Button */}
+          <div className="w-12 h-10 md:hidden" />
           <button onClick={() => setActiveUser(null)} className="md:hidden mr-3 p-1 hover:bg-gray-500/10 rounded-full">
             <ChevronLeft size={28} />
           </button>
