@@ -62,10 +62,9 @@ export default function Analytics() {
   const axisColor = text;
 
   return (
-    /* BETTERMENT: md:pl-16 handles sidebar space, overflow-x-hidden prevents mobile horizontal scroll */
     <div className={`min-h-screen ${bg} ${text} w-full transition-all duration-300 overflow-x-hidden md:pl-16`}>
       <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
-        
+        <div className="w-10 h-10 md:hidden flex-shrink-0" />
         {/* Header - Improved for Mobile */}
         <header className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b ${border}`}>
           <div>
