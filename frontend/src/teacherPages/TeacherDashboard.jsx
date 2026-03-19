@@ -110,12 +110,9 @@ export default function TeacherDashboard() {
           </div>
           
           <div className="flex items-center gap-2 w-full sm:w-auto">
-             <Button variant="outline" size="sm" onClick={fetchDashboardData} className="flex-1 sm:flex-none gap-2">
-                <RefreshCw size={16} />
+             <Button variant="outline" size="sm" onClick={fetchDashboardData} className={`w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20`}>
+                <RefreshCw size={16} /> Refresh
              </Button>
-            <span>
-              Refresh
-            </span>
           </div>
         </header>
 
@@ -221,10 +218,10 @@ export default function TeacherDashboard() {
 
         {/* Quick Actions Footer - Mobile Fixed or Stacked */}
         <div className="flex flex-col sm:flex-row gap-3 pt-4">
-          <Button className="flex-1 gap-2 py-6 rounded-2xl font-bold" onClick={() => (window.location.href = "/books")}>
+          <Button className=className={`w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20`} onClick={() => (window.location.href = "/books")}>
             <PlusCircle size={20} /> Upload New Book
           </Button>
-          <Button variant="outline" className="flex-1 gap-2 py-6 rounded-2xl font-bold" onClick={() => (window.location.href = "/students")}>
+          <Button variant="outline" className=className={`w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20`} onClick={() => (window.location.href = "/students")}>
             <GraduationCap size={20} /> Student Directory
           </Button>
         </div>
