@@ -12,7 +12,6 @@ export default function Profile() {
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState(null);
     
-    // Safety check for localStorage
     const getUserRole = () => {
         try {
             return JSON.parse(localStorage.getItem("user"))?.role || "student";
@@ -20,7 +19,7 @@ export default function Profile() {
     };
     const role = getUserRole();
 
-    const { bg, text, cardBg, border, inputBg, inputBorder, textSecondary, inputFocus, inputText, disabledText } = getThemeClasses(theme);
+    const { bg, text, cardBg, border } = getThemeClasses(theme);
     const fileInputRef = useRef(null);
 
     const showModalMessage = (msg) => {
@@ -81,30 +80,35 @@ export default function Profile() {
     if (loading) return (
         <div className={`flex flex-col justify-center items-center h-screen w-full ${bg} ${text}`}>
             <Loader2 className="w-10 h-10 animate-spin text-blue-500 mb-4" />
-            <p className="font-medium">Loading profile...</p>
+            <p className="font-medium text-sm opacity-60">Loading profile details...</p>
         </div>
     );
 
     const defaultImageUrl = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMTIiIGhlaWdodD0iMTEyIiB2aWV3Qm94PSIwIDAgMTEyIDExMiI+PHJlY3Qgd2lkdGg9IjExMiIgaGVpZ2h0PSIxMTIiIHJ4PSI1NiIgZmlsbD0iIzM2YjVhMiIvPjx0ZXh0IHg9IjU2IiB5PSI2MCIgZm9udC1zaXplPSI2MCIgZm9udC1mYW1pbHk9ImludGVyLCBzYW5zLXNlcmlmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjZmZmZmZmIj5QPC90ZXh0Pjwvc3ZnPg==";
 
     return (
-         <div className={`min-h-screen w-full ${bg} ${text} transition-all duration-300 p-4 md:p-10 md:ml-16`}>
+        /* FIXED: Added 'flex' and 'overflow-x-hidden' to prevent the margin-left from pushing content out */
+        <div className={`min-h-screen w-full ${bg} ${text} flex overflow-x-hidden transition-all duration-300`}>
             
-            {/* Notification Toast */}
-            {message && (
-                <div className="fixed top-5 left-4 right-4 md:left-auto md:right-8 z-50 animate-in fade-in slide-in-from-top-5">
-                    <div className="flex items-center justify-between p-4 bg-blue-600 text-white rounded-2xl shadow-2xl border border-blue-400/30">
-                        <span className="text-sm font-bold">{message}</span>
-                        <button onClick={() => setMessage(null)} className="ml-4 p-1 rounded-full hover:bg-white/20">
-                            <X size={18} />
-                        </button>
-                    </div>
-                </div>
-            )}
+            {/* Sidebar Spacer for Desktop */}
+            <div className="hidden md:block w-16 flex-shrink-0" />
 
-            <div className="max-w-5xl mx-auto">
+            <div className="flex-1 p-4 md:p-10 max-w-7xl mx-auto w-full">
+                
+                {/* Notification Toast */}
+                {message && (
+                    <div className="fixed top-5 left-4 right-4 md:left-auto md:right-8 z-50 animate-in fade-in slide-in-from-top-5">
+                        <div className="flex items-center justify-between p-4 bg-blue-600 text-white rounded-2xl shadow-2xl border border-blue-400/30">
+                            <span className="text-sm font-bold">{message}</span>
+                            <button onClick={() => setMessage(null)} className="ml-4 p-1 rounded-full hover:bg-white/20">
+                                <X size={18} />
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {/* Header Section */}
-                <div className={`flex flex-col sm:flex-row items-center justify-between mb-8 gap-4 border-b ${border} pb-6`}>
+                <header className={`flex flex-col sm:flex-row items-center justify-between mb-8 gap-4 border-b ${border} pb-6`}>
                     <div className="flex items-center gap-3">
                         <div className="p-3 bg-blue-500/10 rounded-2xl">
                             <UserRound className="w-8 h-8 text-blue-500" />
@@ -129,13 +133,13 @@ export default function Profile() {
                             </button>
                         )}
                     </div>
-                </div>
+                </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     
                     {/* Left Sidebar: Avatar & Bio */}
                     <div className="lg:col-span-4 flex flex-col gap-6">
-                        <div className={`p-6 rounded-3xl ${cardBg} border ${border} flex flex-col items-center text-center`}>
+                        <div className={`p-6 rounded-3xl ${cardBg} border ${border} flex flex-col items-center text-center shadow-sm`}>
                             <div className="relative group mb-4">
                                 <img
                                     src={formData?.profilePicUrl || defaultImageUrl}
@@ -155,29 +159,29 @@ export default function Profile() {
                                 <input type="file" ref={fileInputRef} onChange={handleFileSelect} accept="image/*" className="hidden" />
                             </div>
 
-                            <h3 className="text-xl font-bold truncate w-full">{user?.name || "Student User"}</h3>
-                            <p className="text-sm opacity-60 mb-4">{user?.email}</p>
+                            <h3 className="text-xl font-bold truncate w-full">{user?.name || "User"}</h3>
+                            <p className="text-sm opacity-60 mb-4 truncate w-full">{user?.email}</p>
                             <span className="px-4 py-1 bg-blue-500/10 text-blue-500 text-xs font-black uppercase tracking-widest rounded-full">
                                 {user?.role || "Student"}
                             </span>
 
                             <div className="w-full mt-8 text-left">
-                                <label className="text-xs font-black uppercase tracking-widest opacity-40 mb-2 block">Personal Bio</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2 block ml-1">Personal Bio</label>
                                 <textarea
                                     name="bio"
                                     value={formData?.bio || ""}
                                     onChange={handleChange}
                                     disabled={!editing}
                                     rows={3}
-                                    className={`w-full p-3 text-sm rounded-xl border ${editing ? 'border-blue-500/50 bg-blue-500/5' : 'border-transparent bg-transparent'} resize-none outline-none transition-all`}
-                                    placeholder="Write something about yourself..."
+                                    className={`w-full p-3 text-sm rounded-xl border ${editing ? 'border-blue-500/50 bg-blue-500/5' : 'border-transparent bg-gray-500/5'} resize-none outline-none transition-all`}
+                                    placeholder="Tell us about yourself..."
                                 />
                             </div>
                         </div>
 
                         {/* Badges */}
-                        <div className={`p-6 rounded-3xl ${cardBg} border ${border}`}>
-                            <h4 className="text-sm font-black uppercase tracking-widest opacity-40 mb-4 flex items-center gap-2">
+                        <div className={`p-6 rounded-3xl ${cardBg} border ${border} shadow-sm`}>
+                            <h4 className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-4 flex items-center gap-2">
                                 <Star size={14} className="text-yellow-500" /> Achievements
                             </h4>
                             <div className="flex flex-wrap gap-2">
@@ -189,7 +193,7 @@ export default function Profile() {
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-xs opacity-40 italic">Complete milestones to earn badges!</p>
+                                    <p className="text-xs opacity-40 italic">No badges earned yet.</p>
                                 )}
                             </div>
                         </div>
@@ -197,7 +201,7 @@ export default function Profile() {
 
                     {/* Right Content: Forms */}
                     <div className="lg:col-span-8 flex flex-col gap-6">
-                        <div className={`p-6 md:p-8 rounded-3xl ${cardBg} border ${border}`}>
+                        <div className={`p-6 md:p-8 rounded-3xl ${cardBg} border ${border} shadow-sm`}>
                             <h4 className="text-lg font-bold mb-6 flex items-center gap-2">
                                 <User size={20} className="text-blue-500" />
                                 General Information
@@ -215,14 +219,14 @@ export default function Profile() {
                                     <>
                                         <InputField label="Department" name="department" value={formData?.department} onChange={handleChange} editable={editing} />
                                         <InputField label="Designation" name="designation" value={formData?.designation} onChange={handleChange} editable={editing} />
-                                        <InputField label="Years of Experience" name="experience_years" value={formData?.experience_years} onChange={handleChange} editable={editing} type="number" />
+                                        <InputField label="Experience (Years)" name="experience_years" value={formData?.experience_years} onChange={handleChange} editable={editing} type="number" />
                                         <InputField label="City" name="city" value={formData?.city} onChange={handleChange} editable={editing} />
                                     </>
                                 )}
                             </div>
 
                             <div className="mt-8">
-                                <h4 className="text-sm font-black uppercase tracking-widest opacity-40 mb-4 flex items-center gap-2">
+                                <h4 className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-4 flex items-center gap-2">
                                     <Activity size={14} className="text-green-500" /> 
                                     {role === "student" ? "Interests & Skills" : "Handling Classes"}
                                 </h4>
@@ -231,18 +235,18 @@ export default function Profile() {
                                     value={(role === "student" ? formData?.interests : formData?.handling_classes) || ""}
                                     onChange={handleChange}
                                     disabled={!editing}
-                                    className={`w-full p-4 rounded-2xl border ${editing ? 'border-blue-500/50 bg-blue-500/5' : 'border-transparent bg-gray-500/5'} min-h-[100px] outline-none transition-all`}
-                                    placeholder="e.g. Mathematics, Competitive Gaming, Chess..."
+                                    className={`w-full p-4 rounded-2xl border ${editing ? 'border-blue-500/50 bg-blue-500/5' : 'border-transparent bg-gray-500/5'} min-h-[100px] outline-none transition-all text-sm font-medium`}
+                                    placeholder={role === "student" ? "e.g. Science, Chess, Python..." : "e.g. Grade 10 Science, Grade 12 Physics..."}
                                 />
                             </div>
 
                             {role === "student" && (
                                 <div className="mt-8 p-4 bg-red-500/5 rounded-2xl border border-red-500/10">
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-red-500/60 mb-2 flex items-center gap-2">
-                                        <Heart size={12} /> Health & Wellness Summary
+                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-red-500/60 mb-2 flex items-center gap-2">
+                                        <Heart size={12} /> Health Summary
                                     </h4>
-                                    <p className="text-sm opacity-70 leading-relaxed">
-                                        {formData?.health_summary || "Health assessment data will appear here once updated by an administrator."}
+                                    <p className="text-sm opacity-70 leading-relaxed font-medium">
+                                        {formData?.health_summary || "Health data will be visible once updated by your institution."}
                                     </p>
                                 </div>
                             )}
@@ -264,7 +268,7 @@ function InputField({ label, name, value, onChange, editable, type = "text" }) {
                 value={value || ""}
                 onChange={onChange}
                 disabled={!editable}
-                className={`w-full p-3.5 rounded-xl border text-sm font-medium transition-all outline-none
+                className={`w-full p-3.5 rounded-xl border text-sm font-bold transition-all outline-none
                     ${editable 
                         ? 'border-blue-500/30 bg-blue-500/5 focus:border-blue-500' 
                         : 'border-transparent bg-gray-500/5 opacity-80 cursor-not-allowed'
