@@ -67,10 +67,11 @@ export default function Students() {
 
   // ---- UI ----
   return (
-    <div className={`p-6 min-h-screen ${bg} ${text} w-full ml-14`}>
+    <div className={`p-6 min-h-screen ${bg} ${text} w-full md:ml-16`}>
       
       {/* Header */}
       <header className={`flex items-center pb-6 mb-6 border-b ${border}`}>
+        <div className="w-10 h-10 md:hidden flex-shrink-0" />  
         <Users className={`w-8 h-8 text-${primary}-500`} />
         <h1 className="text-3xl font-extrabold pl-3">Students Directory</h1>
       </header>
