@@ -34,9 +34,10 @@ export default function TeacherInterventions() {
   }, [grade, section]);
 
   return (
-    <div className={`p-6 min-h-screen ${bg} ${text} w-full ml-14`}>
+    <div className={`p-6 min-h-screen ${bg} ${text} w-full md:ml-16`}>
       {/* Header */}
       <header className="flex items-center justify-between mb-6">
+        <div className="w-10 h-10 md:hidden flex-shrink-0" />
         <h1 className="text-3xl font-bold">Student Interventions</h1>
         <Button variant="outline" onClick={fetchInterventions}>
           <RefreshCw size={16} className="mr-2" />
