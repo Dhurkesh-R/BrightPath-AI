@@ -207,7 +207,7 @@ export default function Profile() {
                                 General Information
                             </h4>
                             
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <>
                                 {role === "student" ? (
                                     <>
                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -221,14 +221,14 @@ export default function Profile() {
                                         </div>
                                     </>
                                 ) : (
-                                    <>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                         <InputField label="Department" name="department" value={formData?.department} onChange={handleChange} editable={editing} />
                                         <InputField label="Designation" name="designation" value={formData?.designation} onChange={handleChange} editable={editing} />
                                         <InputField label="Experience (Years)" name="experience_years" value={formData?.experience_years} onChange={handleChange} editable={editing} type="number" />
                                         <InputField label="City" name="city" value={formData?.city} onChange={handleChange} editable={editing} />
-                                    </>
+                                    </div>
                                 )}
-                            </div>
+                            </>
 
                             <div className="mt-8">
                                 <h4 className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-4 flex items-center gap-2">
