@@ -709,12 +709,14 @@ def delete_book(book_id):
     book = Book.query.get(book_id)
     if not book:
         return jsonify({"error": "Book not found"}), 404
-    try:
-        file_path = book.file_url.split('/book-resources/')[1]
         
-        supabase.storage.from_('book-resources').remove([file_path])
+    try:
+        url_parts = book.file_url.split('book-resources/')
+        if len(url_parts) > 1:
+            file_path = url_parts[1]
+            supabase.storage.from_('book-resources').remove([file_path])
     except Exception as e:
-        print(f"Storage deletion failed or file already gone: {e}")
+        print(f"Storage deletion failed: {e}")
         
     db.session.delete(book)
     db.session.commit()
