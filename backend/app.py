@@ -1724,5 +1724,24 @@ def get_all_users():
 
     return jsonify(user_list), 200
 
+@app.route("/admin/users/<int:user_id>", methods=["DELETE"])
+@jwt_required()
+def admin_delete_user(user_id):
+    claims = get_jwt()
+    if claims.get("role") != "admin":
+        return jsonify({"error": "Admin access required"}), 403
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # Prevent admin from deleting themselves
+    if str(user.id) == get_jwt_identity():
+        return jsonify({"error": "You cannot delete your own admin account"}), 400
+
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({"message": f"User {user.name} deleted successfully"}), 200
+
 if __name__ == "__main__":
     socketio.run(app, debug=True)
