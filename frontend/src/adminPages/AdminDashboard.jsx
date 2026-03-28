@@ -5,6 +5,7 @@ import { fetchUsers, deleteUser } from "../services/api"
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
   const { theme } = useTheme();
