@@ -21,9 +21,9 @@ class User(db.Model):
     admin_profile = db.relationship("AdminProfile", uselist=False, back_populates="user")
     chat_logs = db.relationship(
         "ChatLog", 
-        backref="user", 
-        cascade="all, delete-orphan",
-        passive_deletes=True # This tells SQLAlchemy to let the DB handle the CASCADE we set in SQL
+        backref="user",           
+        cascade="all, delete-orphan", 
+        passive_deletes=True
     )
 
 
