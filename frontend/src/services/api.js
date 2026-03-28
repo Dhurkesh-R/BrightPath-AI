@@ -747,7 +747,7 @@ export async function fetchUsers() {
       return data;
   };
 
-export async function fetchUsers() {
+export async function deleteUser() {
       const res = await fetch(`${BASE_URL}/admin/users/${userId}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
