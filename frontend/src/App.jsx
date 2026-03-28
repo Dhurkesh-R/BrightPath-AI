@@ -36,6 +36,7 @@ import ParentReports from "./parentPages/Reports";
 import ParentProgress from "./parentPages/Progress";
 import ParentRecommendations from "./parentPages/Recommendations";
 import ParentNotifications from "./parentPages/Notifications";
+import AdminDashboard from "./adminPages/AdminDashboard"
 
 const App = () => {
     const { theme } = useTheme();
@@ -113,7 +114,7 @@ const App = () => {
                     <Route path="/register" element={<Register />} />
 
                     {/* Private Routes with Sidebar Layout */}
-                    <Route path="/" element={<PrivateRoute><LayoutWrapper><Chatbot /></LayoutWrapper></PrivateRoute>} />
+                    <Route path="/" element={<PrivateRoute><LayoutWrapper>{role === "admin" ? <AdminDashboard /> : <Chatbot />}</LayoutWrapper></PrivateRoute>} />
                     
                     <Route path="/dashboard" element={
                         <PrivateRoute>
