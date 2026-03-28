@@ -16,7 +16,7 @@ export default function AdminDashboard() {
         setUsers(data)
       } catch (err) {
       console.error("Failed to fetch users", err);
-      });
+      };
   }, []);
 
   const filteredUsers = users.filter(u => 
