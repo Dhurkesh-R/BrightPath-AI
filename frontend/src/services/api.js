@@ -738,7 +738,7 @@ export async function updateStatus(AssignmentId, StudentId, Status) {
 }
 
 export async function fetchUsers() {
-      const res = await fetchwithRefresh(`${BASE_URL}/admin/users`, {
+      const res = await fetchWithRefresh(`${BASE_URL}/admin/users`, {
         method: "GET",
         headers: getAuthHeaders(),
       });
