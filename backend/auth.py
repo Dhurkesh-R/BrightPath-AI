@@ -15,60 +15,52 @@ def register():
         return jsonify({"error": "Password must be at least 8 characters"}), 400
 
     user_type = data["userType"].lower()
-    if user_type not in ["student", "teacher", "parent"]:
+    if user_type == "school_admin": user_type = "admin" 
+    
+    if user_type not in ["student", "teacher", "parent", "admin"]:
         return jsonify({"error": "Invalid user type"}), 400
 
-    from backend.models import (
-        db,
-        User,
-        StudentProfile,
-        TeacherProfile,
-        ParentProfile
-    )
+    from backend.models import db, User, StudentProfile, TeacherProfile, ParentProfile, AdminProfile
 
-    # Check if email already exists
     if User.query.filter_by(email=data["email"]).first():
         return jsonify({"error": "Email already registered"}), 400
 
-    # --- Create User ---
-    hashed_password = hash_password(data["password"])
-
+    hashed_pw = hash_password(data["password"])
     user = User(
         name=data["name"],
         email=data["email"],
-        password_hash=hashed_password,
+        password_hash=hashed_pw,
         role=user_type
     )
 
     db.session.add(user)
-    db.session.flush()  # ensures user.id is available without commit
+    db.session.flush()
 
-    # --- Create Profile based on role ---
     if user_type == "student":
         profile = StudentProfile(
             user_id=user.id,
-            grade=data.get("grade"),
+            grade=data.get("class"), # matched to frontend key
             section=data.get("section"),
             school=data.get("school"),
             age=data.get("age"),
             city=data.get("city"),
-            interests=data.get("interests"),
-            bio=data.get("bio"),
+            interests=data.get("interests")
         )
-
     elif user_type == "teacher":
         profile = TeacherProfile(
             user_id=user.id,
-            department=data.get("department"),
             designation=data.get("designation"),
-            experience_years=data.get("experienceYears"),
             school=data.get("school"),
-            age=data.get("age"),
-            city=data.get("city"),
-            bio=data.get("bio"),
-            handling_classes=data.get("handlingClasses"),
+            handling_classes=data.get("handling_classes")
         )
-
+    elif user_type == "admin":
+        profile = AdminProfile(
+            user_id=user.id,
+            school_name=data.get("school_name"),
+            school_id=data.get("school_id"),
+            designation=data.get("designation"),
+            bio=data.get("bio")
+        )
     else:  # parent
         child = User.query.filter_by(email=data["childEmail"]).first()
         if not child or not verify_password(data["childPassword"], child.password_hash):
@@ -105,7 +97,10 @@ def login():
     if not user or not verify_password(data["password"], user.password_hash):
         return jsonify({"error": "Invalid credentials"}), 401
 
-    access_token = create_access_token(identity=str(user.id))
+    access_token = create_access_token(
+        identity=str(user.id),
+        additional_claims={"role": user.role}
+    )
     refresh_token = create_refresh_token(identity=str(user.id))
     return jsonify({
         # FIX 1: Change 'access_token' to 'token' to match client's expectation
