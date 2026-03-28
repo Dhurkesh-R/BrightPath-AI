@@ -1689,5 +1689,40 @@ def health_check():
         "timestamp": datetime.utcnow().isoformat()
     }), 200
 
+from flask import jsonify
+from flask_jwt_extended import jwt_required, get_jwt
+
+@app.route("/admin/users", methods=["GET"])
+@jwt_required()
+def get_all_users():
+    claims = get_jwt()
+    if claims.get("role") != "admin":
+        return jsonify({"error": "Unauthorized. Admin access required."}), 403
+
+    users = User.query.all()
+    user_list = []
+
+    for user in users:
+        user_data = {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "role": user.role,
+            "created_at": user.created_at.strftime("%Y-%m-%d"),
+            "details": {}
+        }
+
+        # Add profile-specific info depending on role
+        if user.role == 'student' and user.student_profile:
+            user_data["details"] = {"grade": user.student_profile.grade, "section": user.student_profile.section}
+        elif user.role == 'teacher' and user.teacher_profile:
+            user_data["details"] = {"dept": user.teacher_profile.department, "designation": user.teacher_profile.designation}
+        elif user.role == 'admin' and user.admin_profile:
+            user_data["details"] = {"school": user.admin_profile.school_name}
+
+        user_list.append(user_data)
+
+    return jsonify(user_list), 200
+
 if __name__ == "__main__":
     socketio.run(app, debug=True)
