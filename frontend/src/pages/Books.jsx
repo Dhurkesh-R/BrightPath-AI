@@ -4,6 +4,13 @@ import { Button } from "../ui/button";
 import { Upload, Book, Trash2, Loader2, FileText } from "lucide-react";
 import { uploadBook, getBooks, deleteBook as deleteBookApi } from "../services/api";
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
+// Top of file
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_ANON_KEY
+);
 
 export default function Books() {
   const getUserData = () => {
@@ -49,31 +56,46 @@ export default function Books() {
       showNotification("Please fill all fields and select a PDF.", 'error');
       return;
     }
-
+  
     setLoading(true);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("title", form.title);
-      formData.append("subject", form.subject);
-      formData.append("grade", form.grade);
-      formData.append("section", form.section);
+      // 1. Unique filename to prevent overwriting
+      const fileName = `${Date.now()}-${file.name.replace(/\s/g, '_')}`;
       
-      await uploadBook(formData);
+      // 2. Upload to Supabase Bucket 'book-resources'
+      const { data, error: uploadError } = await supabase.storage
+        .from('book-resources')
+        .upload(`pdfs/${fileName}`, file);
+  
+      if (uploadError) throw uploadError;
+  
+      // 3. Get the permanent Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('book-resources')
+        .getPublicUrl(`pdfs/${fileName}`);
+  
+      // 4. Send the metadata + URL to your Render Backend
+      const payload = {
+        title: form.title,
+        subject: form.subject,
+        grade: form.grade,
+        section: form.section,
+        file_url: publicUrl // This string goes to Neon DB
+      };
+      
+      await uploadBook(payload);
+  
       showNotification(`"${form.title}" uploaded!`, 'success');
       setFile(null);
       setForm({ title: "", subject: "", grade: "", section: "" });
-      if (document.getElementById('file-upload-input')) {
-        document.getElementById('file-upload-input').value = ''; 
-      }
       fetchBooks();
     } catch (error) {
-      showNotification("Upload failed.", 'error');
+      console.error("Upload process failed:", error);
+      showNotification("Upload failed. Check console for details.", 'error');
     } finally {
       setLoading(false);
     }
   };
-
   const handleDeleteBook = async (id) => {
     if (!window.confirm("Delete this book?")) return; 
     try {
