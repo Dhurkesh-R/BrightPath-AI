@@ -12,13 +12,14 @@ export default function AdminDashboard() {
   useEffect(() => {
     const getUsers = async () => {
       try {
-        data = await fetchUsers()
+        const data = await fetchUsers()
         setUsers(data)
-        console.log(data)
       } catch (err) {
       console.error("Failed to fetch users", err);
       };
     }
+
+    getUsers();
   }, []);
 
   const filteredUsers = users.filter(u => 
