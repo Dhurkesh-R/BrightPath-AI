@@ -72,8 +72,6 @@ class StudentProfile(db.Model):
     interests = db.Column(db.Text)
     profile_pic_url = db.Column(db.Text)
 
-    user = db.relationship("User", back_populates="student_profile")
-
 class TeacherProfile(db.Model):
     __tablename__ = "teacher_profiles"
 
@@ -97,8 +95,6 @@ class TeacherProfile(db.Model):
     school = db.Column(db.String(255))
     age = db.Column(db.Integer)
 
-    user = db.relationship("User", back_populates="teacher_profile")
-
 class ParentProfile(db.Model):
     __tablename__ = "parent_profiles"
 
@@ -115,8 +111,6 @@ class ParentProfile(db.Model):
     child_email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     child_password = db.Column(db.String(255), nullable=False)
     profile_pic_url = db.Column(db.Text)
-
-    user = db.relationship("User", back_populates="parent_profile")
 
 class Activity(db.Model):
     __tablename__ = "activities"
