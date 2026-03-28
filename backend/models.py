@@ -191,7 +191,10 @@ class ChatLog(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
-    user = db.relationship("User", backref=db.backref("chat_logs", lazy=True))
+    
+    # REMOVE the 'user = db.relationship(...backref...)' line entirely
+    # The User class already handles this with its chat_logs relationship
+    
     user_message = db.Column(db.Text)
     bot_response = db.Column(db.Text)
     sent_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -204,7 +207,6 @@ class ChatLog(db.Model):
             "bot_response": self.bot_response,
             "sent_at": self.sent_at.isoformat(),
         }
-
 class Book(db.Model):
     __tablename__ = "books"
 
