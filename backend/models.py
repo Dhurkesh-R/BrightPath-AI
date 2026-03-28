@@ -19,6 +19,12 @@ class User(db.Model):
     teacher_profile = db.relationship("TeacherProfile", uselist=False, back_populates="user")
     parent_profile = db.relationship("ParentProfile", uselist=False, back_populates="user")
     admin_profile = db.relationship("AdminProfile", uselist=False, back_populates="user")
+    chat_logs = db.relationship(
+        "ChatLog", 
+        backref="user", 
+        cascade="all, delete-orphan",
+        passive_deletes=True # This tells SQLAlchemy to let the DB handle the CASCADE we set in SQL
+    )
 
 
 class AdminProfile(db.Model):
@@ -185,7 +191,7 @@ class ChatLog(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
-    user = db.relationship("User", backref=db.backref("chat_logs", lazy=True), cascade="all, delete-orphan")
+    user = db.relationship("User", backref=db.backref("chat_logs", lazy=True))
     user_message = db.Column(db.Text)
     bot_response = db.Column(db.Text)
     sent_at = db.Column(db.DateTime, default=datetime.utcnow)
