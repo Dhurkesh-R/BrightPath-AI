@@ -68,6 +68,14 @@ load_dotenv()
 app = create_app()
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 socketio = SocketIO(app, cors_allowed_origins="*")
+import os
+from supabase import create_client, Client
+
+# Initialize Supabase with the SECRET key
+url = os.environ.get("SUPABASE_URL")
+key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+supabase: Client = create_client(url, key)
+
 
 # Aggregated child data store (in-memory)
 CHILD_DATA = {
@@ -664,32 +672,30 @@ def get_custom_quiz():
 @jwt_required()
 def upload_book():
     current_user = get_jwt_identity()
-    title = request.form.get("title")
-    subject = request.form.get("subject")
-    grade = request.form.get("grade")
-    section = request.form.get("section")
+    data = request.get_json() 
+    
+    title = data.get("title")
+    subject = data.get("subject")
+    grade = data.get("grade")
+    section = data.get("section")
+    file_url = data.get("file_url")
 
-    file = request.files.get("file")
-    if not file or not allowed_file(file.filename):
-        return jsonify({"error": "Invalid or missing file"}), 400
-
-    filename = secure_filename(file.filename)
-    filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-    file.save(filepath)
-
-    # Store in DB
+    if not all([title, subject, grade, section, file_url]):
+        return jsonify({"error": "Missing required fields"}), 400
+        
     new_book = Book(
         title=title,
         subject=subject,
         grade=grade,
         section=section,
         uploaded_by=current_user,
-        file_url=f"/books/files/{filename}",
+        file_url=file_url,
     )
+    
     db.session.add(new_book)
     db.session.commit()
 
-    return jsonify({"message": "Book uploaded successfully", "book": new_book.to_dict()}), 201
+    return jsonify({"message": "Book registered successfully", "book": new_book.to_dict()}), 201
 
 @app.route("/books", methods=["GET"])
 @jwt_required()
@@ -703,19 +709,16 @@ def delete_book(book_id):
     book = Book.query.get(book_id)
     if not book:
         return jsonify({"error": "Book not found"}), 404
-
-    # Remove file
-    file_path = os.path.join(app.config["UPLOAD_FOLDER"], os.path.basename(book.file_url))
-    if os.path.exists(file_path):
-        os.remove(file_path)
-
+    try:
+        file_path = book.file_url.split('/book-resources/')[1]
+        
+        supabase.storage.from_('book-resources').remove([file_path])
+    except Exception as e:
+        print(f"Storage deletion failed or file already gone: {e}")
+        
     db.session.delete(book)
     db.session.commit()
     return jsonify({"message": "Book deleted successfully"}), 200
-
-@app.route("/books/files/<path:filename>")
-def serve_book_file(filename):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
 @app.route("/change-password", methods=["POST"])
 @jwt_required()
