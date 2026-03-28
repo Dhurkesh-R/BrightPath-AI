@@ -54,7 +54,8 @@ const topMenu = userRole === "student"
       { name: "Assignments", icon: School, path: "/assignments" },
       { name: "Messages", icon: MessagesSquare, path: "/messages" },
     ] 
-  : [
+  : userRole === "parent"
+  ? [
       { name: "Chat", icon: MessageCircle, path: "/" },
       { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
       { name: "Reports", icon: FileText, path: "/reports" },
@@ -62,7 +63,10 @@ const topMenu = userRole === "student"
       { name: "Recommendations", icon: Lightbulb, path: "/recommendations" },
       { name: "Notifications", icon: Bell, path: "/notifications" },
       { name: "Messages", icon: MessagesSquare, path: "/messages" },
-    ];
+    ]
+  : [
+    { name: "Dashboard", icon: LayoutDashboard, path: "/" },
+  ];
 
 
 const bottomMenu = userRole === "student" || userRole === "teacher"
