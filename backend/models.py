@@ -15,10 +15,10 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
-    student_profile = db.relationship("StudentProfile", uselist=False, back_populates="user")
-    teacher_profile = db.relationship("TeacherProfile", uselist=False, back_populates="user")
-    parent_profile = db.relationship("ParentProfile", uselist=False, back_populates="user")
-    admin_profile = db.relationship("AdminProfile", uselist=False, back_populates="user")
+    student_profile = db.relationship("StudentProfile", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
+    teacher_profile = db.relationship("TeacherProfile", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
+    parent_profile = db.relationship("ParentProfile", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
+    admin_profile = db.relationship("AdminProfile", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
     chat_logs = db.relationship(
         "ChatLog", 
         backref="user",           
