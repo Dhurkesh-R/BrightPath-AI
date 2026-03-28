@@ -19,7 +19,10 @@ export default function Register() {
     interests: "",
     childEmail: "",
     childPassword: "",
-    handling_classes: ""
+    handling_classes: "",
+    school_id: "", 
+    designation: "", 
+    school_name: "" 
   });
 
   const [loading, setLoading] = useState(false);
@@ -133,6 +136,26 @@ export default function Register() {
             <>
               <Input label="Child Email" name="childEmail" value={formData.childEmail} onChange={handleChange} />
               <Input label="Child Password" name="childPassword" value={formData.childPassword} onChange={handleChange} />
+            </>
+          )}
+
+          {formData.userType === "school_admin" && (
+            <>
+              <Input label="School Name" name="school_name" value={formData.school_name} onChange={handleChange} />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input label="School ID / Code" name="school_id" value={formData.school_id} onChange={handleChange} />
+                <Input label="Designation (e.g. Principal)" name="designation" value={formData.designation} onChange={handleChange} />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">Bio</label>
+                <textarea
+                  name="bio"
+                  value={formData.bio}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-blue-400 min-h-[80px]"
+                  placeholder="Brief description of your role..."
+                />
+              </div>
             </>
           )}
 
