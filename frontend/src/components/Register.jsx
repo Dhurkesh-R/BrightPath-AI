@@ -95,11 +95,12 @@ export default function Register() {
 
           {formData.userType === "student" && (
             <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Input label="Grade" name="grade" value={formData.grade} onChange={handleChange} />
               <Input label="Section" name="section" value={formData.section} onChange={handleChange} />
+              <Input label="Age" name="age" value={formData.age} onChange={handleChange} />
             </div>
-            <Input label="Age" name="age" value={formData.age} onChange={handleChange} />
+            
             <Input label="School" name="school" value={formData.school} onChange={handleChange} />
             <Input label="City" name="city" value={formData.city} onChange={handleChange} />
             <div>
