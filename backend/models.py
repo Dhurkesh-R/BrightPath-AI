@@ -185,7 +185,7 @@ class ChatLog(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
-    user = db.relationship("User", backref=db.backref("chat_logs", lazy=True))
+    user = db.relationship("User", backref=db.backref("chat_logs", lazy=True), cascade="all, delete-orphan")
     user_message = db.Column(db.Text)
     bot_response = db.Column(db.Text)
     sent_at = db.Column(db.DateTime, default=datetime.utcnow)
