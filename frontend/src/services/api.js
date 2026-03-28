@@ -396,38 +396,46 @@ export const deleteGoal = async (goalId) => {
 // Books API
 export const getBooks = async () => {
   const res = await fetchWithRefresh(`${BASE_URL}/books`, {
-        method: "GET",
-        headers: getAuthHeaders(),
-      });
-    if (!res.ok) throw new Error("Failed to load books");
-    return res.json();
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to load books");
+  return res.json();
 };
 
-export const uploadBook = async (formData) => {
+// CHANGED: Accept bookData (JSON object) instead of formData
+export const uploadBook = async (bookData) => {
   const res = await fetchWithRefresh(`${BASE_URL}/upload-book`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      ...getAuthHeaders(), // Use your existing auth helper
+      "Content-Type": "application/json", // CRITICAL: Tell Flask this is JSON
     },
-    body: formData,
+    body: JSON.stringify(bookData), // CRITICAL: Convert object to string
   });
 
   if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error || `Upload failed (${res.status})`);
+    // If the server returns HTML (like a 404 or 500), this might still fail.
+    // We check the content-type before parsing to avoid the "<" error.
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const err = await res.json();
+      throw new Error(err.error || `Upload failed (${res.status})`);
+    } else {
+      throw new Error(`Server Error: ${res.status}. Check Render logs.`);
+    }
   }
 
   return res.json();
 };
 
-
 export const deleteBook = async (bookId) => {
   const res = await fetchWithRefresh(`${BASE_URL}/books/${bookId}`, {
-          method: "DELETE", 
-          headers: getAuthHeaders()
-        });
-      if (!res.ok) throw new Error("Failed to delete book");
-      return res.json();
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to delete book");
+  return res.json();
 };
 
 export const changePassword = async (payload) => {
