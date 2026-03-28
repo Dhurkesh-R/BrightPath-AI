@@ -235,7 +235,7 @@ export default function Books() {
                 </p>
                 
                 <a
-                  href={"https://brightpath-ai.onrender.com/" + book.file_url}
+                  href={book.file_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block w-full text-center py-2 text-sm font-bold text-blue-500 border border-blue-500/30 rounded-lg hover:bg-blue-500 hover:text-white transition-all"
