@@ -3,7 +3,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
 db = SQLAlchemy()
-
 class User(db.Model):
     __tablename__ = "users"
 
@@ -11,18 +10,38 @@ class User(db.Model):
     name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
+    # Roles: 'student', 'teacher', 'parent', 'admin'
     role = db.Column(db.String(20), nullable=False, index=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    student_profile = db.relationship(
-        "StudentProfile", uselist=False, back_populates="user"
+    # Relationships
+    student_profile = db.relationship("StudentProfile", uselist=False, back_populates="user")
+    teacher_profile = db.relationship("TeacherProfile", uselist=False, back_populates="user")
+    parent_profile = db.relationship("ParentProfile", uselist=False, back_populates="user")
+    admin_profile = db.relationship("AdminProfile", uselist=False, back_populates="user")
+
+
+class AdminProfile(db.Model):
+    __tablename__ = "admin_profiles"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(
+        db.Integer, 
+        db.ForeignKey("users.id"), 
+        unique=True, 
+        nullable=False, 
+        index=True
     )
-    teacher_profile = db.relationship(
-        "TeacherProfile", uselist=False, back_populates="user"
-    )
-    parent_profile = db.relationship(
-        "ParentProfile", uselist=False, back_populates="user"
-    )
+
+    school_name = db.Column(db.String(255), nullable=False)
+    school_id = db.Column(db.String(50), unique=True) # Unique code for the school
+    designation = db.Column(db.String(100)) # e.g., "Principal", "IT Director"
+    permissions_level = db.Column(db.Integer, default=1) # 1: School Admin, 2: Super Admin
+    is_verified = db.Column(db.Boolean, default=True)
+    profile_pic_url = db.Column(db.Text)
+    bio = db.Column(db.Text)
+
+    user = db.relationship("User", back_populates="admin_profile")
 
 
 class StudentProfile(db.Model):
