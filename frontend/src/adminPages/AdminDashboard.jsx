@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Users, Trash2, Search, ShieldCheck, GraduationCap, UserCircle } from "lucide-react";
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
-import { fetchUsers } from "../services/api"
+import { fetchUsers, deleteUser } from "../services/api"
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeFilter, setActiveFilter] = useState("all");
   const { theme } = useTheme();
   const { bg, text, border, inputBg, textSecondary } = getThemeClasses(theme);
 
@@ -21,6 +22,17 @@ export default function AdminDashboard() {
 
     getUsers();
   }, []);
+
+  const handleDelete = async (userId, userName) => {
+    if (!window.confirm(`Are you sure you want to permanentely delete ${userName}?`)) return;
+
+    try {
+        const data = await deleteUser(userId)
+        setUsers(data)
+      } catch (err) {
+      console.error("Delete error", err);
+    }
+  };
 
   const filteredUsers = users.filter(u => 
     u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
