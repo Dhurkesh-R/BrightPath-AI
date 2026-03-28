@@ -342,7 +342,7 @@ def get_user_profile():
         profile = user.student_profile
         base_response.update({
             "age": profile.age,
-            "class": profile.grade,
+            "grade": profile.grade,
             "section": profile.section,
             "school": profile.school,
             "bio": profile.bio,
@@ -392,7 +392,7 @@ def update_user_profile():
             return jsonify({"error": "Student profile missing"}), 400
 
         profile.age = data.get("age", profile.age)
-        profile.grade = data.get("class", profile.grade)
+        profile.grade = data.get("grade", profile.grade)
         profile.section = data.get("section", profile.section)
         profile.school = data.get("school", profile.school)
         profile.interests = data.get("interests", profile.interests)
@@ -410,7 +410,7 @@ def update_user_profile():
                 "email": user.email,
                 "role": user.role,
                 "age": profile.age,
-                "class": profile.grade,
+                "grade": profile.grade,
                 "section": profile.section,
                 "school": profile.school,
                 "bio": profile.bio,
