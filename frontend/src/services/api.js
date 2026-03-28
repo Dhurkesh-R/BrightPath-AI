@@ -746,3 +746,13 @@ export async function fetchUsers() {
       const data = res.json()
       return data;
   };
+
+export async function fetchUsers() {
+      const res = await fetch(`${BASE_URL}/admin/users/${userId}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) throw new Error("Failed to fetch users");
+      const data = res.json()
+      return data;
+}
