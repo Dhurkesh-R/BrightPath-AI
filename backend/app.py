@@ -1741,7 +1741,9 @@ def admin_delete_user(user_id):
 
     db.session.delete(user)
     db.session.commit()
-    return jsonify({"message": f"User {user.name} deleted successfully"}), 200
+    
+    users = [u.to_admin_dict() for u in User.query.all()]
+    return jsonify(users), 200
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)
