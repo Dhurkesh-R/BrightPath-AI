@@ -27,7 +27,7 @@ const StatCard = ({ label, value, icon, subtext, color, border, inputBg, textSec
 
 export default function AdminStats() {
   const {theme} = useTheme()
-  const [stats, setStats] = useState()
+  const [stats, setStats] = useState([])
   const { border, inputBg, textSecondary } = getThemeClasses(theme);
 
   useEffect(() => {
