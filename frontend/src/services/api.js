@@ -766,3 +766,12 @@ export async function deleteUser(userId) {
       const data = res.json()
       return data;
 }
+
+export async function fetchAdminStats() {
+  const res = await fetchWithRefresh(`${BASE_URL}/admin/stats`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to fetch statistics");
+  return res.json();
+}
