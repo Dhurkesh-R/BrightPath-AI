@@ -22,6 +22,23 @@ class User(db.Model):
     chat_logs = db.relationship("ChatLog", back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
     goals = db.relationship("Goal", back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
 
+    def to_admin_dict(self):
+        data = {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "role": self.role,
+            "created_at": self.created_at.strftime("%Y-%m-%d"),
+            "details": {}
+        }
+        if self.role == 'student' and self.student_profile:
+            data["details"] = {"grade": self.student_profile.grade, "section": self.student_profile.section}
+        elif self.role == 'teacher' and self.teacher_profile:
+            data["details"] = {"dept": self.teacher_profile.department, "designation": self.teacher_profile.designation}
+        elif self.role == 'admin' and self.admin_profile:
+            data["details"] = {"school": self.admin_profile.school_name}
+        return data
+
 
 class AdminProfile(db.Model):
     __tablename__ = "admin_profiles"
