@@ -1763,5 +1763,39 @@ def admin_delete_user(user_id):
     users = [u.to_admin_dict() for u in User.query.all()]
     return jsonify(users), 200
 
+@app.route("/admin/stats", methods=["GET"])
+@jwt_required()
+def get_admin_stats():
+    claims = get_jwt()
+    if claims.get("role") != "admin":
+        return jsonify({"error": "Admin access required"}), 403
+
+    # Basic Counts
+    total_users = User.query.count()
+    student_count = User.query.filter_by(role='student').count()
+    teacher_count = User.query.filter_by(role='teacher').count()
+    parent_count = User.query.filter_by(role='parent').count()
+    
+    # Activity Stats (Last 30 days)
+    recent_users = User.query.filter(User.created_at >= datetime.utcnow() - timedelta(days=30)).count()
+    total_chats = ChatLog.query.count()
+    total_goals = Goal.query.count()
+
+    stats = {
+        "user_overview": {
+            "total": total_users,
+            "students": student_count,
+            "teachers": teacher_count,
+            "parents": parent_count,
+            "recent_growth": recent_users
+        },
+        "engagement": {
+            "total_ai_interactions": total_chats,
+            "active_goals": total_goals
+        }
+    }
+
+    return jsonify(stats), 200
+
 if __name__ == "__main__":
     socketio.run(app, debug=True)
