@@ -66,6 +66,7 @@ const topMenu = userRole === "student"
     ]
   : [
     { name: "Dashboard", icon: LayoutDashboard, path: "/" },
+    { name: "Stats", icon: ChartColumn, path: "/stats" },
   ];
 
 
