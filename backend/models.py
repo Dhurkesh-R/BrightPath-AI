@@ -19,25 +19,15 @@ class User(db.Model):
     teacher_profile = db.relationship("TeacherProfile", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
     parent_profile = db.relationship("ParentProfile", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
     admin_profile = db.relationship("AdminProfile", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
-    chat_logs = db.relationship(
-        "ChatLog", 
-        backref="user",           
-        cascade="all, delete-orphan", 
-        passive_deletes=True
-    )
+    chat_logs = db.relationship("ChatLog", back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
+    goals = db.relationship("Goal", back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
 
 
 class AdminProfile(db.Model):
     __tablename__ = "admin_profiles"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(
-        db.Integer, 
-        db.ForeignKey("users.id"), 
-        unique=True, 
-        nullable=False, 
-        index=True
-    )
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
 
     school_name = db.Column(db.String(255), nullable=False)
     school_id = db.Column(db.String(50), unique=True) # Unique code for the school
@@ -55,13 +45,7 @@ class StudentProfile(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey("users.id"),
-        unique=True,
-        nullable=False,
-        index=True
-    )
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
 
     grade = db.Column(db.String(10))
     section = db.Column(db.String(5))
@@ -72,18 +56,14 @@ class StudentProfile(db.Model):
     interests = db.Column(db.Text)
     profile_pic_url = db.Column(db.Text)
 
+    user = db.relationship("User", back_populates="student_profile")
+
 class TeacherProfile(db.Model):
     __tablename__ = "teacher_profiles"
 
     id = db.Column(db.Integer, primary_key=True)
 
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey("users.id"),
-        unique=True,
-        nullable=False,
-        index=True
-    )
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
 
     department = db.Column(db.String(100))
     designation = db.Column(db.String(100))
@@ -94,6 +74,8 @@ class TeacherProfile(db.Model):
     profile_pic_url = db.Column(db.Text)
     school = db.Column(db.String(255))
     age = db.Column(db.Integer)
+
+    user = db.relationship("User", back_populates="teacher_profile")
 
 class ParentProfile(db.Model):
     __tablename__ = "parent_profiles"
@@ -111,6 +93,8 @@ class ParentProfile(db.Model):
     child_email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     child_password = db.Column(db.String(255), nullable=False)
     profile_pic_url = db.Column(db.Text)
+
+    user = db.relationship("User", back_populates="parent_profile")
 
 class Activity(db.Model):
     __tablename__ = "activities"
@@ -148,9 +132,8 @@ class Goal(db.Model):
     status = db.Column(db.String(50), default="in-progress")  # in-progress, completed, etc.
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
-    user = db.relationship("User", backref=db.backref("goals", lazy=True))
-
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
+    user = db.relationship("User", back_populates="goals")
     def to_dict(self):
         return {
             "id": self.id,
@@ -184,11 +167,9 @@ class ChatLog(db.Model):
     __tablename__ = "chat_logs"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
     
-    # REMOVE the 'user = db.relationship(...backref...)' line entirely
-    # The User class already handles this with its chat_logs relationship
-    
+    user = db.relationship("User", back_populates="chat_logs")
     user_message = db.Column(db.Text)
     bot_response = db.Column(db.Text)
     sent_at = db.Column(db.DateTime, default=datetime.utcnow)
