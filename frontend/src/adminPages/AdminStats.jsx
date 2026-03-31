@@ -39,6 +39,8 @@ export default function AdminStats() {
         console.error("failed to fetch stats", err)
       }
     } 
+
+    getStats()
   }, [])
 
   const data = [
