@@ -10,6 +10,26 @@ export default function AdminDashboard() {
   const [activeFilter, setActiveFilter] = useState("all");
   const { theme } = useTheme();
   const { bg, text, border, inputBg, textSecondary } = getThemeClasses(theme);
+  const [editingUser, setEditingUser] = useState(null); // Track who we are editing
+  const [editData, setEditData] = useState({ grade: "", section: "" });
+
+  const handleEditClick = (user) => {
+    setEditingUser(user);
+    setEditData({ 
+      grade: user.details?.grade || "", 
+      section: user.details?.section || "" 
+    });
+  };
+
+  const handleSaveUpdate = async () => {
+    try {
+      const data = await updateStudentGrade(editingUser.id, editData.grade, editData.section);
+      setUsers(data); // Refresh list
+      setEditingUser(null); // Close modal
+    } catch (err) {
+      console.error("Update failed", err);
+    }
+  };
 
   useEffect(() => {
     const getUsers = async () => {
@@ -24,6 +44,8 @@ export default function AdminDashboard() {
     getUsers();
   }, []);
 
+  getStudentDashboard(userId)
+
   const handleDelete = async (userId, userName) => {
     if (!window.confirm(`Are you sure you want to permanentely delete ${userName}?`)) return;
 
@@ -32,6 +54,16 @@ export default function AdminDashboard() {
         setUsers(data)
       } catch (err) {
       console.error("Delete error", err);
+    }
+  };
+
+  const handleUpdateGrade = async (userId) => {
+
+    try {
+        const data = await updateStudentGrade(userId)
+        setUsers(data)
+      } catch (err) {
+      console.error("update error", err);
     }
   };
 
@@ -51,6 +83,43 @@ export default function AdminDashboard() {
           </h1>
           <p className={textSecondary}>Institutional Oversight & User Management</p>
         </div>
+
+        {editingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className={`${bg} p-6 rounded-2xl border ${border} w-80 shadow-2xl`}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold">Promote Student</h3>
+              <button onClick={() => setEditingUser(null)}><X size={18}/></button>
+            </div>
+            <p className="text-xs mb-4 opacity-70">Updating: {editingUser.name}</p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-[10px] uppercase font-bold opacity-50">Grade</label>
+                <input 
+                  className={`w-full p-2 rounded-lg border ${border} ${inputBg}`}
+                  value={editData.grade}
+                  onChange={(e) => setEditData({...editData, grade: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase font-bold opacity-50">Section</label>
+                <input 
+                  className={`w-full p-2 rounded-lg border ${border} ${inputBg}`}
+                  value={editData.section}
+                  onChange={(e) => setEditData({...editData, section: e.target.value})}
+                />
+              </div>
+              <button 
+                onClick={handleSaveUpdate}
+                className="w-full bg-blue-600 text-white py-2 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-blue-700 transition-all"
+              >
+                <Check size={18}/> Update Info
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Role Filter Tabs */}
@@ -119,7 +188,16 @@ export default function AdminDashboard() {
                     {u.role === 'teacher' && <span>{u.details?.designation}</span>}
                     {u.role === 'admin' && <span>{u.details?.designation}</span>}
                   </td>
-                  <td className="p-4 text-center">
+                  <td className="p-4 text-center flex justify-center gap-2">
+                    {u.role === 'student' && (
+                      <button 
+                        onClick={() => handleEditClick(u)}
+                        className="p-2 hover:bg-blue-500/10 rounded-lg text-blue-500 transition-all group"
+                        title="Edit Grade/Section"
+                      >
+                        <Edit3 size={18} className="group-hover:scale-110" />
+                      </button>
+                    )}
                     <button 
                       onClick={() => handleDelete(u.id, u.name)}
                       className="p-2 hover:bg-red-500/10 rounded-lg text-red-500 transition-all group"
