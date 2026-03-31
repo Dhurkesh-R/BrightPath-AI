@@ -76,7 +76,7 @@ export default function AdminDashboard() {
     <div className={`p-6 min-h-screen ${bg} ${text} md:ml-16`}>
       <header className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3">
+          <h1 className="text-3xl font-bold flex items-center gap-2">
             <div className="w-12 h-10 md:hidden" />
             <ShieldCheck className="text-red-500" size={32} /> Admin Control
           </h1>
