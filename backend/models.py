@@ -21,6 +21,12 @@ class User(db.Model):
     admin_profile = db.relationship("AdminProfile", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
     chat_logs = db.relationship("ChatLog", back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
     goals = db.relationship("Goal", back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
+    quiz_logs = db.relationship(
+        "QuizResult", 
+        back_populates="user", 
+        cascade="all, delete-orphan", 
+        passive_deletes=True
+    )
 
     def to_admin_dict(self):
         data = {
@@ -169,8 +175,8 @@ class QuizResult(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     summary_data = db.Column(db.Text)
     taken_at = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
-    user = db.relationship("User", backref=db.backref("quiz_logs", lazy=True))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
+    user = db.relationship("User", back_populates="goals")
     def to_dict(self):
         return {
             "id": self.id,
