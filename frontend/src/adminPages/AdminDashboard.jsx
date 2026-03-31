@@ -108,6 +108,7 @@ export default function AdminDashboard() {
                     <span className={`px-2 py-1 rounded-md text-[10px] font-black uppercase ${
                       u.role === 'admin' ? 'bg-red-500/20 text-red-500' : 
                       u.role === 'teacher' ? 'bg-blue-500/20 text-blue-500' : 
+                      u.role === 'parent' ? 'bg-yellow-500/20 text-yellow-500' :
                       'bg-green-500/20 text-green-500'
                     }`}>
                       {u.role}
@@ -116,6 +117,7 @@ export default function AdminDashboard() {
                   <td className={`p-4 text-sm ${textSecondary}`}>
                     {u.role === 'student' && <span className="flex items-center gap-1">Gr: {u.details?.grade} Sec: {u.details?.section}</span>}
                     {u.role === 'teacher' && <span>{u.details?.designation}</span>}
+                    {u.role === 'admin' && <span>{u.details?.designation}</span>}
                   </td>
                   <td className="p-4 text-center">
                     <button 
