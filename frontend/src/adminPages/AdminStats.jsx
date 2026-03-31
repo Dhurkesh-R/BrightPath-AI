@@ -1,5 +1,7 @@
 import React from 'react';
 import { Users, GraduationCap, MessageSquare, Target, TrendingUp, UserCheck, Briefcase } from "lucide-react";
+import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
+import { fetchStats } from "../services/api"
 
 const StatCard = ({ label, value, icon, subtext, color, border, inputBg, textSecondary }) => (
   <div className={`p-5 rounded-2xl border ${border} ${inputBg} shadow-sm hover:shadow-md transition-all duration-300 group`}>
@@ -23,10 +25,19 @@ const StatCard = ({ label, value, icon, subtext, color, border, inputBg, textSec
   </div>
 );
 
-export default function AdminStats({ stats, themeClasses }) {
-  if (!stats) return null;
+export default function AdminStats() {
+  const {theme, setTheme} = useTheme()
+  const { border, inputBg, textSecondary } = getThemeClasses(theme);
 
-  const { border, inputBg, textSecondary } = themeClasses;
+  useEffect(() => {
+    const getStats = async () => {
+      try {
+        const stats = await fetchStats()
+      } catch (err) {
+        console.error("failed to fetch stats", err)
+      }
+    } 
+  }, [])
 
   const data = [
     {
