@@ -37,6 +37,7 @@ import ParentProgress from "./parentPages/Progress";
 import ParentRecommendations from "./parentPages/Recommendations";
 import ParentNotifications from "./parentPages/Notifications";
 import AdminDashboard from "./adminPages/AdminDashboard"
+import AdminStats from "./adminPages/AdminStats"
 
 const App = () => {
     const { theme } = useTheme();
@@ -152,7 +153,9 @@ const App = () => {
                     <Route path="/progress" element={<PrivateRoute><LayoutWrapper><ParentProgress /></LayoutWrapper></PrivateRoute>} />
                     <Route path="/recommendations" element={<PrivateRoute><LayoutWrapper><ParentRecommendations /></LayoutWrapper></PrivateRoute>} />
                     <Route path="/notifications" element={<PrivateRoute><LayoutWrapper><ParentNotifications /></LayoutWrapper></PrivateRoute>} />
-                    
+
+                    {/* Admin specific routes */}
+                    <Route path="/stats" element={<PrivateRoute><LayoutWrapper><AdminStats /></LayoutWrapper></PrivateRoute>} />
                 </Routes>
             </AuthProvider>
         </Router>
