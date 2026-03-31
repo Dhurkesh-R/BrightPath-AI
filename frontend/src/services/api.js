@@ -352,6 +352,16 @@ export async function getStudentDashboard(userId) {
   if (!res.ok) throw new Error("Failed to load quiz");
   return res.json();
 }
+
+export async function updateStudentGrade(userId, grade, section) {
+  const res = await fetchWithRefresh(`${BASE_URL}/update-student-grade/${userId}`, {
+    method: "PUT",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ grade, section }), // Send data to backend
+  });
+  if (!res.ok) throw new Error("Failed to update grade");
+  return res.json();
+}
 // Goals API
 export const getGoals = async () => {
   const res = await fetchWithRefresh(`${BASE_URL}/goals`, {
