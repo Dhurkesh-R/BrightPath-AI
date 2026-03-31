@@ -1,7 +1,7 @@
 import React from 'react';
 import { Users, GraduationCap, MessageSquare, Target, TrendingUp, UserCheck, Briefcase } from "lucide-react";
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
-import { fetchStats } from "../services/api"
+import { fetchAdminStats } from "../services/api"
 
 const StatCard = ({ label, value, icon, subtext, color, border, inputBg, textSecondary }) => (
   <div className={`p-5 rounded-2xl border ${border} ${inputBg} shadow-sm hover:shadow-md transition-all duration-300 group`}>
@@ -32,7 +32,7 @@ export default function AdminStats() {
   useEffect(() => {
     const getStats = async () => {
       try {
-        const stats = await fetchStats()
+        const stats = await fetchAdminStats()
       } catch (err) {
         console.error("failed to fetch stats", err)
       }
