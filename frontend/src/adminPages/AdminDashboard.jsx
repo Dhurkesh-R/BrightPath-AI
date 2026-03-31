@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Users, Trash2, Search, ShieldCheck, GraduationCap, UserCircle } from "lucide-react";
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
-import { fetchUsers, deleteUser } from "../services/api"
+import { fetchUsers, deleteUser, updateStudentGrade } from "../services/api"
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
@@ -43,8 +43,6 @@ export default function AdminDashboard() {
 
     getUsers();
   }, []);
-
-  getStudentDashboard(userId)
 
   const handleDelete = async (userId, userName) => {
     if (!window.confirm(`Are you sure you want to permanentely delete ${userName}?`)) return;
