@@ -33,8 +33,8 @@ export default function AdminStats() {
   useEffect(() => {
     const getStats = async () => {
       try {
-        const data = await fetchAdminStats()
-        setStats(data)
+        const info = await fetchAdminStats()
+        setStats(info)
       } catch (err) {
         console.error("failed to fetch stats", err)
       }
