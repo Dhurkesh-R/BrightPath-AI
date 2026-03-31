@@ -648,7 +648,25 @@ def get_student_profile(user_id):
 
     return jsonify(profile), 200
 
+@app.route("/update-student-grade/<int:user_id>", methods=["PUT"])
+@jwt_required()
+def update_student_grade(user_id):
+    data = request.json
+    new_grade = data.get("grade")
+    new_section = data.get("section")
+    
+    user = User.query.get(user_id)
+    if not user or user.role != "student":
+        return jsonify({"error": "Student not found"}), 404
 
+    # Update profile
+    user.student_profile.grade = new_grade
+    user.student_profile.section = new_section
+    db.session.commit()
+
+    # Return the full updated list (reuse your logic from delete)
+    users = [u.to_admin_dict() for u in User.query.all()] 
+    return jsonify(users), 200
 
 @app.route("/daily-quiz", methods=["GET"])
 @jwt_required()
