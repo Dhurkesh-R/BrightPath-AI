@@ -26,13 +26,15 @@ const StatCard = ({ label, value, icon, subtext, color, border, inputBg, textSec
 );
 
 export default function AdminStats() {
-  const {theme, setTheme} = useTheme()
+  const {theme} = useTheme()
+  const [stats, setStats] = useState([])
   const { border, inputBg, textSecondary } = getThemeClasses(theme);
 
   useEffect(() => {
     const getStats = async () => {
       try {
-        const stats = await fetchAdminStats()
+        const data = await fetchAdminStats()
+        setStats(data)
       } catch (err) {
         console.error("failed to fetch stats", err)
       }
