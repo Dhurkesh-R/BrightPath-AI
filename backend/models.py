@@ -36,7 +36,7 @@ class User(db.Model):
             "email": self.email,
             "role": self.role,
             "created_at": self.created_at.strftime("%Y-%m-%d"),
-            "is_verified": self.is_verified
+            "is_verified": self.is_verified,
             "details": {}
         }
         if self.role == 'student' and self.student_profile:
