@@ -163,6 +163,7 @@ export default function AdminDashboard() {
                 <th className="p-4 font-semibold">Role</th>
                 <th className="p-4 font-semibold">Details</th>
                 <th className="p-4 font-semibold text-center">Actions</th>
+                <th className="p-4 font-semibold">Security</th>
               </tr>
             </thead>
             <tbody>
@@ -204,6 +205,13 @@ export default function AdminDashboard() {
                     >
                       <Trash2 size={18} className="group-hover:scale-110" />
                     </button>
+                  </td>
+                  <td className="p-4">
+                    <VerifyButton 
+                      userId={u.id} 
+                      isVerified={u.is_verified} 
+                      onRefresh={getUsers} // Calls your existing fetchUsers function
+                    />
                   </td>
                 </tr>
               ))}
