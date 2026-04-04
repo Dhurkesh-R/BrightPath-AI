@@ -64,9 +64,7 @@ export default function AdminStats() {
       <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Link to="/admin" className={`p-2 rounded-lg hover:bg-gray-500/10 ${textSecondary}`}>
-              <ChevronLeft size={20} />
-            </Link>
+            <div className="w-12 h-10 md:hidden" />
             <h1 className="text-3xl font-bold flex items-center gap-3">
               <BarChart3 className="text-blue-500" size={32} /> Platform Analytics
             </h1>
