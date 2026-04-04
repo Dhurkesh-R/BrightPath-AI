@@ -14,6 +14,13 @@ const getAuthHeaders = () => {
   return headers;
 };
 
+// Add this helper function at the bottom of api.js
+const handleGlobalLogout = () => {
+  localStorage.clear();
+  // This forces the whole browser to the login page
+  window.location.href = "/login"; 
+};
+
 // --- Core fetch utility with automatic token refresh ---
 // NOTE: This function needs to be used by all other authenticated endpoints.
 export const fetchWithRefresh = async (url, options = {}) => {
@@ -28,7 +35,6 @@ export const fetchWithRefresh = async (url, options = {}) => {
         handleGlobalLogout(); // Trigger logout if no refresh token
         throw new Error("Session expired.");
       }
-
       const refreshRes = await fetch(`${API_BASE}/refresh`, {
         method: "POST",
         headers: { Authorization: `Bearer ${refreshToken}` },
@@ -51,13 +57,6 @@ export const fetchWithRefresh = async (url, options = {}) => {
   } catch (err) {
     throw err;
   }
-};
-
-// Add this helper function at the bottom of api.js
-const handleGlobalLogout = () => {
-  localStorage.clear();
-  // This forces the whole browser to the login page
-  window.location.href = "/login"; 
 };
 // ------------------------------------------------------------------
 // AUTHENTICATION ENDPOINTS (Do not use fetchWithRefresh)
