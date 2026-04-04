@@ -49,6 +49,15 @@ export default function AdminStats() {
     getStats();
   }, []);
 
+    if (loading) {
+        return (
+            <div className={`flex items-center justify-center h-screen ${bg} ${textSecondary} w-full`}>
+                <Loader2 className="animate-spin mr-2 w-6 h-6 text-blue-500" /> 
+                <span className="text-lg">Loading admin stats...</span>
+            </div>
+        );
+    }
+
   return (
     <div className={`p-6 min-h-screen ${bg} ${text} md:ml-16`}>
       {/* PAGE HEADER */}
