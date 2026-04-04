@@ -26,6 +26,16 @@ const StatCard = ({ label, value, icon, subtext, color, border, inputBg, textSec
 );
 
 export default function AdminStats() {
+  if (!stats || !stats.user_overview) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10 opacity-50">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className={`h-32 animate-pulse rounded-2xl border ${themeClasses.border} ${themeClasses.inputBg}`} />
+        ))}
+      </div>
+    );
+  }
+  
   const {theme} = useTheme()
   const [stats, setStats] = useState([])
   const { border, inputBg, textSecondary } = getThemeClasses(theme);
@@ -46,28 +56,28 @@ export default function AdminStats() {
   const data = [
     {
       label: "Total Users",
-      value: stats.user_overview.total,
+      value: stats?.user_overview?.total,
       icon: <Users size={20} />,
       color: "bg-blue-500",
-      subtext: `${stats.user_overview.recent_growth} joined recently`
+      subtext: `${stats?.user_overview?.recent_growth} joined recently`
     },
     {
       label: "Students",
-      value: stats.user_overview.students,
+      value: stats?.user_overview?.students,
       icon: <GraduationCap size={20} />,
       color: "bg-green-500",
       subtext: "Preparing for Boards"
     },
     {
       label: "AI Interactions",
-      value: stats.engagement.total_ai_interactions,
+      value: stats?.engagement?.total_ai_interactions,
       icon: <MessageSquare size={20} />,
       color: "bg-purple-500",
       subtext: "Personalized Learning"
     },
     {
       label: "Goals Tracked",
-      value: stats.engagement.active_goals,
+      value: stats?.engagement?.active_goals,
       icon: <Target size={20} />,
       color: "bg-red-500",
       subtext: "Syllabus Progress"
