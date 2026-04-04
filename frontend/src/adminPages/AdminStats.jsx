@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, GraduationCap, MessageSquare, Target, 
-  TrendingUp, BarChart3, ChevronLeft, RefreshCw 
+  TrendingUp, BarChart3, ChevronLeft, RefreshCw , Loader2
 } from "lucide-react";
 import { Link } from "react-router-dom"; // For navigation back to dashboard
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
