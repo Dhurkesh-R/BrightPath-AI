@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from 'react';
-import { Users, GraduationCap, MessageSquare, Target, TrendingUp, UserCheck, Briefcase } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { Users, GraduationCap, MessageSquare, Target, TrendingUp } from "lucide-react";
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
-import { fetchAdminStats } from "../services/api"
+import { fetchAdminStats } from "../services/api";
 
 const StatCard = ({ label, value, icon, subtext, color, border, inputBg, textSecondary }) => (
   <div className={`p-5 rounded-2xl border ${border} ${inputBg} shadow-sm hover:shadow-md transition-all duration-300 group`}>
@@ -15,7 +15,7 @@ const StatCard = ({ label, value, icon, subtext, color, border, inputBg, textSec
     </div>
     
     <div>
-      <div className="text-3xl font-black tracking-tight">{value}</div>
+      <div className="text-3xl font-black tracking-tight">{value || 0}</div>
       <div className="text-xs font-bold uppercase tracking-widest opacity-60 mt-1">{label}</div>
       <div className={`text-[10px] mt-3 flex items-center gap-1 ${textSecondary}`}>
         <span className="w-1 h-1 rounded-full bg-current opacity-40"></span>
@@ -26,58 +26,58 @@ const StatCard = ({ label, value, icon, subtext, color, border, inputBg, textSec
 );
 
 export default function AdminStats() {
-  if (!stats || !stats.user_overview) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10 opacity-50">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className={`h-32 animate-pulse rounded-2xl border ${themeClasses.border} ${themeClasses.inputBg}`} />
-        ))}
-      </div>
-    );
-  }
-  
-  const {theme} = useTheme()
-  const [stats, setStats] = useState(null)
+  const { theme } = useTheme();
+  const [stats, setStats] = useState(null); // Changed to null initially
   const { border, inputBg, textSecondary } = getThemeClasses(theme);
 
   useEffect(() => {
     const getStats = async () => {
       try {
-        const info = await fetchAdminStats()
-        setStats(info)
+        const info = await fetchAdminStats();
+        setStats(info);
       } catch (err) {
-        console.error("failed to fetch stats", err)
+        console.error("failed to fetch stats", err);
       }
-    } 
+    }; 
+    getStats();
+  }, []);
 
-    getStats()
-  }, [])
+  // LOADING GUARD: Moved AFTER variable declarations
+  if (!stats || !stats.user_overview) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className={`h-32 animate-pulse rounded-2xl border ${border} ${inputBg} opacity-50`} />
+        ))}
+      </div>
+    );
+  }
 
   const data = [
     {
       label: "Total Users",
-      value: stats?.user_overview?.total,
+      value: stats.user_overview.total,
       icon: <Users size={20} />,
       color: "bg-blue-500",
-      subtext: `${stats?.user_overview?.recent_growth} joined recently`
+      subtext: `${stats.user_overview.recent_growth} joined recently`
     },
     {
       label: "Students",
-      value: stats?.user_overview?.students,
+      value: stats.user_overview.students,
       icon: <GraduationCap size={20} />,
       color: "bg-green-500",
       subtext: "Preparing for Boards"
     },
     {
       label: "AI Interactions",
-      value: stats?.engagement?.total_ai_interactions,
+      value: stats.engagement.total_ai_interactions,
       icon: <MessageSquare size={20} />,
       color: "bg-purple-500",
       subtext: "Personalized Learning"
     },
     {
       label: "Goals Tracked",
-      value: stats?.engagement?.active_goals,
+      value: stats.engagement.active_goals,
       icon: <Target size={20} />,
       color: "bg-red-500",
       subtext: "Syllabus Progress"
@@ -98,12 +98,11 @@ export default function AdminStats() {
         ))}
       </div>
       
-      {/* Placeholder for Future Charts */}
       <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-         <div className={`h-10 border-2 border-dashed ${border} rounded-2xl flex items-center justify-center opacity-30 text-xs font-bold uppercase tracking-widest`}>
+         <div className={`h-16 border-2 border-dashed ${border} rounded-2xl flex items-center justify-center opacity-30 text-[10px] font-bold uppercase tracking-widest`}>
             Role Distribution Chart (Coming Soon)
          </div>
-         <div className={`h-10 border-2 border-dashed ${border} rounded-2xl flex items-center justify-center opacity-30 text-xs font-bold uppercase tracking-widest`}>
+         <div className={`h-16 border-2 border-dashed ${border} rounded-2xl flex items-center justify-center opacity-30 text-[10px] font-bold uppercase tracking-widest`}>
             Activity Growth Trend (Coming Soon)
          </div>
       </div>
