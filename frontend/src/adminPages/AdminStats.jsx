@@ -37,7 +37,7 @@ export default function AdminStats() {
   }
   
   const {theme} = useTheme()
-  const [stats, setStats] = useState([])
+  const [stats, setStats] = useState(null)
   const { border, inputBg, textSecondary } = getThemeClasses(theme);
 
   useEffect(() => {
