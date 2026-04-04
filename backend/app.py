@@ -1799,5 +1799,41 @@ def verify_user(user_id):
         db.session.rollback()
         return jsonify({"error": "Database error occurred"}), 500
 
+@app.route("/admin/classes", methods=["GET", "POST"])
+@jwt_required()
+def manage_classes():
+    claims = get_jwt()
+    if claims.get("role") != "admin":
+        return jsonify({"error": "Admin access only"}), 403
+
+    if request.method == "POST":
+        data = request.json
+        new_class = SchoolClass(
+            grade=data.get("grade"),
+            section=data.get("section"),
+            stream=data.get("stream", "General"), # e.g., Science, Commerce
+            class_teacher_id=data.get("teacher_id")
+        )
+        db.session.add(new_class)
+        db.session.commit()
+        return jsonify({"message": "Class created successfully"}), 201
+
+    # GET Request: Join with Teacher table to show names
+    classes = db.session.query(SchoolClass, User).outerjoin(
+        User, SchoolClass.class_teacher_id == User.id
+    ).all()
+
+    result = []
+    for cls, teacher in classes:
+        result.append({
+            "id": cls.id,
+            "name": f"{cls.grade} - {cls.section}",
+            "stream": cls.stream,
+            "teacher": teacher.name if teacher else "Not Assigned",
+            "student_count": User.query.filter_by(role='student').filter(User.details.contains({'grade': cls.grade, 'section': cls.section})).count()
+        })
+
+    return jsonify(result), 200
+
 if __name__ == "__main__":
     socketio.run(app, debug=True)
