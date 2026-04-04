@@ -13,7 +13,7 @@ class User(db.Model):
     # Roles: 'student', 'teacher', 'parent', 'admin'
     role = db.Column(db.String(20), nullable=False, index=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    is_verified = db.Column(db.Boolean, default=True)
+    is_verified = db.Column(db.Boolean, default=False)
 
     # Relationships
     student_profile = db.relationship("StudentProfile", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
