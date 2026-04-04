@@ -1797,5 +1797,28 @@ def get_admin_stats():
 
     return jsonify(stats), 200
 
+@app.route("/admin/users/<int:user_id>/verify", methods=["PATCH"])
+@jwt_required()
+def verify_user(user_id):
+    claims = get_jwt()
+    if claims.get("role") != "admin":
+        return jsonify({"error": "Unauthorized. Admin access only."}), 403
+
+    user = User.query.get_or_404(user_id)
+    
+    # Toggle verification or set to True
+    user.is_verified = True
+    
+    try:
+        db.session.commit()
+        # Logic for sending a "Welcome/Verified" email could go here
+        return jsonify({
+            "message": f"User {user.name} has been verified successfully.",
+            "status": "success"
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Database error occurred"}), 500
+
 if __name__ == "__main__":
     socketio.run(app, debug=True)
