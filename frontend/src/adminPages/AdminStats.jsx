@@ -27,7 +27,7 @@ const StatCard = ({ label, value, icon, subtext, color, border, inputBg, textSec
 
 export default function AdminStats() {
   const { theme } = useTheme();
-  const [stats, setStats] = useState(null); // Changed to null initially
+  const [stats, setStats] = useState(null);
   const { border, inputBg, textSecondary } = getThemeClasses(theme);
 
   useEffect(() => {
@@ -42,12 +42,12 @@ export default function AdminStats() {
     getStats();
   }, []);
 
-  // LOADING GUARD: Moved AFTER variable declarations
   if (!stats || !stats.user_overview) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+      // Added px-4 to match your dashboard's mobile padding
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 px-0">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className={`h-32 animate-pulse rounded-2xl border ${border} ${inputBg} opacity-50`} />
+          <div key={i} className={`h-36 animate-pulse rounded-2xl border ${border} ${inputBg} opacity-50`} />
         ))}
       </div>
     );
@@ -85,7 +85,8 @@ export default function AdminStats() {
   ];
 
   return (
-    <section className="mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
+    // Changed mb-10 to mb-8 and added width constraints
+    <section className="mb-8 w-full animate-in fade-in slide-in-from-top-4 duration-700">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {data.map((stat, index) => (
           <StatCard 
@@ -98,11 +99,12 @@ export default function AdminStats() {
         ))}
       </div>
       
-      <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-         <div className={`h-16 border-2 border-dashed ${border} rounded-2xl flex items-center justify-center opacity-30 text-[10px] font-bold uppercase tracking-widest`}>
+      {/* Chart Placeholders with better height for balance */}
+      <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+         <div className={`h-20 border-2 border-dashed ${border} rounded-2xl flex items-center justify-center opacity-20 text-[10px] font-bold uppercase tracking-widest`}>
             Role Distribution Chart (Coming Soon)
          </div>
-         <div className={`h-16 border-2 border-dashed ${border} rounded-2xl flex items-center justify-center opacity-30 text-[10px] font-bold uppercase tracking-widest`}>
+         <div className={`h-20 border-2 border-dashed ${border} rounded-2xl flex items-center justify-center opacity-20 text-[10px] font-bold uppercase tracking-widest`}>
             Activity Growth Trend (Coming Soon)
          </div>
       </div>
