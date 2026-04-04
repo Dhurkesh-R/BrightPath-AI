@@ -775,3 +775,12 @@ export async function fetchAdminStats() {
   if (!res.ok) throw new Error("Failed to fetch statistics");
   return res.json();
 }
+
+export async function verifyUserAccount(userId) {
+  const res = await fetchWithRefresh(`${BASE_URL}/admin/users/${userId}/verify`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to verify user");
+  return res.json();
+}
