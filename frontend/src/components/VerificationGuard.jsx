@@ -7,10 +7,7 @@ export default function VerificationGuard({ children }) {
   const { user, logout } = useAuth();
   const parsedUser = JSON.parse(user)
   const isVerified = parsedUser?.is_verified
-
-  console.log(parsedUser)
-  console.log(user)
-
+  
   if (user && !isVerified) {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-6">
