@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Users, Trash2, Search, ShieldCheck, GraduationCap, UserCircle, Edit3, X, Check } from "lucide-react";
+import { Users, Trash2, Search, ShieldCheck, GraduationCap, UserCircle, Edit3, X, Check, Loader2 } from "lucide-react";
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
 import { fetchUsers, deleteUser, updateStudentGrade } from "../services/api"
 import VerifyButton from "./VerificationBadge"
@@ -34,11 +34,14 @@ export default function AdminDashboard() {
 
   const getUsers = async () => {
       try {
+        setLoading(true)
         const data = await fetchUsers()
         setUsers(data)
       } catch (err) {
       console.error("Failed to fetch users", err);
-      };
+      } finally {
+        setLoading(false)
+      }
     }
 
   useEffect(() => {
@@ -72,6 +75,15 @@ export default function AdminDashboard() {
     const matchesFilter = activeFilter === "all" || u.role === activeFilter;
     return matchesSearch && matchesFilter;
   });
+
+  if (loading) {
+        return (
+            <div className={`flex items-center justify-center h-screen ${bg} ${textSecondary} w-full`}>
+                <Loader2 className="animate-spin mr-2 w-6 h-6 text-blue-500" /> 
+                <span className="text-lg">Loading admin dashboard...</span>
+            </div>
+        );
+    }
 
   return (
     <div className={`p-4 min-h-screen ${bg} ${text} md:ml-16`}>
