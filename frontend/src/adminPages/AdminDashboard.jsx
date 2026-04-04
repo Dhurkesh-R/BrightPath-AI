@@ -199,20 +199,24 @@ export default function AdminDashboard() {
                         <Edit3 size={18} className="group-hover:scale-110" />
                       </button>
                     )}
-                    <button 
-                      onClick={() => handleDelete(u.id, u.name)}
-                      className="p-2 hover:bg-red-500/10 rounded-lg text-red-500 transition-all group"
-                      title="Delete User"
-                    >
-                      <Trash2 size={18} className="group-hover:scale-110" />
-                    </button>
+                      {u.role !== 'admin' && (
+                      <button 
+                        onClick={() => handleDelete(u.id, u.name)}
+                        className="p-2 hover:bg-red-500/10 rounded-lg text-red-500 transition-all group"
+                        title="Delete User"
+                      >
+                        <Trash2 size={18} className="group-hover:scale-110" />
+                      </button>
+                    )}
                   </td>
                   <td className="p-4">
-                    <VerifyButton 
-                      userId={u.id} 
-                      isVerified={u.is_verified} 
-                      onRefresh={getUsers} // Calls your existing fetchUsers function
-                    />
+                    {u.role !== 'admin' && (
+                      <VerifyButton 
+                        userId={u.id} 
+                        isVerified={u.is_verified} 
+                        onRefresh={getUsers} // Calls your existing fetchUsers function
+                      />
+                    )}
                   </td>
                 </tr>
               ))}
