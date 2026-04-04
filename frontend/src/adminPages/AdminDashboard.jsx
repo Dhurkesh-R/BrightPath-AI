@@ -32,8 +32,7 @@ export default function AdminDashboard() {
     }
   };
 
-  useEffect(() => {
-    const getUsers = async () => {
+  const getUsers = async () => {
       try {
         const data = await fetchUsers()
         setUsers(data)
@@ -42,6 +41,7 @@ export default function AdminDashboard() {
       };
     }
 
+  useEffect(() => {
     getUsers();
   }, []);
 
