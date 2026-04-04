@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Users, Trash2, Search, ShieldCheck, GraduationCap, UserCircle, Edit3, X, Check } from "lucide-react";
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
 import { fetchUsers, deleteUser, updateStudentGrade } from "../services/api"
+import { VerifyButton } from "./VerificationBadge"
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
