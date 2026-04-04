@@ -5,8 +5,9 @@ import { useAuth } from '../contexts/AuthContext'; // Assuming you have an AuthC
 
 export default function VerificationGuard({ children }) {
   const { user, logout } = useAuth();
+  const isVerified = JSON.parse(user).is_verified
 
-  if (user && !user.is_verified) {
+  if (user && !isVerified) {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-6">
         <div className="max-w-md w-full bg-white dark:bg-gray-900 rounded-3xl p-8 border border-red-500/30 text-center shadow-2xl animate-in zoom-in duration-300">
