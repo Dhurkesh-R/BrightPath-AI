@@ -1835,5 +1835,21 @@ def manage_classes():
 
     return jsonify(result), 200
 
+@app.route("/admin/teachers/available", methods=["GET"])
+@jwt_required()
+def get_available_teachers():
+    # Only admins should see this list
+    claims = get_jwt()
+    if claims.get("role") != "admin":
+        return jsonify({"error": "Unauthorized"}), 403
+
+    # Fetch all teachers
+    teachers = User.query.filter_by(role='teacher').all()
+    
+    return jsonify([
+        {"id": t.id, "name": t.name} for t in teachers
+    ]), 200
+
+
 if __name__ == "__main__":
     socketio.run(app, debug=True)
