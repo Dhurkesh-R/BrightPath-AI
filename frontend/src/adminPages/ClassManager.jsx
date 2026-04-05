@@ -51,7 +51,7 @@ export default function ClassManager() {
           <p className={`mt-1 font-bold opacity-60 ${textSecondary}`}>Manage 10th Grade Sections & Faculty</p>
         </div>
 
-        <button className="flex items-center gap-2 px-6 py-3 bg-black dark:bg-white text-white dark:text-black font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform shadow-[4px_4px_0px_0px_rgba(37,99,235,1)]" onClick={() => setIsModalOpen(true)>
+        <button className="flex items-center gap-2 px-6 py-3 bg-black dark:bg-white text-white dark:text-black font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform shadow-[4px_4px_0px_0px_rgba(37,99,235,1)]" onClick={() => setIsModalOpen(true)}>
           <Plus size={18} /> Create New Class
         </button>
       </header>
