@@ -23,7 +23,7 @@ const handleGlobalLogout = () => {
 
 // --- Core fetch utility with automatic token refresh ---
 // NOTE: This function needs to be used by all other authenticated endpoints.
-export const fetchWithRefresh = async (url, options = {}) => {
+const fetchWithRefresh = async (url, options = {}) => {
   try {
     let res = await fetch(url, options);
 
