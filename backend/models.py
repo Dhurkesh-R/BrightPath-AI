@@ -291,3 +291,31 @@ class Notification(db.Model):
     severity = db.Column(db.String(20))  # info, warning, critical
     read = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class SchoolClass(db.Model):
+    __tablename__ = 'school_classes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    grade = db.Column(db.String(10), nullable=False)  # e.g., "10"
+    section = db.Column(db.String(5), nullable=False) # e.g., "A"
+    stream = db.Column(db.String(50), default="General") # e.g., "Science", "Commerce"
+    
+    # Foreign Key for Class Teacher
+    class_teacher_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    
+    # Timestamps for auditing
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships
+    # This allows you to do: school_class.teacher.name
+    teacher = db.relationship('User', foreign_keys=[class_teacher_id], backref='managed_class')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "grade": self.grade,
+            "section": self.section,
+            "stream": self.stream,
+            "teacher_id": self.class_teacher_id,
+            "display_name": f"{self.grade} - {self.section}"
+        }
