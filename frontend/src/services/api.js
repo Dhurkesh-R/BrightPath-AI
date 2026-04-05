@@ -806,3 +806,13 @@ export async function createClass(classData) {
   return await res.json();
 }
 
+export async function fetchTeachers() {
+  const res = await fetchwithRefresh(`${BASE_URL}/admin/teachers/available`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to fetch teachers");
+  return await res.json();
+}
+
+
