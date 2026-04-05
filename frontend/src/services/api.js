@@ -785,7 +785,7 @@ export async function verifyUserAccount(userId) {
 }
 
 export async function fetchClasses() {
-  const res = await fetchwithRefresh(`${BASE_URL}/admin/classes`, {
+  const res = await fetchWithRefresh(`${BASE_URL}/admin/classes`, {
     method: "GET",
     headers: getAuthHeaders(),
   });
@@ -794,7 +794,7 @@ export async function fetchClasses() {
 }
 
 export async function createClass(classData) {
-  const res = await fetchwithRefresh(`${BASE_URL}/admin/classes`, {
+  const res = await fetchWithRefresh(`${BASE_URL}/admin/classes`, {
     method: "POST",
     headers: {
       ...getAuthHeaders(),
