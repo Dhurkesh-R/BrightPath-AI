@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutGrid, Plus, Users, GraduationCap, ArrowRight } from "lucide-react";
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
-import { getStudentDashboard } from "../services/api";
+import { fetchClasses } from "../services/api";
 import CreateClassModal from "../components/CreateClassModal";
 
 export default function ClassManager() {
@@ -18,7 +18,6 @@ export default function ClassManager() {
         setClasses(data);
       } catch (err) {
         console.error("Failed to load classes:", err);
-        setError("Could not load classes. Please try again.");
       } finally {
         setLoading(false);
       }
