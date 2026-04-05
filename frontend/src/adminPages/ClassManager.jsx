@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutGrid, Plus, Users, GraduationCap, ArrowRight } from "lucide-react";
+import { LayoutGrid, Plus, Users, GraduationCap, ArrowRight, Loader2 } from "lucide-react";
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
 import { fetchClasses } from "../services/api";
 import CreateClassModal from "../components/CreateClassModal";
