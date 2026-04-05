@@ -16,7 +16,8 @@ import {
   FileText,
   TrendingUp,
   Lightbulb,
-  Bell
+  Bell,
+  LayoutGrid
 } from "lucide-react";
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -67,6 +68,7 @@ const topMenu = userRole === "student"
   : [
     { name: "Dashboard", icon: LayoutDashboard, path: "/" },
     { name: "Stats", icon: ChartColumn, path: "/stats" },
+    { name: "Classes", icon: LayoutGrid, path: "/classes" },
   ];
 
 
