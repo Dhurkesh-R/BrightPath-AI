@@ -793,3 +793,16 @@ export async function fetchClasses() {
   return await res.json();
 }
 
+export async function createClass(classData) {
+  const res = await fetchwithRefresh(`${BASE_URL}/admin/classes`, {
+    method: "POST",
+    headers: {
+      ...getAuthHeaders(),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(classData),
+  });
+  if (!res.ok) throw new Error("Failed to create class");
+  return await res.json();
+}
+
