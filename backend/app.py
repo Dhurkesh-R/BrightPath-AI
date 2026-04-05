@@ -1830,7 +1830,7 @@ def manage_classes():
             "name": f"{cls.grade} - {cls.section}",
             "stream": cls.stream,
             "teacher": teacher.name if teacher else "Not Assigned",
-            "student_count": User.query.filter_by(role='student').filter(User.details.contains({'grade': cls.grade, 'section': cls.section})).count()
+            "student_count": len([s for s in cls.students if s.role == 'student'])
         })
 
     return jsonify(result), 200
