@@ -807,7 +807,7 @@ export async function createClass(classData) {
 }
 
 export async function fetchTeachers() {
-  const res = await fetchwithRefresh(`${BASE_URL}/admin/teachers/available`, {
+  const res = await fetchWithRefresh(`${BASE_URL}/admin/teachers/available`, {
     method: "GET",
     headers: getAuthHeaders(),
   });
