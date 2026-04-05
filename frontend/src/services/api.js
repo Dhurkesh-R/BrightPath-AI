@@ -783,3 +783,13 @@ export async function verifyUserAccount(userId) {
   if (!res.ok) throw new Error("Failed to verify user");
   return res.json();
 }
+
+export async function fetchClasses() {
+  const res = await fetchwithRefresh(`${BASE_URL}/admin/classes`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to fetch classes");
+  return await res.json();
+}
+
