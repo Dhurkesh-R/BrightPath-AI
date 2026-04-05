@@ -1,22 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutGrid, Plus, Users, GraduationCap, ArrowRight } from "lucide-react";
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
+import { getStudentDashboard } from "../services/api";
+import CreateClassModal from "../components/CreateClassModal";
 
 export default function ClassManager() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [classes, setClasses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { theme } = useTheme();
   const { bg, text, border, inputBg, textSecondary } = getThemeClasses(theme);
 
+  const getClasses = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchClasses();
+        setClasses(data);
+      } catch (err) {
+        console.error("Failed to load classes:", err);
+        setError("Could not load classes. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
   useEffect(() => {
-    // Replace with your actual API call: fetchClasses()
-    const mockData = [
-      { id: 1, name: "10 - A", stream: "CBSE Core", teacher: "Ms. Sharma", student_count: 32 },
-      { id: 2, name: "10 - B", stream: "CBSE Core", teacher: "Mr. Gupta", student_count: 28 },
-    ];
-    setClasses(mockData);
-    setLoading(false);
+    getClasses();
   }, []);
+  
+  const handleRefresh = async () => {
+    getClasses();
+  };
+
+  if (loading) {
+        return (
+            <div className={`flex items-center justify-center h-screen ${bg} ${textSecondary} w-full`}>
+                <Loader2 className="animate-spin mr-2 w-6 h-6 text-blue-500" /> 
+                <span className="text-lg">Loading classes...</span>
+            </div>
+        );
+  }
 
   return (
     <div className={`p-6 min-h-screen ${bg} ${text} md:ml-16`}>
@@ -28,10 +51,17 @@ export default function ClassManager() {
           <p className={`mt-1 font-bold opacity-60 ${textSecondary}`}>Manage 10th Grade Sections & Faculty</p>
         </div>
 
-        <button className="flex items-center gap-2 px-6 py-3 bg-black dark:bg-white text-white dark:text-black font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform shadow-[4px_4px_0px_0px_rgba(37,99,235,1)]">
+        <button className="flex items-center gap-2 px-6 py-3 bg-black dark:bg-white text-white dark:text-black font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform shadow-[4px_4px_0px_0px_rgba(37,99,235,1)]" onClick={() => setIsModalOpen(true)>
           <Plus size={18} /> Create New Class
         </button>
       </header>
+
+      <CreateClassModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onRefresh={handleRefresh}
+        themeProps={{ border: 'border-gray-300', inputBg: 'bg-white' }}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {classes.map((cls) => (
