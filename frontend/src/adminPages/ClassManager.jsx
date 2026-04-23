@@ -103,7 +103,7 @@ export default function ClassManager() {
           </div>
         ))}
       </div>
-    </div>
       )}
+    </div>
   );
 }
