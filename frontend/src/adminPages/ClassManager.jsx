@@ -82,9 +82,14 @@ export default function ClassManager() {
                 {cls.stream}
               </div>
               <button className="opacity-30 hover:opacity-100 transition-opacity">
-                <ArrowRight size={20} onClick={() => navigate(`/classes/${cls.id}`)} className="cursor-pointer group p-6 ..."/>
+                <ArrowRight size={20} />
               </button>
             </div>
+            
+            <div 
+              onClick={() => navigate(`/classes/${cls.id}`)}
+              className="cursor-pointer group p-6 ..."
+            >
 
             <h2 className="text-5xl font-black mb-1">{cls.name}</h2>
             <div className="flex items-center gap-2 mb-6 opacity-60">
