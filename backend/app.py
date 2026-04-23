@@ -1850,6 +1850,37 @@ def get_available_teachers():
         {"id": t.id, "name": t.name} for t in teachers
     ]), 200
 
+# GET specific class details, PUT to update, DELETE to remove
+@app.route('/api/classes/<int:class_id>', methods=['GET', 'PUT', 'DELETE'])
+def manage_class(class_id):
+    school_class = SchoolClass.query.get_or_404(class_id)
+
+    if request.method == 'GET':
+        # Get students assigned to this class via the 'students' backref in User model
+        students = [
+            {"id": s.id, "name": s.name, "email": s.email} 
+            for s in school_class.students
+        ]
+        
+        data = school_class.to_dict()
+        data['teacher_name'] = school_class.teacher.name if school_class.teacher else "No Teacher Assigned"
+        data['students'] = students
+        return jsonify(data)
+
+    if request.method == 'PUT':
+        data = request.json
+        school_class.grade = data.get('grade', school_class.grade)
+        school_class.section = data.get('section', school_class.section)
+        school_class.stream = data.get('stream', school_class.stream)
+        school_class.class_teacher_id = data.get('teacher_id', school_class.class_teacher_id)
+        
+        db.session.commit()
+        return jsonify({"message": "Class updated successfully"})
+
+    if request.method == 'DELETE':
+        db.session.delete(school_class)
+        db.session.commit()
+        return jsonify({"message": "Class deleted successfully"})
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)
