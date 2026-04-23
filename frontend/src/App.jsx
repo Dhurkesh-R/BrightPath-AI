@@ -161,7 +161,7 @@ const App = () => {
                         {/* Admin specific routes */}
                         <Route path="/stats" element={<PrivateRoute><LayoutWrapper><AdminStats /></LayoutWrapper></PrivateRoute>} />
                         <Route path="/classes" element={<PrivateRoute><LayoutWrapper><ClassManager /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/classes/:Id" element={<PrivateRoute><LayoutWrapper><StudentProfile /></LayoutWrapper></PrivateRoute>} />
+                        <Route path="/classes/:Id" element={<PrivateRoute><LayoutWrapper><ClassDetails /></LayoutWrapper></PrivateRoute>} />
                     </Routes>
                 </VerificationGuard>
             </AuthProvider>
