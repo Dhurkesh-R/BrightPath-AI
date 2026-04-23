@@ -104,12 +104,12 @@ export default function ClassDetails() {
         ) : (
           <>
             <h1 className="text-7xl font-black uppercase tracking-tighter mb-2">
-              Class {cls.grade}-{cls.section}
+              Class {cls?.grade}-{cls?.section}
             </h1>
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2 font-bold opacity-70">
                 <GraduationCap className="text-blue-600" />
-                <span>TEACHER: {cls.teacher_name}</span>
+                <span>TEACHER: {cls?.teacher_name}</span>
               </div>
               <div className="flex items-center gap-2 font-bold opacity-70">
                 <Users className="text-blue-600" />
