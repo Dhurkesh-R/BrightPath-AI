@@ -61,7 +61,13 @@ export default function ClassManager() {
         onRefresh={handleRefresh}
         themeProps={{ border: 'border-gray-300', inputBg: 'bg-white' }}
       />
-
+      
+      {classes.length === 0 ? (
+        <div className={`text-center py-20 border-4 border-dashed ${border} opacity-50`}>
+          <p className="text-2xl font-black uppercase">No Classes Found</p>
+          <p className="text-sm">Click "Create New Class" to get started.</p>
+        </div>
+      ) : (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {classes.map((cls) => (
           <div 
@@ -98,5 +104,6 @@ export default function ClassManager() {
         ))}
       </div>
     </div>
+      )}
   );
 }
