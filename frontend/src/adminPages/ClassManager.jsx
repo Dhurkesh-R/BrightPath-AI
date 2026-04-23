@@ -3,6 +3,8 @@ import { LayoutGrid, Plus, Users, GraduationCap, ArrowRight, Loader2 } from "luc
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
 import { fetchClasses } from "../services/api";
 import CreateClassModal from "../components/CreateClassModal";
+import { useNavigate } from 'react-router-dom';
+
 
 export default function ClassManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -10,6 +12,7 @@ export default function ClassManager() {
   const [loading, setLoading] = useState(false);
   const { theme } = useTheme();
   const { bg, text, border, inputBg, textSecondary } = getThemeClasses(theme);
+  const navigate = useNavigate();
 
   const getClasses = async () => {
       try {
@@ -79,7 +82,7 @@ export default function ClassManager() {
                 {cls.stream}
               </div>
               <button className="opacity-30 hover:opacity-100 transition-opacity">
-                <ArrowRight size={20} />
+                <ArrowRight size={20} onClick={() => navigate(`/classes/${cls.id}`) className="cursor-pointer group p-6 ..."/>
               </button>
             </div>
 
