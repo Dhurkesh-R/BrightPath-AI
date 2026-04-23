@@ -40,6 +40,7 @@ import ParentNotifications from "./parentPages/Notifications";
 import AdminDashboard from "./adminPages/AdminDashboard"
 import AdminStats from "./adminPages/AdminStats"
 import ClassManager from "./adminPages/ClassManager"
+import ClassDetails from "./adminPages/ClassDetails"
 
 const App = () => {
     const { theme } = useTheme();
@@ -160,6 +161,7 @@ const App = () => {
                         {/* Admin specific routes */}
                         <Route path="/stats" element={<PrivateRoute><LayoutWrapper><AdminStats /></LayoutWrapper></PrivateRoute>} />
                         <Route path="/classes" element={<PrivateRoute><LayoutWrapper><ClassManager /></LayoutWrapper></PrivateRoute>} />
+                        <Route path="/classes/:Id" element={<PrivateRoute><LayoutWrapper><StudentProfile /></LayoutWrapper></PrivateRoute>} />
                     </Routes>
                 </VerificationGuard>
             </AuthProvider>
