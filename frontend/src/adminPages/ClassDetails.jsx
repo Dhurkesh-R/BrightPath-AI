@@ -113,7 +113,7 @@ export default function ClassDetails() {
               </div>
               <div className="flex items-center gap-2 font-bold opacity-70">
                 <Users className="text-blue-600" />
-                <span>{cls.students?.length || 0} Students Enrolled</span>
+                <span>{cls?.students?.length || 0} Students Enrolled</span>
               </div>
             </div>
           </>
@@ -123,7 +123,7 @@ export default function ClassDetails() {
       {/* Student List Section */}
       <h3 className="text-2xl font-black uppercase mb-6 tracking-tight">Student Roster</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {cls.students?.map(student => (
+        {cls?.students?.map(student => (
           <div key={student.id} className={`p-4 border-2 border-black dark:border-white flex items-center justify-between ${inputBg}`}>
             <div>
               <p className="font-black uppercase">{student.name}</p>
