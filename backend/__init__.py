@@ -31,6 +31,14 @@ def create_app():
     app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
     app.config["JWT_CSRF_PROTECT"] = False  # Optional, but helpful for APIs
 
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        "pool_pre_ping": True,  # Checks if connection is alive before sending queries
+        "pool_recycle": 300,    # Closes and replaces connections every 5 minutes
+        "pool_timeout": 30,     # How long to wait for a connection from the pool
+        "pool_size": 10,        # Number of persistent connections
+        "max_overflow": 20,     # Extra connections allowed during peak load
+    }
+
     jwt = JWTManager(app)  # Initialize directly with app
 
     # ✅ JWT Error Handlers
