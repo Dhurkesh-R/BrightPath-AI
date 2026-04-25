@@ -1851,7 +1851,7 @@ def get_available_teachers():
     ]), 200
 
 # GET specific class details, PUT to update, DELETE to remove
-@app.route('/api/classes/<int:class_id>', methods=['GET', 'PUT', 'DELETE'])
+@app.route('/admin/classes/<int:class_id>', methods=['GET', 'PUT', 'DELETE'])
 def manage_class(class_id):
     school_class = SchoolClass.query.get_or_404(class_id)
 
