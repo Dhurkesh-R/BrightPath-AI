@@ -815,4 +815,11 @@ export async function fetchTeachers() {
   return await res.json();
 }
 
-
+export async function fetchClasses(Id) {
+  const res = await fetchWithRefresh(`${BASE_URL}/admin/classes/${Id}`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to fetch classes");
+  return await res.json();
+}
