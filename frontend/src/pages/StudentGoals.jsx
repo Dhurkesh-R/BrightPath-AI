@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { getGoals, createGoal, updateGoal, deleteGoal } from "../services/api";
+import React, { useState, useEffect, useParams } from "react";
+import { getStudentGoals } from "../services/api";
 import { Plus, Edit2, Trash2, X, Loader2 } from "lucide-react";
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext";
 
-export default function Goals({ userId }) {
+export default function Goals() {
+  const { userId } = useParams();
   const { theme } = useTheme();
   const classes = getThemeClasses(theme);
 
@@ -25,7 +26,7 @@ export default function Goals({ userId }) {
       setLoading(true);
       setError(null);
       try {
-        const data = await getGoals();
+        const data = await getStudentGoals(userId);
         if (!mounted) return;
         setGoals(Array.isArray(data) ? data : []);
       } catch (err) {
