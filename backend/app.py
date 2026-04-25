@@ -268,7 +268,7 @@ def fetch_activities():
     activities = Activity.query.filter_by(user_id=user_id).all()
     return jsonify([activity.to_dict() for activity in activities]), 200
 
-@app.route("students/<int:student_id>/activities", methods=["GET"])
+@app.route("/students/<int:student_id>/activities", methods=["GET"])
 @jwt_required()
 def fetch_activities(student_id):
     activities = Activity.query.filter_by(user_id=student_id).all()
@@ -484,7 +484,7 @@ def get_goals():
     goals = Goal.query.filter_by(user_id=user_id).all()
     return jsonify([goal.to_dict() for goal in goals]), 200
 
-@app.route("students/<int:student_id>/goals", methods=["GET"])
+@app.route("/students/<int:student_id>/goals", methods=["GET"])
 @jwt_required()
 def get_goals(student_id):
     goals = Goal.query.filter_by(user_id=student_id).all()
