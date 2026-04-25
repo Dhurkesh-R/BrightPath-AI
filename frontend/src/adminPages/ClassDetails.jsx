@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Users, GraduationCap, ArrowLeft, Trash2, Edit3, Loader2, Save, X } from "lucide-react";
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
-import { fetchClasses, deleteClass, updateClass } from "../services/api"; // Assuming your api service has fetch/put/delete
+import { fetchClass, deleteClass, updateClass } from "../services/api"; // Assuming your api service has fetch/put/delete
 
 export default function ClassDetails() {
   const { id } = useParams();
@@ -21,7 +21,7 @@ export default function ClassDetails() {
 
   const fetchClassData = async () => {
     try {
-      const data = await fetchClasses(id);
+      const data = await fetchClass(id);
       setCls(data);
       setEditForm(data);
     } catch (err) {
