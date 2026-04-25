@@ -253,6 +253,19 @@ export const fetchActivities = async () => {
   return await res.json(); // ✅ return array directly
 };
 
+export const fetchStudentActivities = async (userId) => {
+  const res = await fetchWithRefresh(`${BASE_URL}/students/${userId}/activities`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch activities. Status: ${res.status}`);
+  }
+
+  return await res.json(); // ✅ return array directly
+};
+
 
 export const addActivity = async (activity) => {
   const res = await fetchWithRefresh(`${BASE_URL}/activities`, {
@@ -364,6 +377,15 @@ export async function updateStudentGrade(userId, grade, section) {
 // Goals API
 export const getGoals = async () => {
   const res = await fetchWithRefresh(`${BASE_URL}/goals`, {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+    if (!res.ok) throw new Error("Failed to load goals");
+    return res.json();
+};
+
+export const getStudentGoals = async () => {
+  const res = await fetchWithRefresh(`${BASE_URL}/students/${userId}/goals`, {
         method: "GET",
         headers: getAuthHeaders(),
       });
