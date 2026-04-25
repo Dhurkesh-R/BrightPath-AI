@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Users, GraduationCap, ArrowLeft, Trash2, Edit3, Loader2, Save, X } from "lucide-react";
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
-import { api } from "../services/api"; // Assuming your api service has fetch/put/delete
+import { fetchClasses, deleteClass, updateClass } from "../services/api"; // Assuming your api service has fetch/put/delete
 
 export default function ClassDetails() {
   const { id } = useParams();
@@ -21,9 +21,7 @@ export default function ClassDetails() {
 
   const fetchClassData = async () => {
     try {
-      // Replace with your actual API call: e.g., axios.get(`/api/classes/${id}`)
-      const res = await fetch(`/api/classes/${id}`);
-      const data = await res.json();
+      const data = await fetchClasses(id);
       setCls(data);
       setEditForm(data);
     } catch (err) {
@@ -36,7 +34,7 @@ export default function ClassDetails() {
   const handleDelete = async () => {
     if (window.confirm("Are you sure? This will remove the class registry permanently.")) {
       try {
-        await fetch(`/api/classes/${id}`, { method: 'DELETE' });
+        await deleteClass(id)
         navigate('/classes'); // Go back to manager
       } catch (err) {
         alert("Failed to delete");
@@ -46,11 +44,7 @@ export default function ClassDetails() {
 
   const handleUpdate = async () => {
     try {
-      await fetch(`/api/classes/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editForm)
-      });
+      await updateClass(id, editForm)
       setIsEditing(false);
       fetchClassData();
     } catch (err) {
