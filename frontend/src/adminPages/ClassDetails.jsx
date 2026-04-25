@@ -106,7 +106,7 @@ export default function ClassDetails() {
             />
             <select 
               className={`text-5xl font-black uppercase w-full p-2 border-2 border-black ${bg}`}
-              onChange={(e) => setFormData({...editForm, teacher_id: e.target.value})}
+              onChange={(e) => setEditForm({...editForm, teacher_id: e.target.value})}
               value={editForm.teacher_id}
             >
               <option value="">Select Class Teacher</option>
