@@ -17,7 +17,7 @@ export default function ClassDetails() {
 
   useEffect(() => {
     fetchClassData();
-  }, [id]);
+  }, [Id]);
 
   const fetchClassData = async () => {
     try {
