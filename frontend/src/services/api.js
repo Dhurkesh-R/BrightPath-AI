@@ -815,7 +815,7 @@ export async function fetchTeachers() {
   return await res.json();
 }
 
-export async function fetchClasses(Id) {
+export async function fetchClass(Id) {
   const res = await fetchWithRefresh(`${BASE_URL}/admin/classes/${Id}`, {
     method: "GET",
     headers: getAuthHeaders(),
