@@ -834,13 +834,13 @@ export async function deleteClass(Id) {
       return data;
 }
 
-export async function updateStatus(Id, editForm) {
+export async function updateClass(Id, editForm) {
   const res = await fetchWithRefresh(`${BASE_URL}/admin/classes/${Id}`, {
     method: "PUT",
     headers: getAuthHeaders(),
     body: JSON.stringify(editForm),
   });
-  if (!res.ok) throw new Error("Failed to update status");
+  if (!res.ok) throw new Error("Failed to update class");
   const data = await res.json();
   return data;
 }
