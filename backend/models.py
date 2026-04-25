@@ -311,6 +311,18 @@ class SchoolClass(db.Model):
     # Relationships
     # This allows you to do: school_class.teacher.name
     teacher = db.relationship('User', foreign_keys=[class_teacher_id], backref='managed_class')
+    @property
+    def students(self):
+        return (
+            db.session.query(User)
+            .join(StudentProfile, StudentProfile.user_id == User.id)
+            .filter(
+                User.role == 'student',
+                StudentProfile.grade == self.grade,
+                StudentProfile.section == self.section
+            )
+            .all()
+        )
 
     def to_dict(self):
         return {
