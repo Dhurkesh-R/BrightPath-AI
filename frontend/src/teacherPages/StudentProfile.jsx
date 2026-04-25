@@ -24,6 +24,9 @@ export default function StudentProfile() {
     const [emotions, setEmotions] = useState(null);
     const [health, setHealth] = useState(null);
     const [successPath, setSuccessPath] = useState(null);
+    const navigate = useNavigate();
+    const [recentActivities, setRecentActivities] = useState([]);
+    const [recentGoals, setRecentGoals] = useState([]);
 
     // 2. Dynamic Class Calculation
     const { bg, text, border, textSecondary, progressBarBg } = getThemeClasses(theme);
