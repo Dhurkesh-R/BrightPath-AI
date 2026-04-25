@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useParams } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Activity,
   Book,
@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useParams } from "react-router-dom";
 
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card.jsx";
 import { Button } from "../ui/button.jsx";
