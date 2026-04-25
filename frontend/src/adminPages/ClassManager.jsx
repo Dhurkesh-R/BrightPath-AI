@@ -83,7 +83,7 @@ export default function ClassManager() {
               </div>
               <div 
                 onClick={() => navigate(`/classes/${cls.id}`)}
-                className="cursor-pointer group p-6 ..."
+                className="cursor-pointer group ..."
               >
                 <button className="opacity-30 hover:opacity-100 transition-opacity">
                   <ArrowRight size={20} />
