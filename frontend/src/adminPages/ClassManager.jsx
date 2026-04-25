@@ -11,7 +11,7 @@ export default function ClassManager() {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(false);
   const { theme } = useTheme();
-  const { bg, text, border, inputBg, textSecondary } = getThemeClasses(theme);
+  const { bg, text, border, inputBg, textSecondary, cardBg } = getThemeClasses(theme);
   const navigate = useNavigate();
 
   const getClasses = async () => {
