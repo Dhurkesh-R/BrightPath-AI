@@ -14,7 +14,7 @@ export default function AnnouncementManager() {
         <h1 className="text-4xl font-black uppercase tracking-tighter flex items-center gap-3">
           <Megaphone className="text-yellow-500" size={36} /> Broadcast Center
         </h1>
-        <p className={`font-bold opacity-60 ${textSecondary}`}>Send updates to the BrightPathAI community</p>
+        <p className={`font-bold opacity-60 ${textSecondary}`}>Send updates to the School community</p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
