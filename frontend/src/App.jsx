@@ -41,6 +41,8 @@ import AdminDashboard from "./adminPages/AdminDashboard"
 import AdminStats from "./adminPages/AdminStats"
 import ClassManager from "./adminPages/ClassManager"
 import ClassDetails from "./adminPages/ClassDetails"
+import StudentActivities from "./pages/StudentActivities"
+import StudentGoals from "./pages/StudentGoals"
 
 const App = () => {
     const { theme } = useTheme();
@@ -140,6 +142,8 @@ const App = () => {
                         <Route path="/analytics" element={<PrivateRoute><LayoutWrapper><Analytics /></LayoutWrapper></PrivateRoute>} />
                         <Route path="/students" element={<PrivateRoute><LayoutWrapper><Students /></LayoutWrapper></PrivateRoute>} />
                         <Route path="/students/:userId" element={<PrivateRoute><LayoutWrapper><StudentProfile /></LayoutWrapper></PrivateRoute>} />
+                        <Route path="/students/:userId/goals" element={<PrivateRoute><LayoutWrapper><StudentGoals /></LayoutWrapper></PrivateRoute>} />
+                        <Route path="/students/:userId/activities" element={<PrivateRoute><LayoutWrapper><StudentActivities /></LayoutWrapper></PrivateRoute>} />
                         <Route path="/interventions" element={<PrivateRoute><LayoutWrapper><TeacherInterventions /></LayoutWrapper></PrivateRoute>} />
                         <Route path="/assignments" element={<PrivateRoute><LayoutWrapper><TeacherAssignments /></LayoutWrapper></PrivateRoute>} />
                         
