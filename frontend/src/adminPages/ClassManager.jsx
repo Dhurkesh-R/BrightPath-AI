@@ -90,11 +90,6 @@ export default function ClassManager() {
                 </button>
               </div>
             </div>
-            
-            
-              onClick={() => navigate(`/classes/${cls.id}`)}
-              className="cursor-pointer group p-6 ..."
-            />
 
             <h2 className="text-5xl font-black mb-1">{cls.name}</h2>
             <div className="flex items-center gap-2 mb-6 opacity-60">
