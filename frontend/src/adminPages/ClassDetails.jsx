@@ -146,8 +146,13 @@ export default function ClassDetails() {
               <p className="font-black uppercase">{student.name}</p>
               <p className="text-xs opacity-60 font-bold">{student.email}</p>
             </div>
+            <Button size="sm" onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/students/${student.id}`);
+                    }}>View Profile
+            </Button>
             <div className="w-8 h-8 bg-blue-100 border-2 border-black flex items-center justify-center font-black">
-              {student.name[0]}
+              {student.name[0].toUpperCase()}
             </div>
           </div>
         ))}
