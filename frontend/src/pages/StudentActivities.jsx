@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useParams } from "react";
 import {
   Activity,
   Book,
@@ -25,15 +25,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog.j
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select.jsx";
 
 import {
-  fetchActivities,
-  addActivity,
-  updateActivity,
-  deleteActivity,
+  fetchStudentActivities
 } from "../services/api.js";
 
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext.jsx";
 
 export default function Activities() {
+  const { userId } = useParams();
   const { theme } = useTheme();
   const {
     bg,
@@ -46,9 +44,6 @@ export default function Activities() {
 
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editMode, setEditMode] = useState(false);
   const [selected, setSelected] = useState(null);
   const [showStats, setShowStats] = useState(true);
 
@@ -64,7 +59,7 @@ export default function Activities() {
   const loadActivities = async () => {
     setLoading(true);
     try {
-      const data = await fetchActivities();
+      const data = await fetchStudentActivities(userId);
       const normalized = data
         .map((a) => ({
           ...a,
@@ -98,48 +93,7 @@ export default function Activities() {
     return { totalTime, count: activities.length, longest, recent };
   }, [activities]);
 
-  /* -------------------- ACTIONS -------------------- */
-
-  const openAdd = () => {
-    setForm({ title: "", category: "general", timeSpent: "", description: "" });
-    setEditMode(false);
-    setSelected(null);
-    setModalOpen(true);
-  };
-
-  const openEdit = (activity) => {
-    setSelected(activity);
-    setForm({
-      title: activity.title,
-      category: activity.category,
-      timeSpent: String(activity.timeSpent),
-      description: activity.description || "",
-    });
-    setEditMode(true);
-    setModalOpen(true);
-  };
-
-  const saveActivity = async (e) => {
-    e.preventDefault();
-    const payload = { ...form, timeSpent: Number(form.timeSpent) };
-    try {
-      if (editMode && selected) {
-        await updateActivity(selected.id, payload);
-      } else {
-        await addActivity(payload);
-      }
-      setModalOpen(false);
-      loadActivities();
-    } catch (err) { console.error("Save failed", err); }
-  };
-
-  const removeActivity = async (id) => {
-    try {
-      await deleteActivity(id);
-      loadActivities();
-    } catch (err) { console.error("Delete failed", err); }
-  };
-
+  
   const activityIcons = {
     sports: <Dumbbell className="w-5 h-5 text-blue-400" />,
     academics: <Book className="w-5 h-5 text-green-400" />,
@@ -174,9 +128,6 @@ export default function Activities() {
             <PersonStanding className="w-8 h-8 text-indigo-400" />
             <h1 className="text-2xl md:text-3xl font-extrabold truncate">Activity Log</h1>
           </div>
-          <Button className={`w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20`} onClick={openAdd}>
-            <Plus className="w-4 h-4 mr-2" /> Add Activity
-          </Button>
         </div>
 
         {/* Stats */}
@@ -239,96 +190,12 @@ export default function Activities() {
                       </span>
                     </div>
                   </CardContent>
-
-                  {/* Actions - Visible on hover (Desktop) or always (Mobile) */}
-                  <div className="absolute top-7 right-5 flex gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => openEdit(a)} className="p-1 hover:bg-white/10 rounded">
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => removeActivity(a.id)} className="p-1 hover:bg-red-500/10 rounded">
-                      <Trash2 className="w-4 h-4 text-red-500" />
-                    </button>
-                  </div>
                 </Card>
               ))}
             </div>
           )}
         </div>
       </div>
-
-      {/* Modal - Keeping your Dialog structure */}
-      <Dialog open={modalOpen} onOpenChange={setModalOpen} theme={theme}>
-        <DialogContent className={`${cardBg} ${border} sm:max-w-[425px]`} theme={theme}>
-          <DialogHeader>
-            <DialogTitle>
-              {editMode ? "Edit Activity" : "Add Activity"}
-            </DialogTitle>
-          </DialogHeader>
-
-          <form onSubmit={saveActivity} className="space-y-4 mt-4">
-            <div className="space-y-2">
-                <Label>Activity Title</Label>
-                <Input
-                  placeholder="e.g., Morning Jog"
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  required
-                  theme={theme}
-                />
-            </div>
-
-            <div className="space-y-2">
-                <Label>Category</Label>
-                <Select 
-                  value={form.category || ""} 
-                  onValueChange={(v) => setForm(prev => ({ ...prev, category: v }))}
-                >
-                  <SelectTrigger theme={theme} className="w-full">
-                    <SelectValue placeholder="Choose Category" />
-                  </SelectTrigger>
-                  <SelectContent theme={theme}>
-                    <SelectItem value="sports" theme={theme}>Sports</SelectItem>
-                    <SelectItem value="academics" theme={theme}>Academics</SelectItem>
-                    <SelectItem value="music" theme={theme}>Music</SelectItem>
-                    <SelectItem value="art" theme={theme}>Art</SelectItem>
-                    <SelectItem value="general" theme={theme}>General</SelectItem>
-                  </SelectContent>
-                </Select>
-            </div>
-
-            <div className="space-y-2">
-                <Label>Duration (Minutes)</Label>
-                <Input
-                  type="number"
-                  placeholder="45"
-                  value={form.timeSpent}
-                  onChange={(e) => setForm({ ...form, timeSpent: e.target.value })}
-                  required
-                  theme={theme}
-                />
-            </div>
-
-            <div className="space-y-2">
-                <Label>Description</Label>
-                <Input
-                  placeholder="What did you achieve?"
-                  value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  theme={theme}
-                />
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4">
-              <Button variant="outline" type="button" onClick={() => setModalOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" className={buttonPrimary}>
-                {editMode ? "Update" : "Save Activity"}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
