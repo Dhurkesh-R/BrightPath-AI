@@ -15,7 +15,11 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_verified = db.Column(db.Boolean, default=False)
     class_id = db.Column(db.Integer, db.ForeignKey('school_classes.id'), nullable=True)
-    assigned_class = db.relationship('SchoolClass', foreign_keys=[class_id], backref='students')
+    assigned_class = db.relationship(
+        'SchoolClass',
+        foreign_keys=[class_id],
+        backref='assigned_students'
+    )
 
     # Relationships
     student_profile = db.relationship("StudentProfile", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
