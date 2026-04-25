@@ -101,7 +101,7 @@ export default function ClassManager() {
               <div className="flex items-center gap-2">
                 <div className="flex -space-x-2">
                   {[1, 2, 3].map(i => (
-                    <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-gray-300" />
+                    <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-gray-500" />
                   ))}
                 </div>
                 {cls.student_count === 0 ? (
