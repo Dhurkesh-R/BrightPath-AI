@@ -1894,5 +1894,29 @@ def manage_class(class_id):
         db.session.commit()
         return jsonify({"message": "Class deleted successfully"})
 
+@app.route("/admin/announcements", methods=["GET", "POST"])
+@jwt_required()
+def manage_announcements():
+    claims = get_jwt()
+    if claims.get("role") != "admin":
+        return jsonify({"error": "Admin access required"}), 403
+
+    if request.method == "POST":
+        data = request.json
+        new_announcement = Announcement(
+            title=data.get("title"),
+            content=data.get("content"),
+            priority=data.get("priority", "normal"), # normal, high, urgent
+            target_role=data.get("target_role", "all"), # all, student, teacher
+            author_id=get_jwt_identity()
+        )
+        db.session.add(new_announcement)
+        db.session.commit()
+        return jsonify({"message": "Announcement broadcasted!"}), 201
+
+    # GET: Fetch latest 20 announcements
+    announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(20).all()
+    return jsonify([a.to_dict() for a in announcements]), 200
+
 if __name__ == "__main__":
     socketio.run(app, debug=True)
