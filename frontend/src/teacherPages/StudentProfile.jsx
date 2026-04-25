@@ -8,6 +8,9 @@ import { RiskCard } from "../ui/riskCard";
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext"
 import { getStudentDashboard } from "../services/api";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { fetchStudentActivities, getStudentGoals } from "../services/api";
+import { Button } from "../ui/button";
 
 // --- MAIN DASHBOARD COMPONENT ---
 export default function StudentProfile() {
@@ -55,6 +58,22 @@ export default function StudentProfile() {
                 setEmotions(emotions);
                 setHealth(health);
                 setSuccessPath(successPath);
+
+                // 🔥 Fetch recent activities & goals
+                const activities = await fetchStudentActivities(userId);
+                const goals = await getStudentGoals(userId);
+    
+                setRecentActivities(
+                    activities
+                        .sort((a, b) => new Date(b.created_at || b.date) - new Date(a.created_at || a.date))
+                        .slice(0, 4)
+                );
+    
+                setRecentGoals(
+                    goals
+                        .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+                        .slice(0, 4)
+                );
         
             } catch (err) {
                 console.error("Error loading dashboard:", err);
@@ -78,199 +97,205 @@ export default function StudentProfile() {
 
 
     return (
-        <div className={`w-full min-h-screen ${bg} p-6 md:p-10 ${text} transition-colors duration-300 ml-14`}>
+        <div className={`min-h-screen ${bg} p-4 md:p-10 ${text} transition-colors duration-300 md:ml-16 w-full md:w-[calc(100%-4rem)]`}>
             <style>{`
                 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
                 body { font-family: 'Inter', sans-serif; }
             `}</style>
             
             <div className="max-w-7xl mx-auto">
-                
                 {/* Header */}
                 <header className={`flex items-center pb-6 mb-6 border-b ${border}`}>
                     <div className="flex items-center">
+                        <div className="w-12 h-10 md:hidden" />
                         <LayoutDashboardIcon className={`w-8 h-8 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                         <h1 className="text-3xl font-extrabold pl-3">Student Dashboard</h1>
                     </div>
                 </header>
 
-                {/* Main Grid: 4 columns */}
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {/* FIXED GRID ALIGNMENT */}
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
                     
-                    {/* Column 1: Profile & Risks (Spanning 3 rows) */}
-                    <div className="md:col-span-1 flex flex-col gap-6">
-                        
-                        {/* Profile Card */}
+                    {/* LEFT Column: Profile & Risks */}
+                    <div className="lg:col-span-1 space-y-6">
                         <Card theme={theme} className="shadow-xl">
-                            <CardContent>
-                                <div className="flex items-center justify-center mb-6">
+                            <CardContent className="pt-6">
+                                <div className="flex flex-col items-center text-center">
                                     <img
                                         src={profile?.profilePicUrl || defaultAvatar}
-                                        alt="child avatar"
-                                        className="w-24 h-24 object-cover rounded-full border-4 border-blue-500 shadow-md"
-                                        onError={(e) => e.currentTarget.src = defaultAvatar}
+                                        alt="avatar"
+                                        className="w-24 h-24 object-cover rounded-full border-4 border-blue-500 shadow-md mb-4"
                                     />
-                                </div>
-                                <div className="text-center">
-                                    <h2 className="text-2xl font-bold mb-1">{profile?.name || "Child Profile"}</h2>
+                                    <h2 className="text-2xl font-bold mb-1">{profile?.name || "Student"}</h2>
                                     <p className={`text-sm font-medium ${theme === 'dark' ? 'text-blue-300 bg-blue-900/40' : 'text-blue-600 bg-blue-50'} px-3 py-1 rounded-full inline-block`}>
-                                        {profile?.grade || "N/A"}
+                                        Grade {profile?.grade || "N/A"}
                                     </p>
-                                    <p className={`text-md ${textSecondary} mt-2`}>Age: {profile?.age}</p>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        {/* Risk Summary */}
-                        <div className="flex flex-col gap-4">
-                            <h3 className="text-xl font-semibold flex items-center gap-2">
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-semibold flex items-center gap-2 px-1">
                                 <CircleAlert className="w-5 h-5 text-red-500" />
                                 Risk Snapshot
                             </h3>
-                            <RiskCard 
-                                title="Academic Risk" 
-                                riskData={{ risk_score: academicRiskScore, skills }} 
-                                type="academic"
-                                theme={theme}
-                            />
-                            <RiskCard 
-                                title="Emotional Risk" 
-                                riskData={{ ...emotions, risk_score: emotions?.risk_score, emotions }} 
-                                type="emotional"
-                                theme={theme}
-                            />
-                            <RiskCard 
-                                title="Behavioral Trend" 
-                                riskData={{ ...behavior, risk_score: behavior?.risk_score, behavior }} 
-                                type="behavioral"
-                                theme={theme}
-                                className="mb-5"
-                            />
+                            <RiskCard title="Academic" riskData={{ risk_score: academicRiskScore, skills }} type="academic" theme={theme} />
+                            <RiskCard title="Emotional" riskData={{ ...emotions, risk_score: emotions?.risk_score }} type="emotional" theme={theme} />
+                            <RiskCard title="Behavioral" riskData={{ ...behavior, risk_score: behavior?.risk_score }} type="behavioral" theme={theme} />
                         </div>
                     </div>
 
-                    {/* Column 2 & 3: Main Data Points */}
-                    <div className="md:col-span-3 grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                        {/* Metric 1: Learning Style */}
-                        <Card theme={theme} className="lg:col-span-1 shadow-md">
-                            <CardContent>
-                                <div className="flex items-center mb-4 text-indigo-500">
-                                    <Brain className="w-6 h-6 mr-3" />
-                                    <h3 className="text-lg font-semibold">Learning Style</h3>
-                                </div>
-                                {learningStyle ? (
-                                    <>
-                                        <p className="text-2xl font-extrabold text-indigo-400">{learningStyle.type}</p>
-                                        <p className="text-sm ${textSecondary} mt-2">{learningStyle.description}</p>
-                                    </>
-                                ) : (<p className={textSecondary}>No data available</p>)}
-                            </CardContent>
-                        </Card>
-
-                        {/* Metric 2: Emotional Health */}
-                        <Card theme={theme} className="lg:col-span-1 shadow-md">
-                            <CardContent>
-                                <div className="flex items-center mb-4 text-red-500">
-                                    <Smile className="w-6 h-6 mr-3" />
-                                    <h3 className="text-lg font-semibold">Emotional State</h3>
-                                </div>
-                                {emotions ? (
-                                    <>
-                                        <p className="text-2xl font-extrabold text-red-400">{emotions?.mood}</p>
-                                        <p className="text-sm ${textSecondary} mt-2">{emotions?.trendDescription}</p>
-                                    </>
-                                ) : (<p className={textSecondary}>No data available</p>)}
-                            </CardContent>
-                        </Card>
-
-                        {/* Metric 3: Physical Health */}
-                        <Card theme={theme} className="lg:col-span-1 shadow-md">
-                            <CardContent>
-                                <div className="flex items-center mb-4 text-green-500">
-                                    <Heart className="w-6 h-6 mr-3" />
-                                    <h3 className="text-lg font-semibold">Physical Health</h3>
-                                </div>
-                                {health ? (
-                                    <>
-                                        <p className="text-2xl font-extrabold text-green-400">{health.score}/100</p>
-                                        <p className="text-sm ${textSecondary} mt-2">{health.recommendation}</p>
-                                    </>
-                                ) : (<p className={textSecondary}>No data available</p>)}
-                            </CardContent>
-                        </Card>
+                    {/* RIGHT Column: Metrics & Success Path */}
+                    <div className="lg:col-span-3 flex flex-col gap-6">
                         
-                        {/* Wide Card 1: Skills */}
-                        <Card theme={theme} className="lg:col-span-2 shadow-md mb-5">
-                            <CardContent>
-                                <div className="flex items-center mb-4 text-yellow-500">
-                                    <BookOpen className="w-6 h-6 mr-3" />
-                                    <h3 className="text-lg font-semibold">Core Skills Proficiency</h3>
-                                </div>
-                                <div className="space-y-3">
-                                    {skills?.length === 0 ? (
-                                        <p className="text-sm text-gray-400 italic">
-                                            Today's quiz is not taken.
-                                        </p>
-                                    ) : (
-                                        skills.map((s, i) => (
-                                            <div key={i}>
-                                                <div className="flex justify-between items-center text-sm font-medium">
-                                                    <span>{s.name} ({s.level})</span>
-                                                    <span className={
-                                                        `${s.score < 60 
-                                                            ? 'text-red-400' 
-                                                            : s.score < 80 
-                                                                ? 'text-yellow-400' 
-                                                                : 'text-green-400'
-                                                        } font-bold`
-                                                    }>
-                                                        {s.score}%
-                                                    </span>
+                        {/* Top Stats Row - Always 3 columns on big screens */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <Card theme={theme} className="shadow-md">
+                                <CardContent className="pt-6">
+                                    <div className="flex items-center mb-2 text-indigo-500"><Brain className="w-5 h-5 mr-2"/> <span className="text-sm font-bold uppercase">Learning</span></div>
+                                    <p className="text-xl font-extrabold text-indigo-400">{learningStyle?.type || "N/A"}</p>
+                                    <p className={`text-xs ${textSecondary} mt-1`}>{learningStyle?.description}</p>
+                                </CardContent>
+                            </Card>
+                            <Card theme={theme} className="shadow-md">
+                                <CardContent className="pt-6">
+                                    <div className="flex items-center mb-2 text-red-500"><Smile className="w-5 h-5 mr-2"/> <span className="text-sm font-bold uppercase">Mood</span></div>
+                                    <p className="text-xl font-extrabold text-red-400">{emotions?.mood || "N/A"}</p>
+                                    <p className={`text-xs ${textSecondary} mt-1`}>{emotions?.trendDescription}</p>
+                                </CardContent>
+                            </Card>
+                            <Card theme={theme} className="shadow-md">
+                                <CardContent className="pt-6">
+                                    <div className="flex items-center mb-2 text-green-500"><Heart className="w-5 h-5 mr-2"/> <span className="text-sm font-bold uppercase">Physical</span></div>
+                                    <p className="text-xl font-extrabold text-green-400">{health?.physical || "N/A"}</p>
+                                    <p className={`text-xs ${textSecondary} mt-1`}>Score: {health?.score}</p>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        {/* Skills and Roadmap Row */}
+                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-stretch">
+                            <Card theme={theme} className="shadow-md">
+                                <CardContent className="pt-6">
+                                    <div className="flex items-center mb-6 text-yellow-500">
+                                        <BookOpen className="w-6 h-6 mr-3" />
+                                        <h3 className="text-lg font-semibold">Core Skills</h3>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {skills?.map((s, i) => (
+                                            <div key={i} className="space-y-1">
+                                                <div className="flex justify-between text-sm font-medium">
+                                                    <span>{s.name}</span>
+                                                    <span>{s.score}%</span>
                                                 </div>
-                                                
                                                 <div className={`w-full ${progressBarBg} rounded-full h-2`}>
-                                                    <div
-                                                        className={`h-2 rounded-full transition-all duration-500 ${
-                                                            s.score < 60
-                                                                ? 'bg-red-500'
-                                                                : s.score < 80
-                                                                    ? 'bg-yellow-500'
-                                                                    : 'bg-green-500'
-                                                        }`}
-                                                        style={{ width: `${s.score}%` }}
-                                                    ></div>
+                                                    <div className={`h-2 rounded-full transition-all duration-500 ${s.score < 60 ? 'bg-red-500' : 'bg-green-500'}`} style={{ width: `${s.score}%` }}></div>
                                                 </div>
                                             </div>
-                                        ))
-                                    )}
-                                </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
 
-                            </CardContent>
-                        </Card>
-                        
-                        {/* Wide Card 2: Success Path */}
-                        <Card theme={theme} className="lg:col-span-1 shadow-md mb-5">
-                            <CardContent className="h-full flex flex-col">
-                                <div className="flex items-center mb-4 text-purple-500">
-                                    <Compass className="w-6 h-6 mr-3" />
-                                    <h3 className="text-lg font-semibold">Next Steps & Success Path</h3>
-                                </div>
-                                {successPath ? (
-                                    <ul className={`list-decimal list-inside space-y-2 text-base flex-1 ${textSecondary}`}>
-                                        {successPath.steps.map((s, i) => (
-                                            <li key={i} className="pl-1">
-                                                <span className="font-medium">{s}</span>
+                            <Card theme={theme} className="shadow-md">
+                                <CardContent className="pt-6">
+                                    <div className="flex items-center mb-4 text-purple-500">
+                                        <Compass className="w-6 h-6 mr-3" />
+                                        <h3 className="text-lg font-semibold">Success Path</h3>
+                                    </div>
+                                    <ul className="space-y-3">
+                                        {successPath?.steps.map((step, i) => (
+                                            <li key={i} className="flex gap-2 items-start text-sm">
+                                                <span className="text-purple-500 font-bold">{i+1}.</span>
+                                                <span className={textSecondary}>{step}</span>
                                             </li>
                                         ))}
                                     </ul>
-                                ) : (<p className={textSecondary}>No recommendations yet</p>)}
-                            </CardContent>
-                        </Card>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        {/* Recent Activities & Goals */}
+                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                         
+                            {/* Recent Activities */}
+                            <Card theme={theme} className="shadow-md">
+                                <CardContent className="pt-6">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <div className="flex items-center text-blue-500">
+                                            <Activity className="w-5 h-5 mr-2"/>
+                                            <h3 className="text-lg font-semibold">Recent Activities</h3>
+                                        </div>
+                                        <Button size="sm" onClick={() => navigate(`/students/${userId}/activities`)}>
+                                            View All
+                                        </Button>
+                                    </div>
+                        
+                                    <div className="space-y-3">
+                                        {recentActivities.length === 0 ? (
+                                            <p className={`text-sm ${textSecondary}`}>No activities yet</p>
+                                        ) : (
+                                            recentActivities.map((a, i) => (
+                                                <div key={i} className="flex justify-between text-sm">
+                                                    <span className="truncate">{a.title}</span>
+                                                    <span className={textSecondary}>
+                                                        {a.timeSpent || a.time_spent}m
+                                                    </span>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        
+                            {/* Recent Goals */}
+                            <Card theme={theme} className="shadow-md">
+                                <CardContent className="pt-6">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <div className="flex items-center text-green-500">
+                                            <Star className="w-5 h-5 mr-2"/>
+                                            <h3 className="text-lg font-semibold">Recent Goals</h3>
+                                        </div>
+                                        <Button size="sm" onClick={() => navigate(`/students/${userId}/goals`)}>
+                                            View All
+                                        </Button>
+                                    </div>
+                        
+                                    <div className="space-y-3">
+                                        {recentGoals.length === 0 ? (
+                                            <p className={`text-sm ${textSecondary}`}>No goals yet</p>
+                                        ) : (
+                                            recentGoals.map((g, i) => (
+                                                <div key={i} className="flex justify-between text-sm">
+                                                    <span className="truncate">{g.title}</span>
+                                                    <span className={textSecondary}>
+                                                        {g.progress || 0}%
+                                                    </span>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    );
+}
+// Helper Sub-component for small stat cards
+function StatCard({ icon, title, value, sub, color, theme }) {
+    return (
+        <Card theme={theme} className="shadow-sm">
+            <CardContent className="pt-6">
+                <div className={`flex items-center mb-2 ${color}`}>
+                    {icon}
+                    <h3 className="ml-2 text-sm font-semibold uppercase tracking-wider opacity-70">{title}</h3>
+                </div>
+                <p className={`text-xl font-bold ${color}`}>{value || "N/A"}</p>
+                <p className="text-xs text-gray-500 mt-1 line-clamp-2">{sub}</p>
+            </CardContent>
+        </Card>
     );
 }
