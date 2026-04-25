@@ -384,7 +384,7 @@ export const getGoals = async () => {
     return res.json();
 };
 
-export const getStudentGoals = async () => {
+export const getStudentGoals = async (userId) => {
   const res = await fetchWithRefresh(`${BASE_URL}/students/${userId}/goals`, {
         method: "GET",
         headers: getAuthHeaders(),
