@@ -7,6 +7,9 @@ import { Card, CardContent } from "../ui/card";
 import { RiskCard } from "../ui/riskCard";
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext"
 import { getStudentDashboard } from "../services/api";
+import { useNavigate } from "react-router-dom";
+import { fetchActivities, getGoals } from "../services/api";
+import { Button } from "../ui/button";
 
 export default function App() {
     const { theme, _, t } = useTheme()
@@ -18,6 +21,9 @@ export default function App() {
     const [emotions, setEmotions] = useState(null);
     const [health, setHealth] = useState(null);
     const [successPath, setSuccessPath] = useState(null);
+    const navigate = useNavigate();
+    const [recentActivities, setRecentActivities] = useState([]);
+    const [recentGoals, setRecentGoals] = useState([]);
     const user = JSON.parse(localStorage.getItem("user"))
 
     const { bg, text, border, textSecondary, progressBarBg } = getThemeClasses(theme);
@@ -33,7 +39,7 @@ export default function App() {
             try {
                 const dashboard = await getStudentDashboard(user.id);
                 const { profile, skills, learningStyle, behavior, emotions, health, successPath } = dashboard;
-        
+    
                 setProfile(profile);
                 setSkills(skills);
                 setLearningStyle(learningStyle);
@@ -41,15 +47,33 @@ export default function App() {
                 setEmotions(emotions);
                 setHealth(health);
                 setSuccessPath(successPath);
+    
+                // 🔥 Fetch recent activities & goals
+                const activities = await fetchActivities();
+                const goals = await getGoals();
+    
+                setRecentActivities(
+                    activities
+                        .sort((a, b) => new Date(b.created_at || b.date) - new Date(a.created_at || a.date))
+                        .slice(0, 4)
+                );
+    
+                setRecentGoals(
+                    goals
+                        .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+                        .slice(0, 4)
+                );
+    
             } catch (err) {
                 console.error("Error loading dashboard:", err);
             } finally {
                 setLoading(false);
             }
-        }        
+        }
+    
         fetchData();
     }, []);
-
+    
     if (loading) {
         return (
             <div className={`flex items-center justify-center h-screen ${bg} ${textSecondary} w-full`}>
@@ -179,7 +203,70 @@ return (
                                 </CardContent>
                             </Card>
                         </div>
-
+                        {/* Recent Activities & Goals */}
+                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        
+                            {/* Recent Activities */}
+                            <Card theme={theme} className="shadow-md">
+                                <CardContent className="pt-6">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <div className="flex items-center text-blue-500">
+                                            <Activity className="w-5 h-5 mr-2"/>
+                                            <h3 className="text-lg font-semibold">Recent Activities</h3>
+                                        </div>
+                                        <Button size="sm" onClick={() => navigate("/activities")}>
+                                            View All
+                                        </Button>
+                                    </div>
+                        
+                                    <div className="space-y-3">
+                                        {recentActivities.length === 0 ? (
+                                            <p className={`text-sm ${textSecondary}`}>No activities yet</p>
+                                        ) : (
+                                            recentActivities.map((a, i) => (
+                                                <div key={i} className="flex justify-between text-sm">
+                                                    <span className="truncate">{a.title}</span>
+                                                    <span className={textSecondary}>
+                                                        {a.timeSpent || a.time_spent}m
+                                                    </span>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        
+                            {/* Recent Goals */}
+                            <Card theme={theme} className="shadow-md">
+                                <CardContent className="pt-6">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <div className="flex items-center text-green-500">
+                                            <Star className="w-5 h-5 mr-2"/>
+                                            <h3 className="text-lg font-semibold">Recent Goals</h3>
+                                        </div>
+                                        <Button size="sm" onClick={() => navigate("/goals")}>
+                                            View All
+                                        </Button>
+                                    </div>
+                        
+                                    <div className="space-y-3">
+                                        {recentGoals.length === 0 ? (
+                                            <p className={`text-sm ${textSecondary}`}>No goals yet</p>
+                                        ) : (
+                                            recentGoals.map((g, i) => (
+                                                <div key={i} className="flex justify-between text-sm">
+                                                    <span className="truncate">{g.title}</span>
+                                                    <span className={textSecondary}>
+                                                        {g.progress || 0}%
+                                                    </span>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        
+                        </div>
                     </div>
                 </div>
             </div>
