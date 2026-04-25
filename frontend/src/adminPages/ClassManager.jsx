@@ -75,7 +75,7 @@ export default function ClassManager() {
         {classes.map((cls) => (
           <div 
             key={cls.id} 
-            className={`group p-6 rounded-none border-2 border-black dark:border-white ${inputBg} shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] hover:-translate-y-1 transition-all`}
+            className={`group p-6 rounded-none border-2 border-black dark:border-white ${cardBg} shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] hover:-translate-y-1 transition-all`}
           >
             <div className="flex justify-between items-start mb-6">
               <div className="px-3 py-1 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest">
