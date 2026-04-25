@@ -9,9 +9,6 @@ export default function Goals({ userId }) {
 
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [editGoal, setEditGoal] = useState(null);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
   const [formData, setFormData] = useState({
@@ -42,71 +39,6 @@ export default function Goals({ userId }) {
     return () => { mounted = false; };
   }, []);
 
-  const openModal = (goal = null) => {
-    setEditGoal(goal);
-    if (goal) {
-      setFormData({
-        title: goal.title || "",
-        description: goal.description || "",
-        deadline: goal.deadline ? goal.deadline.split("T")[0] : "",
-        progress: goal.progress ?? 0,
-        status: goal.status || "in-progress",
-      });
-    } else {
-      setFormData({
-        title: "",
-        description: "",
-        deadline: "",
-        progress: 0,
-        status: "in-progress",
-      });
-    }
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setEditGoal(null);
-    setSaving(false);
-    setError(null);
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSave = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    setError(null);
-    try {
-      if (editGoal) {
-        const updated = await updateGoal(editGoal.id, formData);
-        setGoals((prev) => prev.map((g) => (g.id === updated.id ? updated : g)));
-      } else {
-        const newGoal = await createGoal({ ...formData, user_id: userId });
-        setGoals((prev) => [...prev, newGoal]);
-      }
-      closeModal();
-    } catch (err) {
-      console.error("Failed to save goal", err);
-      setError(err.message || "Failed to save");
-      setSaving(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this goal?")) return;
-    try {
-      await deleteGoal(id);
-      setGoals((prev) => prev.filter((g) => g.id !== id));
-    } catch (err) {
-      console.error("Failed to delete goal", err);
-      setError("Failed to delete goal");
-    }
-  };
-
   return (
     /* FIX: Added flex parent, overflow-hidden, and removed ml-14 */
     <div className={`flex min-h-screen ${classes.bg} ${classes.text} overflow-hidden`}>
@@ -124,12 +56,6 @@ export default function Goals({ userId }) {
             <div className="w-10 h-10 md:hidden flex-shrink-0" />
             <h2 className="text-xl md:text-2xl font-semibold truncate">🎯 Goals</h2>
           </div>
-          <button
-            onClick={() => openModal()}
-            className={`flex items-center gap-2 px-3 md:px-4 py-2 ${classes.buttonPrimaryBg} ${classes.buttonPrimaryHoverBg} ${classes.textOnPrimary} rounded-xl shadow transition-all text-sm md:text-base`}
-          >
-            <Plus size={18} /> <span className="hidden sm:inline">Add Goal</span>
-          </button>
         </div>
 
         {/* Scrollable Content Area */}
@@ -155,24 +81,8 @@ export default function Goals({ userId }) {
                   key={goal.id}
                   className={`${classes.cardBg} p-5 rounded-2xl border ${classes.border} shadow-sm hover:shadow-md transition-all relative group`}
                 >
-                  <div className="flex justify-between items-start">
+                  <div className="flex items-start">
                     <h3 className={`text-lg font-semibold pr-16 truncate ${classes.text}`}>{goal.title}</h3>
-                    <div className="flex gap-2 absolute top-5 right-5 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => openModal(goal)}
-                        className={`p-1.5 rounded-lg ${classes.hoverBg} ${classes.buttonSecondaryBg} border ${classes.border}`}
-                        title="Edit"
-                      >
-                        <Edit2 size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(goal.id)}
-                        className={`p-1.5 rounded-lg ${classes.hoverBg} text-red-400 border ${classes.border}`}
-                        title="Delete"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
                   </div>
 
                   <p className={`${classes.textSecondary} text-sm mt-2 line-clamp-2 h-10`}>{goal.description}</p>
@@ -214,102 +124,6 @@ export default function Goals({ userId }) {
           )}
         </div>
       </div>
-
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100] p-4 animate-in fade-in duration-200">
-          <div className={`${classes.cardBg} p-6 rounded-2xl w-full max-w-md relative shadow-2xl border ${classes.border}`}>
-            <button
-              onClick={closeModal}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
-            >
-              <X size={20} />
-            </button>
-
-            <h3 className={`text-xl font-bold mb-6 ${classes.text}`}>
-              {editGoal ? "Edit Goal" : "Add New Goal"}
-            </h3>
-
-            <form onSubmit={handleSave} className="space-y-4">
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1 opacity-60 ${classes.text}`}>Title</label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  placeholder="What's your goal?"
-                  className={`w-full px-3 py-2.5 ${classes.inputBg} border ${classes.border} rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all`}
-                  required
-                />
-              </div>
-
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1 opacity-60 ${classes.text}`}>Description</label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  rows="3"
-                  placeholder="Add some details..."
-                  className={`w-full px-3 py-2.5 ${classes.inputBg} border ${classes.border} rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all`}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 opacity-60 ${classes.text}`}>Deadline</label>
-                  <input
-                    type="date"
-                    name="deadline"
-                    value={formData.deadline}
-                    onChange={handleChange}
-                    className={`w-full px-3 py-2.5 ${classes.inputBg} border ${classes.border} rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all`}
-                  />
-                </div>
-                <div>
-                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1 opacity-60 ${classes.text}`}>Progress (%)</label>
-                  <input
-                    type="number"
-                    name="progress"
-                    value={formData.progress}
-                    onChange={handleChange}
-                    min="0"
-                    max="100"
-                    className={`w-full px-3 py-2.5 ${classes.inputBg} border ${classes.border} rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all`}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1 opacity-60 ${classes.text}`}>Status</label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2.5 ${classes.inputBg} border ${classes.border} rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all appearance-none`}
-                >
-                  <option value="in-progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                </select>
-              </div>
-
-              <button
-                type="submit"
-                disabled={saving}
-                className={`w-full mt-6 ${classes.buttonPrimaryBg} ${classes.buttonPrimaryHoverBg} ${classes.textOnPrimary} py-3 rounded-xl font-bold shadow-lg transition-all ${saving ? "opacity-60 cursor-not-allowed" : "hover:scale-[1.02] active:scale-95"}`}
-              >
-                {saving ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <Loader2 size={18} className="animate-spin" />
-                    <span>{editGoal ? "Updating..." : "Adding..."}</span>
-                  </div>
-                ) : editGoal ? "Update Goal" : "Create Goal"}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
