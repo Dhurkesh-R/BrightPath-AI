@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Users, GraduationCap, ArrowLeft, Trash2, Edit3, Loader2, Save, X } from "lucide-react";
 import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
 import { fetchClass, deleteClass, updateClass, fetchTeachers } from "../services/api"; // Assuming your api service has fetch/put/delete
+import { Button } from "../ui/button";
 
 export default function ClassDetails() {
   const { Id } = useParams();
