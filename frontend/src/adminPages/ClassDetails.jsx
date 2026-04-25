@@ -5,7 +5,7 @@ import { getThemeClasses, useTheme } from "../contexts/ThemeContext";
 import { fetchClass, deleteClass, updateClass } from "../services/api"; // Assuming your api service has fetch/put/delete
 
 export default function ClassDetails() {
-  const { id } = useParams();
+  const { Id } = useParams();
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { bg, text, border, inputBg, textSecondary } = getThemeClasses(theme);
@@ -21,7 +21,7 @@ export default function ClassDetails() {
 
   const fetchClassData = async () => {
     try {
-      const data = await fetchClass(id);
+      const data = await fetchClass(Id);
       setCls(data);
       setEditForm(data);
     } catch (err) {
@@ -34,7 +34,7 @@ export default function ClassDetails() {
   const handleDelete = async () => {
     if (window.confirm("Are you sure? This will remove the class registry permanently.")) {
       try {
-        await deleteClass(id)
+        await deleteClass(Id)
         navigate('/classes'); // Go back to manager
       } catch (err) {
         alert("Failed to delete");
@@ -44,7 +44,7 @@ export default function ClassDetails() {
 
   const handleUpdate = async () => {
     try {
-      await updateClass(id, editForm)
+      await updateClass(Id, editForm)
       setIsEditing(false);
       fetchClassData();
     } catch (err) {
