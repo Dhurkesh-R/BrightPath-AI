@@ -337,3 +337,25 @@ class SchoolClass(db.Model):
             "teacher_id": self.class_teacher_id,
             "display_name": f"{self.grade} - {self.section}"
         }
+
+
+class Announcement(db.Model):
+    __tablename__ = 'announcements'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    priority = db.Column(db.String(20), default='normal') # normal, high, urgent
+    target_role = db.Column(db.String(20), default='all')
+    
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "content": self.content,
+            "priority": self.priority,
+            "author": self.author.name,
+            "created_at": self.created_at.isoformat()
+        }
