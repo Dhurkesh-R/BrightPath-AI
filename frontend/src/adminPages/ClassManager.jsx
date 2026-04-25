@@ -104,7 +104,11 @@ export default function ClassManager() {
                     <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-gray-300" />
                   ))}
                 </div>
-                <span className="text-[10px] font-black uppercase opacity-40">+{cls.student_count - 3} Students</span>
+                {cls.student_count === 0 ? (
+                  <span className="text-[10px] font-black uppercase opacity-40">0 Students</span>
+                ) : (
+                  <span className="text-[10px] font-black uppercase opacity-40">+{cls.student_count - 3} Students</span>
+                )
               </div>
               <Users size={18} className="opacity-20" />
             </div>
