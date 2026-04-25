@@ -81,12 +81,17 @@ export default function ClassManager() {
               <div className="px-3 py-1 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest">
                 {cls.stream}
               </div>
-              <button className="opacity-30 hover:opacity-100 transition-opacity">
-                <ArrowRight size={20} />
-              </button>
+              <div 
+                onClick={() => navigate(`/classes/${cls.id}`)}
+                className="cursor-pointer group p-6 ..."
+              >
+                <button className="opacity-30 hover:opacity-100 transition-opacity">
+                  <ArrowRight size={20} />
+                </button>
+              </div>
             </div>
             
-            <div 
+            
               onClick={() => navigate(`/classes/${cls.id}`)}
               className="cursor-pointer group p-6 ..."
             />
