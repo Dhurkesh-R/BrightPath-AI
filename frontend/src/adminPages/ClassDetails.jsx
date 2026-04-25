@@ -14,10 +14,23 @@ export default function ClassDetails() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
+  const [ teachers, setTeachers ] = useState([])
 
   useEffect(() => {
     fetchClassData();
   }, [Id]);
+
+  useEffect(() => {
+      const getTeachers = async () => {
+        try {
+          const data = await fetchTeachers();
+          setTeachers(data);
+        } catch (err) {
+          console.error("Failed to load teachers", err);
+        }
+      };
+      getTeachers();
+    }, []);
 
   const fetchClassData = async () => {
     try {
@@ -91,6 +104,16 @@ export default function ClassDetails() {
               value={editForm.grade}
               onChange={e => setEditForm({...editForm, grade: e.target.value})}
             />
+            <select 
+              className={`text-5xl font-black uppercase w-full p-2 border-2 border-black ${bg}`}
+              onChange={(e) => setFormData({...editForm, teacher_id: e.target.value})}
+              value={editForm.teacher_id}
+            >
+              <option value="">Select Class Teacher</option>
+              {teachers.map(t => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
             <button onClick={handleUpdate} className="bg-blue-600 text-white px-6 py-2 font-black flex items-center gap-2">
               <Save size={18} /> SAVE CHANGES
             </button>
