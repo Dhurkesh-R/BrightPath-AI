@@ -102,6 +102,7 @@ def login():
         additional_claims={"role": user.role}
     )
     refresh_token = create_refresh_token(identity=str(user.id))
+    school_name = user.school.name if user.school else "Unassigned"
     return jsonify({
         # FIX 1: Change 'access_token' to 'token' to match client's expectation
         "token": access_token, 
@@ -111,7 +112,8 @@ def login():
             "name": user.name,
             "email": user.email,
             "role": user.role,
-            "is_verified": user.is_verified
+            "is_verified": user.is_verified,
+            "school_name": school_name
         }
     }), 200
 
