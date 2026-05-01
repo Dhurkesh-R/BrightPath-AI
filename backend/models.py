@@ -356,6 +356,7 @@ class Announcement(db.Model):
             "title": self.title,
             "content": self.content,
             "priority": self.priority,
+            "target_role": self.target_role,
             "author": self.author.name,
             "created_at": self.created_at.isoformat()
         }
