@@ -28,7 +28,7 @@ const fetchWithRefresh = async (url, options = {}) => {
     let res = await fetch(url, options);
 
     // If access token is expired (401)
-    if (res.status === 401) {
+    if (res.status === 401 || res.status === 403) {
       const refreshToken = localStorage.getItem("refresh_token");
       
       if (!refreshToken) {
