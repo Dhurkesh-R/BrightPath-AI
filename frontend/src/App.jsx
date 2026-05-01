@@ -94,71 +94,73 @@ const AppContent = () => {
     };
 
     return (
-        <Routes>
-            {/* Public Routes */}
-            <Route path="/login" element={<Login theme={theme} />} />
-            <Route path="/register" element={<Register />} />
-
-            {/* Private Routes with Sidebar Layout */}
-            <Route path="/" element={
-                <PrivateRoute>
-                    <LayoutWrapper>
-                        {role === "admin" ? <AdminDashboard /> : <Chatbot />}
-                    </LayoutWrapper>
-                </PrivateRoute>
-            } />
-            
-            <Route path="/dashboard" element={
-                <PrivateRoute>
-                    <LayoutWrapper>
-                        {role === "teacher" ? <TeacherDashboard /> : <Dashboard />}
-                    </LayoutWrapper>
-                </PrivateRoute>
-            } />
-
-            <Route path="/activities" element={<PrivateRoute><LayoutWrapper><Activities /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/goals" element={<PrivateRoute><LayoutWrapper><Goals /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/books" element={<PrivateRoute><LayoutWrapper><Books /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/quizzes" element={<PrivateRoute><LayoutWrapper><Quizzes /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/profile" element={<PrivateRoute><LayoutWrapper><Profile /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/settings" element={<PrivateRoute><LayoutWrapper><Settings /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/announcements" element={
-                <PrivateRoute>
-                    <LayoutWrapper>
-                        {role === "admin" ? <AnnouncementManager /> : <Announcements />}
-                    </LayoutWrapper>
-                </PrivateRoute>
-            } />
-
-            {/* Teacher Specific Routes */}
-            <Route path="/analytics" element={<PrivateRoute><LayoutWrapper><Analytics /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/students" element={<PrivateRoute><LayoutWrapper><Students /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/students/:userId" element={<PrivateRoute><LayoutWrapper><StudentProfile /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/students/:userId/goals" element={<PrivateRoute><LayoutWrapper><StudentGoals /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/students/:userId/activities" element={<PrivateRoute><LayoutWrapper><StudentActivities /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/interventions" element={<PrivateRoute><LayoutWrapper><TeacherInterventions /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/assignments" element={<PrivateRoute><LayoutWrapper><TeacherAssignments /></LayoutWrapper></PrivateRoute>} />
-            
-            {/* Unified Messaging Route */}
-            <Route path="/messages" element={
-                <PrivateRoute>
-                    <LayoutWrapper>
-                        {role === "teacher" ? <TeacherMessages /> : <ParentMessages />}
-                    </LayoutWrapper>
-                </PrivateRoute>
-            } />
-
-            {/* Parent Specific Routes */}
-            <Route path="/reports" element={<PrivateRoute><LayoutWrapper><ParentReports /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/progress" element={<PrivateRoute><LayoutWrapper><ParentProgress /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/recommendations" element={<PrivateRoute><LayoutWrapper><ParentRecommendations /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/notifications" element={<PrivateRoute><LayoutWrapper><ParentNotifications /></LayoutWrapper></PrivateRoute>} />
-
-            {/* Admin specific routes */}
-            <Route path="/stats" element={<PrivateRoute><LayoutWrapper><AdminStats /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/classes" element={<PrivateRoute><LayoutWrapper><ClassManager /></LayoutWrapper></PrivateRoute>} />
-            <Route path="/classes/:Id" element={<PrivateRoute><LayoutWrapper><ClassDetails /></LayoutWrapper></PrivateRoute>} />
-        </Routes>
+        <VerificationGuard>
+            <Routes>
+                {/* Public Routes */}
+                <Route path="/login" element={<Login theme={theme} />} />
+                <Route path="/register" element={<Register />} />
+    
+                {/* Private Routes with Sidebar Layout */}
+                <Route path="/" element={
+                    <PrivateRoute>
+                        <LayoutWrapper>
+                            {role === "admin" ? <AdminDashboard /> : <Chatbot />}
+                        </LayoutWrapper>
+                    </PrivateRoute>
+                } />
+                
+                <Route path="/dashboard" element={
+                    <PrivateRoute>
+                        <LayoutWrapper>
+                            {role === "teacher" ? <TeacherDashboard /> : <Dashboard />}
+                        </LayoutWrapper>
+                    </PrivateRoute>
+                } />
+    
+                <Route path="/activities" element={<PrivateRoute><LayoutWrapper><Activities /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/goals" element={<PrivateRoute><LayoutWrapper><Goals /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/books" element={<PrivateRoute><LayoutWrapper><Books /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/quizzes" element={<PrivateRoute><LayoutWrapper><Quizzes /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/profile" element={<PrivateRoute><LayoutWrapper><Profile /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/settings" element={<PrivateRoute><LayoutWrapper><Settings /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/announcements" element={
+                    <PrivateRoute>
+                        <LayoutWrapper>
+                            {role === "admin" ? <AnnouncementManager /> : <Announcements />}
+                        </LayoutWrapper>
+                    </PrivateRoute>
+                } />
+    
+                {/* Teacher Specific Routes */}
+                <Route path="/analytics" element={<PrivateRoute><LayoutWrapper><Analytics /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/students" element={<PrivateRoute><LayoutWrapper><Students /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/students/:userId" element={<PrivateRoute><LayoutWrapper><StudentProfile /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/students/:userId/goals" element={<PrivateRoute><LayoutWrapper><StudentGoals /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/students/:userId/activities" element={<PrivateRoute><LayoutWrapper><StudentActivities /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/interventions" element={<PrivateRoute><LayoutWrapper><TeacherInterventions /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/assignments" element={<PrivateRoute><LayoutWrapper><TeacherAssignments /></LayoutWrapper></PrivateRoute>} />
+                
+                {/* Unified Messaging Route */}
+                <Route path="/messages" element={
+                    <PrivateRoute>
+                        <LayoutWrapper>
+                            {role === "teacher" ? <TeacherMessages /> : <ParentMessages />}
+                        </LayoutWrapper>
+                    </PrivateRoute>
+                } />
+    
+                {/* Parent Specific Routes */}
+                <Route path="/reports" element={<PrivateRoute><LayoutWrapper><ParentReports /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/progress" element={<PrivateRoute><LayoutWrapper><ParentProgress /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/recommendations" element={<PrivateRoute><LayoutWrapper><ParentRecommendations /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/notifications" element={<PrivateRoute><LayoutWrapper><ParentNotifications /></LayoutWrapper></PrivateRoute>} />
+    
+                {/* Admin specific routes */}
+                <Route path="/stats" element={<PrivateRoute><LayoutWrapper><AdminStats /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/classes" element={<PrivateRoute><LayoutWrapper><ClassManager /></LayoutWrapper></PrivateRoute>} />
+                <Route path="/classes/:Id" element={<PrivateRoute><LayoutWrapper><ClassDetails /></LayoutWrapper></PrivateRoute>} />
+            </Routes>
+        </VerificationGuard>
     );
 };
 
@@ -189,9 +191,7 @@ const App = () => {
 
     return (
         <Router>
-                <VerificationGuard>
-                    <AppContent />
-                </VerificationGuard>
+                    <AppContent />      
         </Router>
     );
 };
