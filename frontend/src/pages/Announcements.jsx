@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Clock, Info, AlertTriangle, ShieldAlert } from "lucide-react";
 import { fetchPublicAnnouncements } from "../services/api"; // Same API helper
+import { useAuth } from "../contexts/AuthContext";
 
 const PriorityBadge = ({ level }) => {
   const styles = {
@@ -24,6 +25,7 @@ const PriorityBadge = ({ level }) => {
 export default function Announcements() {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth()
 
   useEffect(() => {
     const load = async () => {
@@ -44,7 +46,7 @@ export default function Announcements() {
       <header className="mb-10 border-b-4 border-black pb-4 flex justify-between items-end">
         <div>
           <h1 className="text-5xl font-black italic uppercase tracking-tighter">The Bulletin</h1>
-          <p className="font-bold opacity-50 uppercase text-xs tracking-widest">BrightPathAI // Official Updates</p>
+          <p className="font-bold opacity-50 uppercase text-xs tracking-widest">{user?.school_name}</p>
         </div>
         <Bell className="opacity-20" size={40} />
       </header>
