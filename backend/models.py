@@ -317,6 +317,7 @@ class SchoolClass(db.Model):
     grade = db.Column(db.String(10), nullable=False)  # e.g., "10"
     section = db.Column(db.String(5), nullable=False) # e.g., "A"
     stream = db.Column(db.String(50), default="General") # e.g., "Science", "Commerce"
+    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False)
     
     # Foreign Key for Class Teacher
     class_teacher_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
@@ -358,6 +359,7 @@ class Announcement(db.Model):
     content = db.Column(db.Text, nullable=False)
     priority = db.Column(db.String(20), default='normal') # normal, high, urgent
     target_role = db.Column(db.String(20), default='all')
+    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False)
     
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
