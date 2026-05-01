@@ -43,6 +43,7 @@ import ClassManager from "./adminPages/ClassManager"
 import ClassDetails from "./adminPages/ClassDetails"
 import StudentActivities from "./pages/StudentActivities"
 import StudentGoals from "./pages/StudentGoals"
+import Announcements from "./adminPages/Announcements"
 
 const App = () => {
     const { theme } = useTheme();
@@ -166,6 +167,7 @@ const App = () => {
                         <Route path="/stats" element={<PrivateRoute><LayoutWrapper><AdminStats /></LayoutWrapper></PrivateRoute>} />
                         <Route path="/classes" element={<PrivateRoute><LayoutWrapper><ClassManager /></LayoutWrapper></PrivateRoute>} />
                         <Route path="/classes/:Id" element={<PrivateRoute><LayoutWrapper><ClassDetails /></LayoutWrapper></PrivateRoute>} />
+                        <Route path="/announcements" element={<PrivateRoute><LayoutWrapper><Announcements /></LayoutWrapper></PrivateRoute>} />
                     </Routes>
                 </VerificationGuard>
             </AuthProvider>
