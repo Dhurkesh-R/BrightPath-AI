@@ -26,7 +26,7 @@ export default function App() {
     const navigate = useNavigate();
     const [recentActivities, setRecentActivities] = useState([]);
     const [recentGoals, setRecentGoals] = useState([]);
-    const { user } = useAuth()
+    const user = JSON.parse(localStorage.getItem("user"))
 
     const { bg, text, border, textSecondary, progressBarBg } = getThemeClasses(theme);
     
