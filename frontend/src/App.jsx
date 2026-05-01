@@ -189,11 +189,9 @@ const App = () => {
 
     return (
         <Router>
-            <AuthProvider>
                 <VerificationGuard>
                     <AppContent />
                 </VerificationGuard>
-            </AuthProvider>
         </Router>
     );
 };
