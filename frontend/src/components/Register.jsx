@@ -80,7 +80,7 @@ export default function Register() {
             <div className="bg-blue-500 p-3 rounded-2xl text-white mb-4 shadow-lg shadow-blue-200">
                 <SchoolIcon size={28} />
             </div>
-            <h1 className="text-3xl font-black text-gray-800 tracking-tighter">
+            <h1 className="text-2xl font-black text-gray-800 tracking-tighter">
                 BrightPathAI
             </h1>
             <p className="text-gray-500 text-sm font-bold uppercase tracking-widest">Join the ecosystem</p>
@@ -105,7 +105,7 @@ export default function Register() {
               <option value="student">Student</option>
               <option value="parent">Parent</option>
               <option value="teacher">Teacher</option>
-              <option value="school_admin">New School Admin</option>
+              <option value="school_admin">School Admin</option>
             </select>
           </div>
 
