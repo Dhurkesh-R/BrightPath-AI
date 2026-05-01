@@ -22,7 +22,6 @@ export default function Register() {
     childPassword: "",
     handling_classes: "",
     designation: "", 
-    school_name: "", // Only used for school_admin creating a new school
     bio: ""
   });
 
