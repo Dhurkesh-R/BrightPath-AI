@@ -349,6 +349,7 @@ class Announcement(db.Model):
     
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    author = db.relationship('User', backref=db.backref('announcements_list', lazy=True))
 
     def to_dict(self):
         return {
