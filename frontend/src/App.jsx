@@ -46,7 +46,7 @@ import StudentGoals from "./pages/StudentGoals"
 import AnnouncementManager from "./adminPages/AnnouncementManager"
 import Announcements from "./pages/Announcements"
 
-const App = () => {
+const AppContent = () => {
     const { user } = useAuth(); 
     const { theme } = useTheme();
     const role = user?.role;
