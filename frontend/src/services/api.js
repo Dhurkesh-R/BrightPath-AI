@@ -893,3 +893,9 @@ export async function fetchPublicAnnouncements() {
     if (!res.ok) throw new Error("Failed to fetch announcements");
     return res.json();
 }
+
+export async function getPublicSchools() {
+  const res = await fetchWithRefresh(`${BASE_URL}/public/schools`);
+  if (!res.ok) throw new Error("Failed to fetch schools");
+  return res.json();
+}
