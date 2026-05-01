@@ -43,7 +43,7 @@ import ClassManager from "./adminPages/ClassManager"
 import ClassDetails from "./adminPages/ClassDetails"
 import StudentActivities from "./pages/StudentActivities"
 import StudentGoals from "./pages/StudentGoals"
-import AnnouncementManager from "./adminPages/AnnouncementManagerg f"
+import AnnouncementManager from "./adminPages/AnnouncementManager"
 
 const App = () => {
     const { theme } = useTheme();
