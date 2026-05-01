@@ -44,6 +44,7 @@ import ClassDetails from "./adminPages/ClassDetails"
 import StudentActivities from "./pages/StudentActivities"
 import StudentGoals from "./pages/StudentGoals"
 import AnnouncementManager from "./adminPages/AnnouncementManager"
+import Announcements from "./pages/Announcements"
 
 const App = () => {
     const { theme } = useTheme();
@@ -138,6 +139,7 @@ const App = () => {
                         <Route path="/quizzes" element={<PrivateRoute><LayoutWrapper><Quizzes /></LayoutWrapper></PrivateRoute>} />
                         <Route path="/profile" element={<PrivateRoute><LayoutWrapper><Profile /></LayoutWrapper></PrivateRoute>} />
                         <Route path="/settings" element={<PrivateRoute><LayoutWrapper><Settings /></LayoutWrapper></PrivateRoute>} />
+                        <Route path="/announcements" element={<PrivateRoute><LayoutWrapper>{role === "admin" ? <AnnouncementManager /> : <Announcements />}</LayoutWrapper></PrivateRoute>} />
     
                         {/* Teacher Specific Routes */}
                         <Route path="/analytics" element={<PrivateRoute><LayoutWrapper><Analytics /></LayoutWrapper></PrivateRoute>} />
@@ -167,7 +169,6 @@ const App = () => {
                         <Route path="/stats" element={<PrivateRoute><LayoutWrapper><AdminStats /></LayoutWrapper></PrivateRoute>} />
                         <Route path="/classes" element={<PrivateRoute><LayoutWrapper><ClassManager /></LayoutWrapper></PrivateRoute>} />
                         <Route path="/classes/:Id" element={<PrivateRoute><LayoutWrapper><ClassDetails /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/announcements" element={<PrivateRoute><LayoutWrapper><AnnouncementManager /></LayoutWrapper></PrivateRoute>} />
                     </Routes>
                 </VerificationGuard>
             </AuthProvider>
