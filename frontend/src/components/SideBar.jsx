@@ -22,17 +22,11 @@ import {
 } from "lucide-react";
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+
 
 // Safely parse user data
-const getUserData = () => {
-  try {
-    return JSON.parse(localStorage.getItem("user"));
-  } catch (e) {
-    return null;
-  }
-};
-
-const user = getUserData();
+const { user } = useAuth();
 const userRole = user?.role || "student";
 
 const topMenu = userRole === "student" 
