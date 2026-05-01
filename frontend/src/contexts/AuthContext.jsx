@@ -5,25 +5,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   console.log("AuthContext is running")
   const [token, setToken] = useState(localStorage.getItem("token"));
-  const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem("user");
-    // If there's no user, return null
-    if (!savedUser) return null;
-    
-    // If the string is literally "[object Object]", it's corrupted. Clear it.
-    if (savedUser === "[object Object]") {
-      localStorage.removeItem("user");
-      return null;
-    }
-
-    try {
-      return JSON.parse(savedUser);
-    } catch (e) {
-      console.error("Failed to parse user from local storage", e);
-      return null;
-    }
-  });
-
+  const [user, setUser] = useState(null); // Hardcode to null for 10 seconds
   const login = (user, token, refreshToken) => {
     setUser(user);
     setToken(token);
