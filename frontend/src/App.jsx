@@ -47,129 +47,64 @@ import AnnouncementManager from "./adminPages/AnnouncementManager"
 import Announcements from "./pages/Announcements"
 
 const App = () => {
+    const { user } = useAuth(); 
     const { theme } = useTheme();
+    const role = user?.role;
+    
     const [moodCompleted, setMoodCompleted] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    // Move your LayoutWrapper inside here or keep it as a sub-component
+    const LayoutWrapper = ({ children }) => (
+        <div className="flex h-screen relative overflow-hidden">
+            <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="md:hidden fixed top-4 left-4 z-[100] ...">
+                {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+            <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+            <main className="flex-1 h-screen overflow-auto relative">
+                {children}
+                {!moodCompleted && <MoodCheck onComplete={() => setMoodCompleted(true)} />}
+            </main>
+        </div>
+    );
+
+    return (
+        <Routes>
+            {/* Public Routes */}
+            <Route path="/login" element={<Login theme={theme} />} />
+            <Route path="/register" element={<Register />} />
+
+            {/* Private Routes */}
+            <Route path="/" element={<PrivateRoute><LayoutWrapper>{role === "admin" ? <AdminDashboard /> : <Chatbot />}</LayoutWrapper></PrivateRoute>} />
+            <Route path="/dashboard" element={<PrivateRoute><LayoutWrapper>{role === "teacher" ? <TeacherDashboard /> : <Dashboard />}</LayoutWrapper></PrivateRoute>} />
+            {/* ... rest of your routes ... */}
+            <Route path="/announcements" element={<PrivateRoute><LayoutWrapper>{role === "admin" ? <AnnouncementManager /> : <Announcements />}</LayoutWrapper></PrivateRoute>} />
+        </Routes>
+    );
+};
+
+const App = () => {
     const [isAwake, setIsAwake] = useState(false);
 
-    const user = JSON.parse(localStorage.getItem("user"));
-    const role = user?.role;
-
-    // --- Server Wakeup Logic ---
     useEffect(() => {
         const wakeUpServer = async () => {
             try {
                 await api.get('/health');
                 setIsAwake(true);
             } catch (error) {
-                if (error.response) {
-                    setIsAwake(true);
-                } else {
-                    console.log("Server spinning up... retrying in 5s");
-                    setTimeout(wakeUpServer, 5000);
-                }
+                setTimeout(wakeUpServer, 5000);
             }
         };
         wakeUpServer();
     }, []);
 
-    // --- Layout Wrapper for Sidebar Logic ---
-    const LayoutWrapper = ({ children }) => {
-        return (
-            <div className="flex h-screen relative overflow-hidden">
-                {/* Mobile Hamburger Button */}
-                <button
-                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="md:hidden fixed top-4 left-4 z-[100] p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
-                >
-                    {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
-
-                {/* Sidebar Component */}
-                <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
-
-                {/* Mobile Backdrop Overlay */}
-                {isSidebarOpen && (
-                    <div
-                        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[55] md:hidden transition-opacity"
-                        onClick={() => setIsSidebarOpen(false)}
-                    />
-                )}
-
-                {/* Main Content Area */}
-                <main className="flex-1 h-screen overflow-auto relative">
-                    {children}
-                    
-                    {/* Global MoodCheck Modal */}
-                    {!moodCompleted && (
-                        <MoodCheck onComplete={() => setMoodCompleted(true)} />
-                    )}
-                </main>
-            </div>
-        );
-    };
-
-    if (!isAwake) {
-        return <LoadingScreen />;
-    }
+    if (!isAwake) return <LoadingScreen />;
 
     return (
         <Router>
-            <AuthProvider>
+            <AuthProvider> {/* Provider is at the top */}
                 <VerificationGuard>
-                    <Routes>
-                        {/* Public Routes */}
-                        <Route path="/login" element={<Login theme={theme} />} />
-                        <Route path="/register" element={<Register />} />
-    
-                        {/* Private Routes with Sidebar Layout */}
-                        <Route path="/" element={<PrivateRoute><LayoutWrapper>{role === "admin" ? <AdminDashboard /> : <Chatbot />}</LayoutWrapper></PrivateRoute>} />
-                        
-                        <Route path="/dashboard" element={
-                            <PrivateRoute>
-                                <LayoutWrapper>
-                                    {role === "teacher" ? <TeacherDashboard /> : <Dashboard />}
-                                </LayoutWrapper>
-                            </PrivateRoute>
-                        } />
-    
-                        <Route path="/activities" element={<PrivateRoute><LayoutWrapper><Activities /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/goals" element={<PrivateRoute><LayoutWrapper><Goals /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/books" element={<PrivateRoute><LayoutWrapper><Books /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/quizzes" element={<PrivateRoute><LayoutWrapper><Quizzes /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/profile" element={<PrivateRoute><LayoutWrapper><Profile /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/settings" element={<PrivateRoute><LayoutWrapper><Settings /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/announcements" element={<PrivateRoute><LayoutWrapper>{role === "admin" ? <AnnouncementManager /> : <Announcements />}</LayoutWrapper></PrivateRoute>} />
-    
-                        {/* Teacher Specific Routes */}
-                        <Route path="/analytics" element={<PrivateRoute><LayoutWrapper><Analytics /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/students" element={<PrivateRoute><LayoutWrapper><Students /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/students/:userId" element={<PrivateRoute><LayoutWrapper><StudentProfile /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/students/:userId/goals" element={<PrivateRoute><LayoutWrapper><StudentGoals /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/students/:userId/activities" element={<PrivateRoute><LayoutWrapper><StudentActivities /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/interventions" element={<PrivateRoute><LayoutWrapper><TeacherInterventions /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/assignments" element={<PrivateRoute><LayoutWrapper><TeacherAssignments /></LayoutWrapper></PrivateRoute>} />
-                        
-                        {/* Unified Messaging Route */}
-                        <Route path="/messages" element={
-                            <PrivateRoute>
-                                <LayoutWrapper>
-                                    {role === "teacher" ? <TeacherMessages /> : <ParentMessages />}
-                                </LayoutWrapper>
-                            </PrivateRoute>
-                        } />
-    
-                        {/* Parent Specific Routes */}
-                        <Route path="/reports" element={<PrivateRoute><LayoutWrapper><ParentReports /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/progress" element={<PrivateRoute><LayoutWrapper><ParentProgress /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/recommendations" element={<PrivateRoute><LayoutWrapper><ParentRecommendations /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/notifications" element={<PrivateRoute><LayoutWrapper><ParentNotifications /></LayoutWrapper></PrivateRoute>} />
-    
-                        {/* Admin specific routes */}
-                        <Route path="/stats" element={<PrivateRoute><LayoutWrapper><AdminStats /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/classes" element={<PrivateRoute><LayoutWrapper><ClassManager /></LayoutWrapper></PrivateRoute>} />
-                        <Route path="/classes/:Id" element={<PrivateRoute><LayoutWrapper><ClassDetails /></LayoutWrapper></PrivateRoute>} />
-                    </Routes>
+                    <AppContent /> {/* AppContent can now use useAuth() */}
                 </VerificationGuard>
             </AuthProvider>
         </Router>
