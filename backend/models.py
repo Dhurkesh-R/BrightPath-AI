@@ -74,7 +74,6 @@ class AdminProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
 
-    school_name = db.Column(db.String(255), nullable=False)
     school_id = db.Column(db.String(50), unique=True) # Unique code for the school
     designation = db.Column(db.String(100)) # e.g., "Principal", "IT Director"
     permissions_level = db.Column(db.Integer, default=1) # 1: School Admin, 2: Super Admin
