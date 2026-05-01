@@ -3,6 +3,18 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
 db = SQLAlchemy()
+class School(db.Model):
+    __tablename__ = "schools"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    unique_code = db.Column(db.String(50), unique=True, nullable=False) # e.g., "BPAI-001"
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships to clean up data fetching
+    users = db.relationship('User', backref='school', lazy=True)
+    classes = db.relationship('SchoolClass', backref='school', lazy=True)
+    announcements = db.relationship('Announcement', backref='school', lazy=True)
+    
 class User(db.Model):
     __tablename__ = "users"
 
@@ -13,6 +25,7 @@ class User(db.Model):
     # Roles: 'student', 'teacher', 'parent', 'admin'
     role = db.Column(db.String(20), nullable=False, index=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=True)
     is_verified = db.Column(db.Boolean, default=False)
     class_id = db.Column(db.Integer, db.ForeignKey('school_classes.id'), nullable=True)
     assigned_class = db.relationship(
@@ -43,6 +56,7 @@ class User(db.Model):
             "role": self.role,
             "created_at": self.created_at.strftime("%Y-%m-%d"),
             "is_verified": self.is_verified,
+            "school_name": self.school.name if self.school else "Unassigned", 
             "details": {}
         }
         if self.role == 'student' and self.student_profile:
@@ -80,7 +94,6 @@ class StudentProfile(db.Model):
 
     grade = db.Column(db.String(10))
     section = db.Column(db.String(5))
-    school = db.Column(db.String(255))
     age = db.Column(db.Integer)
     bio = db.Column(db.Text)
     city = db.Column(db.String(100))
@@ -103,7 +116,6 @@ class TeacherProfile(db.Model):
     city = db.Column(db.String(100))
     handling_classes = db.Column(db.Text)
     profile_pic_url = db.Column(db.Text)
-    school = db.Column(db.String(255))
     age = db.Column(db.Integer)
 
     user = db.relationship("User", back_populates="teacher_profile")
