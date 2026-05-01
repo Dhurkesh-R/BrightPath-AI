@@ -1918,5 +1918,18 @@ def manage_announcements():
     announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(20).all()
     return jsonify([a.to_dict() for a in announcements]), 200
 
+@app.route("/announcements", methods=["GET"])
+@jwt_required()
+def get_user_announcements():
+    user_role = get_jwt().get("role")
+    if user_role == "admin":
+        announcements = Announcement.query.order_by(Announcement.created_at.desc()).all()
+    else:
+        announcements = Announcement.query.filter(
+            Announcement.target_role.in_(['all', user_role])
+        ).order_by(Announcement.created_at.desc()).all()
+        
+    return jsonify([a.to_dict() for a in announcements]), 200
+
 if __name__ == "__main__":
     socketio.run(app, debug=True)
