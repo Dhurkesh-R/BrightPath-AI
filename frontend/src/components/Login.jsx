@@ -24,7 +24,6 @@ export default function Login() {
      // 'user' is an object here, which AuthContext will now correctly stringify
      login(user, token, refresh_token) 
      navigate("/"); // This is where the redirect happens
-     location.reload()
      } catch (err) {
      setError("Invalid email or password");
      } finally {
