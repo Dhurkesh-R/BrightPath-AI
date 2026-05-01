@@ -80,8 +80,8 @@ export default function Register() {
             <div className="bg-blue-500 p-3 rounded-2xl text-white mb-4 shadow-lg shadow-blue-200">
                 <SchoolIcon size={28} />
             </div>
-            <h1 className="text-2xl font-black text-gray-800 tracking-tighter">
-                BrightPathAI
+            <h1 className="text-2xl font-['cursive'] text-gray-800 tracking-tighter">
+                BrightPath AI
             </h1>
             <p className="text-gray-500 text-sm font-bold uppercase tracking-widest">Join the ecosystem</p>
         </div>
