@@ -28,7 +28,7 @@ const fetchWithRefresh = async (url, options = {}) => {
     let res = await fetch(url, options);
 
     // If access token is expired (401)
-    if (res.status === 401 || res.status === 403) {
+    if (res.status === 401) {
       const refreshToken = localStorage.getItem("refresh_token");
       
       if (!refreshToken) {
@@ -779,7 +779,7 @@ export async function fetchUsers() {
   };
 
 export async function deleteUser(userId) {
-      const res = await fetch(`${BASE_URL}/admin/users/${userId}`, {
+      const res = await fetchWithRefresh(`${BASE_URL}/admin/users/${userId}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
       });
@@ -847,7 +847,7 @@ export async function fetchClass(Id) {
 }
 
 export async function deleteClass(Id) {
-      const res = await fetch(`${BASE_URL}/admin/classes/${Id}`, {
+      const res = await fetchWithRefresh(`${BASE_URL}/admin/classes/${Id}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
       });
