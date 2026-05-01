@@ -866,3 +866,23 @@ export async function updateClass(Id, editForm) {
   const data = await res.json();
   return data;
 }
+
+// services/api.js
+
+export async function fetchAnnouncements() {
+    const res = await fetchWithRefresh(`${BASE_URL}/admin/announcements`, {
+        headers: getAuthHeaders(),
+    });
+    if (!res.ok) throw new Error("Failed to fetch announcements");
+    return res.json();
+}
+
+export async function createAnnouncement(data) {
+    const res = await fetchWithRefresh(`${BASE_URL}/admin/announcements`, {
+        method: "POST",
+        headers: { ...getAuthHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to broadcast announcement");
+    return res.json();
+}
