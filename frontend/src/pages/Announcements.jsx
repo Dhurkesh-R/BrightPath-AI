@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Clock, Info, AlertTriangle, ShieldAlert } from "lucide-react";
-import { fetchAnnouncements } from "../services/api"; // Same API helper
+import { fetchPublicAnnouncements } from "../services/api"; // Same API helper
 
 const PriorityBadge = ({ level }) => {
   const styles = {
@@ -28,7 +28,7 @@ export default function Announcements() {
   useEffect(() => {
     const load = async () => {
       try {
-        const data = await fetchAnnouncements(); // Now filtered by backend
+        const data = await fetchPublicAnnouncements(); // Now filtered by backend
         setNews(data);
       } catch (err) {
         console.error("News fetch error", err);
