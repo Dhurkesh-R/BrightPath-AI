@@ -127,7 +127,7 @@ export default function AnnouncementManager() {
                 )}
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-2xl font-black uppercase tracking-tighter">{msg.title}</h3>
-                  <span className="text-[10px] bg-black/5 px-2 py-1 font-bold">{msg.target_role}</span>
+                  <span className="text-[10px] bg-black/5 px-2 py-1 font-bold">{msg.target_role.toUpperCase}</span>
                 </div>
                 <p className="text-sm leading-relaxed mb-4 opacity-80 font-medium">{msg.content}</p>
                 <div className="flex items-center gap-4 text-[10px] font-black uppercase opacity-40">
