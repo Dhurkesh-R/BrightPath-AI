@@ -1931,5 +1931,14 @@ def get_user_announcements():
         
     return jsonify([a.to_dict() for a in announcements]), 200
 
+@app.route("/public/schools", methods=["GET"])
+def get_registered_schools():
+    schools = School.query.order_by(School.name.asc()).all()
+    # We return the ID (for the backend) and the Name (for the UI)
+    return jsonify([
+        {"id": s.id, "name": s.name, "unique_code": s.unique_code} 
+        for s in schools
+    ]), 200
+
 if __name__ == "__main__":
     socketio.run(app, debug=True)
