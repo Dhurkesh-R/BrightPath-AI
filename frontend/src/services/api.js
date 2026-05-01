@@ -867,8 +867,6 @@ export async function updateClass(Id, editForm) {
   return data;
 }
 
-// services/api.js
-
 export async function fetchAnnouncements() {
     const res = await fetchWithRefresh(`${BASE_URL}/admin/announcements`, {
         headers: getAuthHeaders(),
@@ -884,5 +882,14 @@ export async function createAnnouncement(data) {
         body: JSON.stringify(data),
     });
     if (!res.ok) throw new Error("Failed to broadcast announcement");
+    return res.json();
+}
+
+export async function fetchPublicAnnouncements() {
+    const res = await fetchWithRefresh(`${BASE_URL}/announcements`, {
+        method: "GET",
+        headers: getAuthHeaders(),
+    });
+    if (!res.ok) throw new Error("Failed to fetch announcements");
     return res.json();
 }
