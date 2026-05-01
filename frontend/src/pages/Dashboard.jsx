@@ -10,6 +10,8 @@ import { getStudentDashboard } from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { fetchActivities, getGoals } from "../services/api";
 import { Button } from "../ui/button";
+import { useAuth } from "../contexts/AuthContext";
+
 
 export default function App() {
     const { theme, _, t } = useTheme()
@@ -24,7 +26,7 @@ export default function App() {
     const navigate = useNavigate();
     const [recentActivities, setRecentActivities] = useState([]);
     const [recentGoals, setRecentGoals] = useState([]);
-    const user = JSON.parse(localStorage.getItem("user"))
+    const { user } = useAuth()
 
     const { bg, text, border, textSecondary, progressBarBg } = getThemeClasses(theme);
     
