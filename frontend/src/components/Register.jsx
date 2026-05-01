@@ -163,10 +163,23 @@ export default function Register() {
 
           {formData.userType === "school_admin" && (
             <>
-              <div className="p-4 bg-yellow-50 rounded-2xl border border-yellow-200 mb-2">
-                <p className="text-[10px] font-black text-yellow-700 uppercase mb-2">Registration for School Principals</p>
-                <Input label="New School Name" name="school_name" value={formData.school_name} onChange={handleChange} />
-              </div>
+              <div>
+              <label className="block text-xs font-black uppercase text-gray-400 mb-1 ml-1">Select Your School</label>
+              <select
+                name="school_id"
+                value={formData.school_id}
+                onChange={handleChange}
+                disabled={fetchingSchools}
+                className="w-full border-2 border-gray-100 bg-gray-50 rounded-2xl p-3 outline-none focus:border-blue-400 focus:bg-white transition-all font-bold text-gray-700 appearance-none"
+                required
+              >
+                <option value="">{fetchingSchools ? "Loading schools..." : "-- Choose from list --"}</option>
+                {schools.map(s => (
+                    <option key={s.id} value={s.id}>{s.name} ({s.unique_code})</option>
+                ))}
+              </select>
+              <p className="text-[10px] text-gray-400 mt-2 ml-1 italic">School not listed? Contact your administrator.</p>
+            </div>
               <Input label="Designation" name="designation" value={formData.designation} onChange={handleChange} placeholder="Principal / IT Head" />
             </>
           )}
