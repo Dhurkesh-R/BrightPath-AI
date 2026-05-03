@@ -647,7 +647,7 @@ def get_student_profile(user_id):
         "age": student_profile.age,
         "grade": student_profile.grade,
         "section": student_profile.section,
-        "school_id": student_profile.school_id,
+        "school_id": user.school_id,
         "profilePicUrl": student_profile.profile_pic_url
     }
 
