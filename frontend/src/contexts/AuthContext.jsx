@@ -5,7 +5,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   console.log("AuthContext is running")
   const [token, setToken] = useState(localStorage.getItem("token"));
-  const [user, setUser] = useState([]); // Hardcode to null for 10 seconds
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("token")));
   const login = (user, token, refreshToken) => {
     setUser(user);
     setToken(token);
