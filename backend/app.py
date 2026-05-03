@@ -350,7 +350,7 @@ def get_user_profile():
             "age": profile.age,
             "grade": profile.grade,
             "section": profile.section,
-            "school": profile.school,
+            "school": user.school.name,
             "bio": profile.bio,
             "city": profile.city,
             "interests": profile.interests,
@@ -369,7 +369,7 @@ def get_user_profile():
             "city": profile.city,
             "handling_classes": profile.handling_classes,
             "profilePicUrl": profile.profile_pic_url,
-            "school": profile.school
+            "school": user.school.name
         })
 
     return jsonify(base_response), 200
@@ -400,7 +400,6 @@ def update_user_profile():
         profile.age = data.get("age", profile.age)
         profile.grade = data.get("grade", profile.grade)
         profile.section = data.get("section", profile.section)
-        profile.school = data.get("school", profile.school)
         profile.interests = data.get("interests", profile.interests)
         profile.city = data.get("city", profile.city)
         profile.bio = data.get("bio", profile.bio)
@@ -418,7 +417,7 @@ def update_user_profile():
                 "age": profile.age,
                 "grade": profile.grade,
                 "section": profile.section,
-                "school": profile.school,
+                "school": user.school.name,
                 "bio": profile.bio,
                 "city": profile.city,
                 "interests": profile.interests,
@@ -438,7 +437,6 @@ def update_user_profile():
         profile.city = data.get("city", profile.city)
         profile.bio = data.get("bio", profile.bio)
         profile.age = data.get("age", profile.age)
-        profile.school = data.get("school", profile.school)
         
         profile.profile_pic_url = data.get("profilePicUrl", profile.profile_pic_url)
 
@@ -459,7 +457,7 @@ def update_user_profile():
                 "handling_classes": profile.handling_classes,
                 "age": profile.age,
                 "profilePicUrl": profile.profile_pic_url,
-                "school": profile.school,
+                "school": user.school.name,
             }
         }), 200
     
