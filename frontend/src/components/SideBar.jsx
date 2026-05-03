@@ -25,61 +25,60 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 
-// Safely parse user data
-const { user } = useAuth();
-const userRole = user?.role || "student";
-
-const topMenu = userRole === "student" 
-  ? [
-      { name: "Chat", icon: MessageCircle, path: "/" },
-      { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-      { name: "Activities", icon: Activity, path: "/activities" },
-      { name: "Goals", icon: Goal, path: "/goals" },
-      { name: "Quizzes", icon: BookOpen, path: "/quizzes" },
-      { name: "Books", icon: Book, path: "/books" },
-      { name: "Assignments", icon: School, path: "/assignments" },
-      { name: "Announcements", icon: Megaphone, path: "/announcements" },
-    ] 
-  : userRole === "teacher" 
-  ? [
-      { name: "Chat", icon: MessageCircle, path: "/" },
-      { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-      { name: "Analytics", icon: ChartColumn, path: "/analytics" },
-      { name: "Students", icon: Users, path: "/students" },
-      { name: "Books", icon: Book, path: "/books" },
-      { name: "Interventions", icon: ShieldAlert, path: "/interventions" },
-      { name: "Assignments", icon: School, path: "/assignments" },
-      { name: "Messages", icon: MessagesSquare, path: "/messages" },
-      { name: "Announcements", icon: Megaphone, path: "/announcements" },
-    ] 
-  : userRole === "parent"
-  ? [
-      { name: "Chat", icon: MessageCircle, path: "/" },
-      { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-      { name: "Reports", icon: FileText, path: "/reports" },
-      { name: "Progress", icon: TrendingUp, path: "/progress" },
-      { name: "Recommendations", icon: Lightbulb, path: "/recommendations" },
-      { name: "Notifications", icon: Bell, path: "/notifications" },
-      { name: "Messages", icon: MessagesSquare, path: "/messages" },
-      { name: "Announcements", icon: Megaphone, path: "/announcements" },
-    ]
-  : [
-    { name: "Dashboard", icon: LayoutDashboard, path: "/" },
-    { name: "Stats", icon: ChartColumn, path: "/stats" },
-    { name: "Classes", icon: LayoutGrid, path: "/classes" },
-    { name: "Announcements", icon: Megaphone, path: "/announcements" },
-  ];
-
-
-const bottomMenu = userRole === "student" || userRole === "teacher"
-  ? [
-    { name: "Profile", icon: User, path: "/profile" },
-    { name: "Settings", icon: Settings, path: "/settings" },
-  ] : [
-    { name: "Settings", icon: Settings, path: "/settings" },
-  ];
-
 export default function Sidebar({ isOpen, setIsOpen }) {
+  // ✅ FIXED: Moved useAuth() inside component (was at module level on line 29)
+  const { user } = useAuth();
+  const userRole = user?.role || "student";
+
+  const topMenu = userRole === "student" 
+    ? [
+        { name: "Chat", icon: MessageCircle, path: "/" },
+        { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+        { name: "Activities", icon: Activity, path: "/activities" },
+        { name: "Goals", icon: Goal, path: "/goals" },
+        { name: "Quizzes", icon: BookOpen, path: "/quizzes" },
+        { name: "Books", icon: Book, path: "/books" },
+        { name: "Assignments", icon: School, path: "/assignments" },
+        { name: "Announcements", icon: Megaphone, path: "/announcements" },
+      ] 
+    : userRole === "teacher" 
+    ? [
+        { name: "Chat", icon: MessageCircle, path: "/" },
+        { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+        { name: "Analytics", icon: ChartColumn, path: "/analytics" },
+        { name: "Students", icon: Users, path: "/students" },
+        { name: "Books", icon: Book, path: "/books" },
+        { name: "Interventions", icon: ShieldAlert, path: "/interventions" },
+        { name: "Assignments", icon: School, path: "/assignments" },
+        { name: "Messages", icon: MessagesSquare, path: "/messages" },
+        { name: "Announcements", icon: Megaphone, path: "/announcements" },
+      ] 
+    : userRole === "parent"
+    ? [
+        { name: "Chat", icon: MessageCircle, path: "/" },
+        { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+        { name: "Reports", icon: FileText, path: "/reports" },
+        { name: "Progress", icon: TrendingUp, path: "/progress" },
+        { name: "Recommendations", icon: Lightbulb, path: "/recommendations" },
+        { name: "Notifications", icon: Bell, path: "/notifications" },
+        { name: "Messages", icon: MessagesSquare, path: "/messages" },
+        { name: "Announcements", icon: Megaphone, path: "/announcements" },
+      ]
+    : [
+      { name: "Dashboard", icon: LayoutDashboard, path: "/" },
+      { name: "Stats", icon: ChartColumn, path: "/stats" },
+      { name: "Classes", icon: LayoutGrid, path: "/classes" },
+      { name: "Announcements", icon: Megaphone, path: "/announcements" },
+    ];
+
+  const bottomMenu = userRole === "student" || userRole === "teacher"
+    ? [
+      { name: "Profile", icon: User, path: "/profile" },
+      { name: "Settings", icon: Settings, path: "/settings" },
+    ] : [
+      { name: "Settings", icon: Settings, path: "/settings" },
+    ];
+
   const { theme } = useTheme();
   const { barBg, border } = getThemeClasses(theme);
   const location = useLocation();
