@@ -647,7 +647,7 @@ def get_student_profile(user_id):
         "age": student_profile.age,
         "grade": student_profile.grade,
         "section": student_profile.section,
-        "school": student_profile.school,
+        "school_id": student_profile.school_id,
         "profilePicUrl": student_profile.profile_pic_url
     }
 
@@ -803,7 +803,7 @@ def get_students():
     query = (
         db.session.query(User, StudentProfile)
         .join(StudentProfile, StudentProfile.user_id == User.id)
-        .filter(User.role == "student", StudentProfile.school==user.teacher_profile.school)
+        .filter(User.role == "student", User.school_id==user.school_id)
     )
 
     logging.info(query)
@@ -998,7 +998,7 @@ def interventions():
             User.role == "student",
             StudentProfile.grade == grade,
             StudentProfile.section == section,
-            StudentProfile.school == teacher.teacher_profile.school,
+            User.school_id == teacher.school_id,
         )
         .all()
     )
@@ -1382,12 +1382,12 @@ def get_parents_for_teacher():
     if not teacher or teacher.role != "teacher":
         return jsonify({"error": "Unauthorized"}), 403
 
-    teacher_school = teacher.teacher_profile.school
+    teacher_school_id = teacher.school_id
 
     # 1. Get students from same school
     students = (
-        StudentProfile.query
-        .filter(StudentProfile.school == teacher_school)
+        User.query
+        .filter(User.role == "student", User.school_id == teacher_school_id)
         .all()
     )
 
@@ -1426,12 +1426,11 @@ def get_teachers_for_parent():
         return jsonify({"error": "Unauthorized"}), 403
 
     child = User.query.filter_by(email=parent.parent_profile.child_email).first()
-    child_school = child.student_profile.school
 
     # 1. Get students from same school
     teachers = (
-        TeacherProfile.query
-        .filter(TeacherProfile.school == child_school)
+        User.query
+        .filter(User.role == "teacher", User.school_id == child.school_id)
         .all()
     )
 
@@ -1442,7 +1441,7 @@ def get_teachers_for_parent():
             "userId": teacher_user.id,
             "name": teacher_user.name,
             "email": teacher_user.email,
-            "school": teacher_user.teacher_profile.school
+            "school": teacher_user.school_id
         })
 
     return jsonify(response), 200
