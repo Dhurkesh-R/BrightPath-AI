@@ -189,11 +189,7 @@ const App = () => {
         return <LoadingScreen />;
     }
 
-    return (
-        <Router>
-                    <AppContent />      
-        </Router>
-    );
+    return <AppContent />;
 };
 
 export default App;
