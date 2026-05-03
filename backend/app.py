@@ -264,6 +264,10 @@ def add_activity():
 @jwt_required()
 def fetch_activities():
     user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    if user.role == "parent":
+        user = User.query.filter_by(email=user.parent_profile.child_email).first()
+        user_id = user.id
 
     activities = Activity.query.filter_by(user_id=user_id).all()
     return jsonify([activity.to_dict() for activity in activities]), 200
@@ -478,6 +482,10 @@ def update_user_profile():
 @jwt_required()
 def get_goals():
     user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    if user.role == "parent":
+        user = User.query.filter_by(email=user.parent_profile.child_email).first()
+        user_id = user.id
 
     goals = Goal.query.filter_by(user_id=user_id).all()
     return jsonify([goal.to_dict() for goal in goals]), 200
