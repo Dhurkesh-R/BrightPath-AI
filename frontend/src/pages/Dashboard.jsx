@@ -26,8 +26,8 @@ export default function App() {
     const navigate = useNavigate();
     const [recentActivities, setRecentActivities] = useState([]);
     const [recentGoals, setRecentGoals] = useState([]);
-    const user = JSON.parse(localStorage.getItem("user"))
-
+    const { user } = useAuth()
+ 
     const { bg, text, border, textSecondary, progressBarBg } = getThemeClasses(theme);
     
     const academicRiskScore = useMemo(() => {
