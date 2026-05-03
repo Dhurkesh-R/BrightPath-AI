@@ -216,7 +216,7 @@ export default function Profile() {
                                             <InputField label="Section" name="section" value={formData?.section} />
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                            <InputField label="School Name" name="school" value={formData?.school} onChange={handleChange} editable={editing} />
+                                            <InputField label="School Name" name="school" value={formData?.school} />
                                             <InputField label="Current City" name="city" value={formData?.city} onChange={handleChange} editable={editing} />
                                         </div>
                                     </>
