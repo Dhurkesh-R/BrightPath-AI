@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext'; // Assuming you have an AuthC
 export default function VerificationGuard({ children }) {
   const { user, logout } = useAuth();
   parsedUser = JSON.parse(user)
-  const isVerified = user?.is_verified
+  const isVerified = parsedUser?.is_verified
   
   if (user && !isVerified) {
     return (
