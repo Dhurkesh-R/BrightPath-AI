@@ -51,7 +51,7 @@ import Announcements from "./pages/Announcements";
  * It is a child of AuthProvider, so useAuth() works here.
  */
 const AppContent = () => {
-    const { user } = useAuth();
+    const user = JSON.parse(localStorage.getItem("user"))
     const { theme } = useTheme();
     const [moodCompleted, setMoodCompleted] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
