@@ -64,7 +64,7 @@ class User(db.Model):
         elif self.role == 'teacher' and self.teacher_profile:
             data["details"] = {"dept": self.teacher_profile.department, "designation": self.teacher_profile.designation}
         elif self.role == 'admin' and self.admin_profile:
-            data["details"] = {"school": self.admin_profile.school_name}
+            data["details"] = {"school": self.school.name}
         return data
 
 
