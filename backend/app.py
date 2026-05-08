@@ -1848,7 +1848,7 @@ def manage_classes():
     # GET Request: Join with Teacher table to show names
     classes = db.session.query(SchoolClass, User).outerjoin(
         User, SchoolClass.class_teacher_id == User.id
-    ).filter_by(User.school_id=admin.school_id).all()
+    ).filter(User.school_id==admin.school_id).all()
 
     result = []
     for cls, teacher in classes:
