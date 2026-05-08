@@ -1734,7 +1734,9 @@ def get_all_users():
     if claims.get("role") != "admin":
         return jsonify({"error": "Unauthorized. Admin access required."}), 403
 
-    users = [u.to_admin_dict() for u in User.query.all()]
+    admin = User.query.get(get_jwt_identity())
+
+    users = [u.to_admin_dict() for u in User.query.filter_by(school_id=admin.school_id).all()]
     return jsonify(users), 200
 
 
@@ -1765,17 +1767,17 @@ def get_admin_stats():
     claims = get_jwt()
     if claims.get("role") != "admin":
         return jsonify({"error": "Admin access required"}), 403
-
+    admin = User.query.get(get_jwt_identity())
     # Basic Counts
-    total_users = User.query.count()
-    student_count = User.query.filter_by(role='student').count()
-    teacher_count = User.query.filter_by(role='teacher').count()
-    parent_count = User.query.filter_by(role='parent').count()
+    total_users = User.query.filter_by(school_id=admin.school_id).count()
+    student_count = User.query.filter_by(school_id=admin.school_id, role='student').count()
+    teacher_count = User.query.filter_by(school_id=admin.school_id, role='teacher').count()
+    parent_count = User.query.filter_by(school_id=admin.school_id, role='parent').count()
     
     # Activity Stats (Last 30 days)
-    recent_users = User.query.filter(User.created_at >= datetime.utcnow() - timedelta(days=30)).count()
-    total_chats = ChatLog.query.count()
-    total_goals = Goal.query.count()
+    recent_users = User.query.filter_by(school_id=admin.school_id).filter(User.created_at >= datetime.utcnow() - timedelta(days=30)).count()
+    total_chats = ChatLog.query.filter_by(ChatLog.user.school_id=admin.school_id).count()
+    total_goals = Goal.query.count(Goal.user.school_id=admin.school_id)
 
     stats = {
         "user_overview": {
@@ -1822,6 +1824,7 @@ def manage_classes():
     claims = get_jwt()
     if claims.get("role") != "admin":
         return jsonify({"error": "Admin access only"}), 403
+    admin = User.query.get(get_jwt_identity())
 
     if request.method == "POST":
         data = request.json
@@ -1838,7 +1841,7 @@ def manage_classes():
     # GET Request: Join with Teacher table to show names
     classes = db.session.query(SchoolClass, User).outerjoin(
         User, SchoolClass.class_teacher_id == User.id
-    ).all()
+    ).filter_by(User.school_id=admin.school_id).all()
 
     result = []
     for cls, teacher in classes:
@@ -1859,9 +1862,9 @@ def get_available_teachers():
     claims = get_jwt()
     if claims.get("role") != "admin":
         return jsonify({"error": "Unauthorized"}), 403
-
+    admin = User.query.get(get_jwt_identity())
     # Fetch all teachers
-    teachers = User.query.filter_by(role='teacher').all()
+    teachers = User.query.filter_by(school_id=admin.school_id, role='teacher').all()
     
     return jsonify([
         {"id": t.id, "name": t.name} for t in teachers
@@ -1905,7 +1908,7 @@ def manage_announcements():
     claims = get_jwt()
     if claims.get("role") != "admin":
         return jsonify({"error": "Admin access required"}), 403
-
+    
     if request.method == "POST":
         data = request.json
         new_announcement = Announcement(
@@ -1927,10 +1930,11 @@ def manage_announcements():
 @jwt_required()
 def get_user_announcements():
     user_role = get_jwt().get("role")
+    user = User.query.get(get_jwt_identity())
     if user_role == "admin":
         announcements = Announcement.query.order_by(Announcement.created_at.desc()).all()
     else:
-        announcements = Announcement.query.filter(
+        announcements = Announcement.query.filter_by(school_id=user.school_id).filter(
             Announcement.target_role.in_(['all', user_role])
         ).order_by(Announcement.created_at.desc()).all()
         
