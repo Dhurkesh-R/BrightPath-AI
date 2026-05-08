@@ -738,7 +738,7 @@ def upload_book():
 def get_books():
     user = User.query.get(get_jwt_identity())
     
-    books = Book.query.filter_by(Book.school_id=user.school_id).all()
+    books = Book.query.filter(Book.school_id==user.school_id).all()
     return jsonify([book.to_dict() for book in books]), 200
 
 @app.route("/books/<int:book_id>", methods=["DELETE"])
