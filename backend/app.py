@@ -736,7 +736,9 @@ def upload_book():
 @app.route("/books", methods=["GET"])
 @jwt_required()
 def get_books():
-    books = Book.query.all()
+    user = User.query.get(get_jwt_identity())
+    
+    books = Book.query.filter_by(Book.school_id=user.school_id).all()
     return jsonify([book.to_dict() for book in books]), 200
 
 @app.route("/books/<int:book_id>", methods=["DELETE"])
@@ -854,6 +856,7 @@ def get_students():
 @app.route("/analytics/class-summary", methods=["GET"])
 @jwt_required()
 def class_analytics():
+    user = User.query.get(get_jwt_identity())
     grade = request.args.get("grade")
     section = request.args.get("section")
 
@@ -862,6 +865,7 @@ def class_analytics():
         .join(StudentProfile)
         .filter(
             User.role == "student",
+            User.school_id == user.school_id,
             StudentProfile.grade == grade,
             StudentProfile.section == section
         )
@@ -917,10 +921,10 @@ def teacher_stats():
     if not teacher or teacher.role != "teacher":
         return jsonify({"error": "Unauthorized"}), 403
 
-    students_count = User.query.filter_by(role="student").count()
-    books_count = Book.query.count()
+    students_count = User.query.filter_by(school_id=teacher.school_id, role="student").count()
+    books_count = Book.query.filter_by(school_id=teacher.school_id).count()
 
-    quiz_results = QuizResult.query.all()
+    quiz_results = QuizResult.query.filter_by(QuizResult.user.school_id=teacher.school_id).all()
 
     if not quiz_results:
         avg_score = 0
@@ -942,7 +946,8 @@ def teacher_stats():
 @app.route("/performance-data", methods=["GET"])
 @jwt_required()
 def performance_data():
-    quiz_results = QuizResult.query.all()
+    teacher = User.query.get(get_jwt_identity())
+    quiz_results = QuizResult.query.filter_by(QuizResult.user.school_id=teacher.school_id).all()
 
     all_quiz_summaries = [
         json.loads(q.summary_data)
@@ -956,9 +961,10 @@ def performance_data():
 @app.route("/analytics/overview", methods=["GET"])
 @jwt_required()
 def analytics_overview():
-    students = User.query.filter_by(role="student").all()
+    teacher = User.query.get(get_jwt_identity())
+    students = User.query.filter_by(school_id=teacher.school_id, role="student").all()
 
-    all_quizzes = QuizResult.query.all()
+    all_quizzes = QuizResult.query.filter_by(QuizResult.user.school_id=teacher.school_id).all()
 
     weekly = weekly_quiz_trend(all_quizzes)
     risks = risk_distribution(students)
@@ -971,7 +977,8 @@ def analytics_overview():
 @app.route("/books/recent", methods=["GET"])
 @jwt_required()
 def recent_books():
-    books = Book.query.order_by(Book.uploaded_at.desc()).limit(6).all()
+    teacher = User.query.get(get_jwt_identity())
+    books = Book.query.filter_by(school_id=teacher.school_id, user_id=teacher.id).order_by(Book.uploaded_at.desc()).limit(6).all()
 
     return jsonify([
         {
@@ -1102,6 +1109,7 @@ def list_assignments():
     else:
         profile = user.student_profile
         assignments = Assignment.query.filter_by(
+            Assignment.school_id=user.school_id
             grade=profile.grade,
             section=profile.section
         ).all()
