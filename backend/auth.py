@@ -122,7 +122,23 @@ def login():
 @auth_bp.route("/refresh", methods=["POST"])
 @jwt_required(refresh=True)
 def refresh():
-    current_user = get_jwt_identity()
-    new_token = create_access_token(identity=current_user)
-    # This already uses 'token', which is correct
-    return jsonify({"status": "success", "token": new_token})
+    from backend.models import User
+
+    current_user_id = get_jwt_identity()
+
+    user = User.query.get(int(current_user_id))
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    new_token = create_access_token(
+        identity=str(user.id),
+        additional_claims={
+            "role": user.role
+        }
+    )
+
+    return jsonify({
+        "status": "success",
+        "token": new_token
+    }), 200
