@@ -15,6 +15,7 @@ class School(db.Model):
     classes = db.relationship('SchoolClass', backref='school', lazy=True)
     announcements = db.relationship('Announcement', backref='school', lazy=True)
     books = db.relationship('Book', backref='school', lazy=True)
+    assignments = db.relationship('Assignment', backref='school', lazy=True)
     
 class User(db.Model):
     __tablename__ = "users"
@@ -261,6 +262,7 @@ class Assignment(db.Model):
     created_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True, index=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_completed = db.Column(db.Boolean, default=False)
+    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False)
 
 class AssignmentSubmission(db.Model):
     __tablename__ = "assignment_submissions"
