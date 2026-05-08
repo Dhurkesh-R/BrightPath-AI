@@ -14,6 +14,7 @@ class School(db.Model):
     users = db.relationship('User', backref='school', lazy=True)
     classes = db.relationship('SchoolClass', backref='school', lazy=True)
     announcements = db.relationship('Announcement', backref='school', lazy=True)
+    books = db.relationship('Book', backref='school', lazy=True)
     
 class User(db.Model):
     __tablename__ = "users"
@@ -235,10 +236,12 @@ class Book(db.Model):
     uploaded_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True, index=True)
     file_url = db.Column(db.String(500), nullable=False)
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+    school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False)
 
     def to_dict(self):
         return {
             "id": self.id,
+            "school_id": self.school_id
             "title": self.title,
             "subject": self.subject,
             "grade": self.grade,
