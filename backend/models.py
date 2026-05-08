@@ -242,7 +242,7 @@ class Book(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "school_id": self.school_id
+            "school_id": self.school_id,
             "title": self.title,
             "subject": self.subject,
             "grade": self.grade,
