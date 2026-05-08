@@ -1111,7 +1111,7 @@ def list_assignments():
         assignments = Assignment.query.filter_by(
             grade=profile.grade,
             section=profile.section
-        ).filter(Assignment.school_id=user.school_id).all()
+        ).filter(Assignment.school_id==user.school_id).all()
 
     return jsonify([
         {
