@@ -899,3 +899,24 @@ export async function getPublicSchools() {
   if (!res.ok) throw new Error("Failed to fetch schools");
   return res.json();
 }
+
+export async function deleteAnnouncement(Id) {
+      const res = await fetchWithRefresh(`${BASE_URL}/announcements/${Id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) throw new Error("Failed to delete announcement");
+      const data = res.json()
+      return data;
+}
+
+export async function updateClass(Id, editForm) {
+  const res = await fetchWithRefresh(`${BASE_URL}/announcements/${Id}`, {
+    method: "PUT",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(editForm),
+  });
+  if (!res.ok) throw new Error("Failed to update announcement");
+  const data = await res.json();
+  return data;
+}
