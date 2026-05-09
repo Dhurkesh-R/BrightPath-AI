@@ -176,7 +176,7 @@ class Goal(db.Model):
     status = db.Column(db.String(50), default="in-progress")  # in-progress, completed, etc.
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     user = db.relationship("User", back_populates="goals")
     def to_dict(self):
         return {
@@ -196,7 +196,7 @@ class QuizResult(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     summary_data = db.Column(db.Text)
     taken_at = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     user = db.relationship("User", back_populates="quiz_logs")
     def to_dict(self):
         return {
@@ -211,7 +211,7 @@ class ChatLog(db.Model):
     __tablename__ = "chat_logs"
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     
     user = db.relationship("User", back_populates="chat_logs")
     user_message = db.Column(db.Text)
