@@ -1783,9 +1783,19 @@ def get_admin_stats():
     
     # Activity Stats (Last 30 days)
     recent_users = User.query.filter_by(school_id=admin.school_id).filter(User.created_at >= datetime.utcnow() - timedelta(days=30)).count()
-    total_chats = ChatLog.query.filter(ChatLog.user.school_id==admin.school_id).count()
-    total_goals = Goal.query.filter(Goal.user.school_id==admin.school_id).count()
-
+    total_chats = (
+        db.session.query(ChatLog)
+        .join(User, ChatLog.user_id == User.id)
+        .filter(User.school_id == admin.school_id)
+        .count()
+    )
+    
+    total_goals = (
+        db.session.query(Goal)
+        .join(User, Goal.user_id == User.id)
+        .filter(User.school_id == admin.school_id)
+        .count()
+    )
     stats = {
         "user_overview": {
             "total": total_users,
