@@ -910,7 +910,7 @@ export async function deleteAnnouncement(Id) {
       return data;
 }
 
-export async function updateClass(Id, editForm) {
+export async function updateAnnouncement(Id, editForm) {
   const res = await fetchWithRefresh(`${BASE_URL}/announcements/${Id}`, {
     method: "PUT",
     headers: getAuthHeaders(),
