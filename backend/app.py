@@ -1966,5 +1966,40 @@ def get_registered_schools():
         for s in schools
     ]), 200
 
+@app.route('/announcements/<int:id>', methods=['PUT'])
+@jwt_required()
+def update_announcement(id):
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    
+    if user.role != 'admin':
+        return jsonify({"msg": "Unauthorized"}), 403
+        
+    announcement = Announcement.query.get_or_404(id)
+    data = request.json
+    
+    announcement.title = data.get('title', announcement.title)
+    announcement.content = data.get('content', announcement.content)
+    announcement.priority = data.get('priority', announcement.priority)
+    announcement.target_role = data.get('target_role', announcement.target_role)
+    
+    db.session.commit()
+    return jsonify({"msg": "Updated successfully"}), 200
+
+@app.route('/announcements/<int:id>', methods=['DELETE'])
+@jwt_required()
+def delete_announcement(id):
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    
+    if user.role != 'admin':
+        return jsonify({"msg": "Unauthorized"}), 403
+        
+    announcement = Announcement.query.get_or_404(id)
+    db.session.delete(announcement)
+    db.session.commit()
+    
+    return jsonify({"msg": "Deleted successfully"}), 200
+
 if __name__ == "__main__":
     socketio.run(app, debug=True)
