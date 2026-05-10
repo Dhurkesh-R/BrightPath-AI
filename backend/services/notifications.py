@@ -20,7 +20,7 @@ def academic_drop_notification(prev, curr):
 
 
 def missed_goal_notification(goals):
-    overdue = [g for g in goals if g.status != "completed" and g.due_date < datetime.utcnow()]
+    overdue = [g for g in goals if g.status != "completed" and g.deadline < datetime.utcnow()]
     if overdue:
         return {
             "type": "goals",
