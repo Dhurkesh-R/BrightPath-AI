@@ -23,6 +23,7 @@ import {
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { fetchParentNotifications } from "../services/api";
 
 
 export default function Sidebar({ isOpen, setIsOpen }) {
