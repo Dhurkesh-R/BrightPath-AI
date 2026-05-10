@@ -52,8 +52,12 @@ def generate_parent_notifications():
 
     for parent in parents:
         student = User.query.filter_by(email=parent.parent_profile.child_email).first()
+        
+        if not student:
+            print(f"Skipping parent {parent.id}: No student found with email {parent.parent_profile.child_email}")
+            continue
         student_id = student.id
-
+        
         quizzes = QuizResult.query.filter_by(user_id=student_id).all()
         activities = Activity.query.filter_by(user_id=student_id).all()
         goals = Goal.query.filter_by(user_id=student_id).all()
