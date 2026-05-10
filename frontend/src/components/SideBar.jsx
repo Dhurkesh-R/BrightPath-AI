@@ -85,7 +85,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-      if (role === 'parent') {
+      if (userRole === 'parent') {
           const checkNotifs = async () => {
               try {
                   const data = await fetchParentNotifications();
@@ -96,7 +96,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           const interval = setInterval(checkNotifs, 60000); // Check every minute
           return () => clearInterval(interval);
       }
-  }, [role]);
+  }, [userRole]);
 
   return (
     <aside 
