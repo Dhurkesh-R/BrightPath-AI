@@ -17,14 +17,23 @@ def academic_weekly_delta(quiz_results):
     previous_scores = []
 
     for q in quiz_results:
-        # Parse summary_data safely
+        # 1. Parse the data
         if isinstance(q.summary_data, dict):
             summary = q.summary_data
-        else:
+        elif isinstance(q.summary_data, str):
             summary = json.loads(q.summary_data)
+        else:
+            summary = q.summary_data
+            
+        quiz_values = summary.values() if isinstance(summary, dict) else summary
 
-        accuracy = analyze_quiz(summary.values())["overall_accuracy"]
-
+        try:
+            analysis = analyze_quiz(quiz_values)
+            accuracy = analysis.get("overall_accuracy", 0)
+        except Exception as e:
+            print(f"Error analyzing quiz {q.id}: {e}")
+            continue
+            
         if q.taken_at >= start_current:
             current_scores.append(accuracy)
         elif start_previous <= q.taken_at < start_current:
