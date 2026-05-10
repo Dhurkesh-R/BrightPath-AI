@@ -113,16 +113,11 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           <MenuItem 
             key={`top-${idx}`} 
             item={item} 
+            unreadCount={unreadCount}
             closeSidebar={() => setIsOpen(false)} // Close on click for mobile
           />
         ))}
       </div>
-
-      {item.path === '/notifications' && unreadCount > 0 && (
-          <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] px-1.5 rounded-full animate-bounce">
-              {unreadCount}
-          </span>
-      )}
       
       {/* Bottom Menu Section */}
       <div className="flex flex-col space-y-4 w-full">
@@ -138,7 +133,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   );
 }
 
-const MenuItem = ({ item, closeSidebar }) => {
+const MenuItem = ({ item, unreadCount closeSidebar }) => {
   const { theme } = useTheme();
   const classes = getThemeClasses(theme);
   const Icon = item.icon;
@@ -163,6 +158,14 @@ const MenuItem = ({ item, closeSidebar }) => {
       >
         <Icon size={22} />
       </button>
+
+      
+      {item.path === '/notifications' && unreadCount > 0 && (
+          <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] px-1.5 rounded-full animate-bounce">
+              {unreadCount}
+          </span>
+      )}
+      
       {/* Tooltip: Hidden on mobile to avoid clutter */}
       <span className={`
         absolute left-16 px-3 py-1.5 
