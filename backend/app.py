@@ -924,7 +924,12 @@ def teacher_stats():
     students_count = User.query.filter_by(school_id=teacher.school_id, role="student").count()
     books_count = Book.query.filter_by(school_id=teacher.school_id).count()
 
-    quiz_results = QuizResult.query.filter(QuizResult.user.school_id==teacher.school_id).all()
+    quiz_results = (
+        QuizResult.query
+        .join(User, QuizResult.user_id == User.id)
+        .filter(User.school_id == teacher.school_id)
+        .all()
+    )    
 
     if not quiz_results:
         avg_score = 0
@@ -947,8 +952,12 @@ def teacher_stats():
 @jwt_required()
 def performance_data():
     teacher = User.query.get(get_jwt_identity())
-    quiz_results = QuizResult.query.filter(QuizResult.user.school_id==teacher.school_id).all()
-
+    quiz_results = (
+        QuizResult.query
+        .join(User, QuizResult.user_id == User.id)
+        .filter(User.school_id == teacher.school_id)
+        .all()
+    )
     all_quiz_summaries = [
         json.loads(q.summary_data)
         for q in quiz_results
@@ -964,7 +973,7 @@ def analytics_overview():
     teacher = User.query.get(get_jwt_identity())
     students = User.query.filter_by(school_id=teacher.school_id, role="student").all()
 
-    all_quizzes = QuizResult.query.filter(QuizResult.user.school_id==teacher.school_id).all()
+    all_quizzes = QuizResult.query.join(User, QuizResult.user_id == User.id).filter(User.school_id == teacher.school_id).all()
 
     weekly = weekly_quiz_trend(all_quizzes)
     risks = risk_distribution(students)
