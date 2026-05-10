@@ -264,6 +264,20 @@ class Assignment(db.Model):
     is_completed = db.Column(db.Boolean, default=False)
     school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=False)
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "grade": self.grade,
+            "section": self.section,
+            "due_date": self.due_date.isoformat() if self.due_date else None,
+            "created_by": self.created_by,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "is_completed": self.is_completed,
+            "school_id": self.school_id
+        }
+
 class AssignmentSubmission(db.Model):
     __tablename__ = "assignment_submissions"
 
