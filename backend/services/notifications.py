@@ -41,3 +41,34 @@ def inactivity_notification(activities, category, days=7):
             "severity": "info"
         }
     return None
+
+
+def generate_parent_notifications():
+    parents = User.query.filter_by(role="parent").all()
+
+    for parent in parents:
+        student = User.query.filter_by(email=parent.parent_profile.child_email).first()
+        student_id = student.id
+
+        quizzes = QuizResult.query.filter_by(user_id=student_id).all()
+        activities = Activity.query.filter_by(user_id=student_id).all()
+        goals = Goal.query.filter_by(user_id=student_id).all()
+
+        prev, curr = academic_weekly_delta(quizzes)
+
+        detectors = [
+            academic_drop_notification(prev, curr),
+            missed_goal_notification(goals),
+            inactivity_notification(activities, "sports"),
+            inactivity_notification(activities, "art"),
+        ]
+
+        for d in detectors:
+            if d:
+                db.session.add(Notification(
+                    user_id=parent.id,
+                    student_id=student_id,
+                    **d
+                ))
+
+    db.session.commit()
