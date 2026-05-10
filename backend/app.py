@@ -1154,7 +1154,10 @@ def update_assignment(assignment_id):
         assignment.due_date = data["due_date"]   
 
     db.session.commit()
-    return jsonify({"message": "Assignment updated", "activity": assignment})
+    return jsonify({
+        "message": "Assignment updated",
+        "assignment": assignment.to_dict()
+    })
 
 @app.route("/assignments/<int:assignment_id>", methods=["DELETE"])
 @jwt_required()
