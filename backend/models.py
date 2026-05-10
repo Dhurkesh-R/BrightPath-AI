@@ -43,7 +43,7 @@ class User(db.Model):
     admin_profile = db.relationship("AdminProfile", uselist=False, back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
     chat_logs = db.relationship("ChatLog", back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
     goals = db.relationship("Goal", back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
-    quiz_logs = db.relationship(
+    quiz_results = db.relationship(
         "QuizResult", 
         back_populates="user", 
         cascade="all, delete-orphan", 
