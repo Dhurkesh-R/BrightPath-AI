@@ -155,7 +155,7 @@ export default function Students() {
 
                   <div className="flex justify-between items-center mt-3">
                     {getPerformanceBadge(student.performance)}
-                    <Button size="sm" onClick={(e) => {
+                    <Button size="xs" onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/students/${student.id}`);
                     }}>View Profile</Button>
