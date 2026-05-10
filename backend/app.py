@@ -1678,6 +1678,12 @@ def get_parent_notifications():
         for n in notifications
     ])
 
+@app.route("/tasks/generate-notifications", methods=["GET"])
+def cron_trigger():
+    # You should add a secret header check here so random people can't trigger it
+    generate_parent_notifications()
+    return "Notifications Generated", 200
+
 @app.route("/parent/notifications/<int:id>/read", methods=["POST"])
 @jwt_required()
 def mark_notification_read(id):
