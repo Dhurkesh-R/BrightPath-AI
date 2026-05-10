@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from backend.utils.security import hash_password, verify_password
+from backend.app import generate_parent_notifications
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, jwt_required
 
 auth_bp = Blueprint("auth", __name__)
@@ -96,6 +97,9 @@ def login():
     user = User.query.filter_by(email=data["email"]).first()
     if not user or not verify_password(data["password"], user.password_hash):
         return jsonify({"error": "Invalid credentials"}), 401
+
+    if user.role == "parent":
+        generate_parent_notifications()
 
     access_token = create_access_token(
         identity=str(user.id),
