@@ -1,6 +1,7 @@
 import datetime
 from datetime import timedelta
 from backend.models import *
+from .academic_metrics import academic_weekly_delta
 
 def academic_drop_notification(prev, curr):
     if prev >= 70 and curr < prev - 15:
