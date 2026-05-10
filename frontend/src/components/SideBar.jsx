@@ -134,7 +134,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   );
 }
 
-const MenuItem = ({ item, unreadCount closeSidebar }) => {
+const MenuItem = ({ item, unreadCount, closeSidebar }) => {
   const { theme } = useTheme();
   const classes = getThemeClasses(theme);
   const Icon = item.icon;
