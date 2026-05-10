@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from backend.utils.security import hash_password, verify_password
-from backend.app import generate_parent_notifications
+from backend.services.notifications import generate_parent_notifications
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, jwt_required
 
 auth_bp = Blueprint("auth", __name__)
