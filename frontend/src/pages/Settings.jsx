@@ -49,6 +49,7 @@ const Settings = () => {
     const handleLogOut = () => {
         localStorage.clear();
         navigate("/login");
+        location.reload()
     };
 
     const handlePasswordUpdate = async () => {
