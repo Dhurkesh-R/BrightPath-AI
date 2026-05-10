@@ -4,6 +4,8 @@ from backend.models import *
 from .academic_metrics import academic_weekly_delta
 
 def academic_drop_notification(prev, curr):
+    if prev is None or curr is None:
+        return None
     if prev >= 70 and curr < prev - 15:
         return {
             "type": "academic",
