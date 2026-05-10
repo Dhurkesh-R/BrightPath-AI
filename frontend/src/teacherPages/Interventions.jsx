@@ -34,7 +34,7 @@ export default function TeacherInterventions() {
   }, [grade, section]);
 
   return (
-    <div className={`p-6 min-h-screen ${bg} ${text} w-full md:ml-16`}>
+    <div className={`min-h-screen ${bg} ${text} p-6 w-full overflow-x-hidden md:pl-28`}>
       {/* Header */}
       <header className="flex items-center justify-between mb-6">
         <div className="w-10 h-10 md:hidden flex-shrink-0" />
