@@ -135,7 +135,7 @@ export default function Students() {
       {loading ? (
         <p className="text-center text-lg">Loading students...</p>
       ) : students.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {students.map(student => (
             <Card key={student.id} className={`border ${border} ${bgCard}`} theme={theme} onClick={() => navigate(`/students/${student.id}`)}>
               <CardContent className="p-5 flex gap-4" theme={theme}>
