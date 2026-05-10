@@ -67,7 +67,7 @@ export default function Students() {
 
   // ---- UI ----
   return (
-    <div className={`p-6 min-h-screen ${bg} ${text} w-full md:ml-16`}>
+    <div className={`min-h-screen ${bg} ${text} p-6 w-full overflow-x-hidden md:pl-28`}>
       
       {/* Header */}
       <header className={`flex items-center pb-6 mb-6 border-b ${border}`}>
