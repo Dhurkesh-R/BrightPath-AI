@@ -96,7 +96,7 @@ export default function ParentNotifications() {
   }
 
   return (
-    <div className={`min-h-screen ${bg} ${text} p-6 w-full md:ml-14`}>
+    <div className={`min-h-screen ${bg} ${text} p-6 w-full overflow-x-hidden md:pl-28`}>
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-12 h-10 md:hidden" />
@@ -114,7 +114,7 @@ export default function ParentNotifications() {
       )}
 
       {/* List */}
-      <div className="space-y-4">
+      <div className="space-y-4 max-w-4xl mx-auto">
         <AnimatePresence>
           {notifications.map((n) => {
             const Icon =
