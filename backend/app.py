@@ -1426,7 +1426,7 @@ def get_parents_for_teacher():
         .all()
     )
 
-    student_emails = [s.user.email for s in students]
+    student_emails = [s.email for s in students]
 
     # 2. Match parents via child_email
     parents = (
