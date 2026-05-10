@@ -1677,13 +1677,7 @@ def get_parent_notifications():
         }
         for n in notifications
     ])
-
-@app.route("/tasks/generate-notifications", methods=["GET"])
-def cron_trigger():
-    # You should add a secret header check here so random people can't trigger it
-    generate_parent_notifications()
-    return "Notifications Generated", 200
-
+    
 @app.route("/parent/notifications/<int:id>/read", methods=["POST"])
 @jwt_required()
 def mark_notification_read(id):
@@ -1695,35 +1689,12 @@ def mark_notification_read(id):
 
     return jsonify({"status": "ok"})
 
-def generate_parent_notifications():
-    parents = User.query.filter_by(role="parent").all()
+@app.route("/tasks/generate-notifications", methods=["GET"])
+def cron_trigger():
+    # You should add a secret header check here so random people can't trigger it
+    generate_parent_notifications()
+    return "Notifications Generated", 200
 
-    for parent in parents:
-        student = User.query.filter_by(email=parent.parent_profile.child_email).first()
-        student_id = student.id
-
-        quizzes = QuizResult.query.filter_by(user_id=student_id).all()
-        activities = Activity.query.filter_by(user_id=student_id).all()
-        goals = Goal.query.filter_by(user_id=student_id).all()
-
-        prev, curr = academic_weekly_delta(quizzes)
-
-        detectors = [
-            academic_drop_notification(prev, curr),
-            missed_goal_notification(goals),
-            inactivity_notification(activities, "sports"),
-            inactivity_notification(activities, "art"),
-        ]
-
-        for d in detectors:
-            if d:
-                db.session.add(Notification(
-                    user_id=parent.id,
-                    student_id=student_id,
-                    **d
-                ))
-
-    db.session.commit()
 
 @app.route('/health', methods=['GET'])
 def health_check():
