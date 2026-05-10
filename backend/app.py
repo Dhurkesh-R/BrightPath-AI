@@ -1200,6 +1200,7 @@ def get_assignment_status(assignment_id, student_id):
 @jwt_required()
 def update_assignment_status(assignment_id, student_id):
     teacher = User.query.get(get_jwt_identity())
+
     if teacher.role != "teacher":
         return jsonify({"error": "Unauthorized"}), 403
 
@@ -1207,14 +1208,17 @@ def update_assignment_status(assignment_id, student_id):
 
     if isinstance(data, str):
         status = data
+
     elif isinstance(data, dict):
         status = data.get("status")
+
     else:
         return jsonify({"error": "Invalid request body"}), 400
-        submission = AssignmentSubmission.query.filter_by(
-            assignment_id=assignment_id,
-            student_id=student_id
-        ).first()
+
+    submission = AssignmentSubmission.query.filter_by(
+        assignment_id=assignment_id,
+        student_id=student_id
+    ).first()
 
     if not submission:
         submission = AssignmentSubmission(
@@ -1227,10 +1231,10 @@ def update_assignment_status(assignment_id, student_id):
         submission.status = status
 
     submission.updated_at = datetime.utcnow()
+
     db.session.commit()
 
     return jsonify({"status": submission.status})
-
 
 def conversation_room(user1_id, user2_id):
     low, high = sorted([int(user1_id), int(user2_id)])
