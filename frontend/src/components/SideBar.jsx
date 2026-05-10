@@ -82,6 +82,21 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const { theme } = useTheme();
   const { barBg, border } = getThemeClasses(theme);
   const location = useLocation();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+      if (role === 'parent') {
+          const checkNotifs = async () => {
+              try {
+                  const data = await fetchParentNotifications();
+                  setUnreadCount(data.filter(n => !n.read).length);
+              } catch (e) { console.error(e); }
+          };
+          checkNotifs();
+          const interval = setInterval(checkNotifs, 60000); // Check every minute
+          return () => clearInterval(interval);
+      }
+  }, [role]);
 
   return (
     <aside 
@@ -103,6 +118,12 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         ))}
       </div>
 
+      {item.path === '/notifications' && unreadCount > 0 && (
+          <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] px-1.5 rounded-full animate-bounce">
+              {unreadCount}
+          </span>
+      )}
+      
       {/* Bottom Menu Section */}
       <div className="flex flex-col space-y-4 w-full">
         {bottomMenu.map((item, idx) => (
