@@ -198,7 +198,7 @@ export default function TeacherAssignments() {
                 <h1 className="text-xl md:text-2xl font-bold truncate">Assignments</h1>
             </div>
             {userRole === "teacher" && (
-                <Button size="sm" className={`${buttonPrimary} shadow-lg shadow-indigo-500/20`} onClick={handleOpenAdd}>
+                <Button size="sm" className={`w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20`}  onClick={handleOpenAdd}>
                     <Plus className="w-4 h-4 mr-1" />
                     <span className="hidden sm:inline">New Assignment</span>
                 </Button>
