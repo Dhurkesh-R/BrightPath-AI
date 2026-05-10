@@ -1203,13 +1203,18 @@ def update_assignment_status(assignment_id, student_id):
     if teacher.role != "teacher":
         return jsonify({"error": "Unauthorized"}), 403
 
-    data = request.json
-    status = data.get("status")
+    data = request.get_json()
 
-    submission = AssignmentSubmission.query.filter_by(
-        assignment_id=assignment_id,
-        student_id=student_id
-    ).first()
+    if isinstance(data, str):
+        status = data
+    elif isinstance(data, dict):
+        status = data.get("status")
+    else:
+        return jsonify({"error": "Invalid request body"}), 400
+        submission = AssignmentSubmission.query.filter_by(
+            assignment_id=assignment_id,
+            student_id=student_id
+        ).first()
 
     if not submission:
         submission = AssignmentSubmission(
