@@ -1141,6 +1141,14 @@ def update_assignment(assignment_id):
     if not assignment:
         return jsonify({"error": "Activity not found"}), 404
 
+    user = User.query.get(get_jwt_identity())
+
+    if user.role != "teacher":
+        return jsonify({"error": "Unauthorized"}), 403
+    
+    if assignment.created_by != user.id:
+        return jsonify({"error": "Forbidden"}), 403
+
     data = request.get_json()
     if "title" in data:
         assignment.title = data["title"]
@@ -1151,7 +1159,9 @@ def update_assignment(assignment_id):
     if "section" in data:
         assignment.section = data["section"]
     if "due_date" in data:
-        assignment.due_date = data["due_date"]   
+        assignment.due_date = datetime.strptime(
+            data["due_date"], "%Y-%m-%d"
+        ).date()
 
     db.session.commit()
     return jsonify({
