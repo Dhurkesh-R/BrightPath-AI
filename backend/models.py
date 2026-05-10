@@ -197,7 +197,7 @@ class QuizResult(db.Model):
     summary_data = db.Column(db.Text)
     taken_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    user = db.relationship("User", back_populates="quiz_logs")
+    user = db.relationship("User", back_populates="quiz_results")
     def to_dict(self):
         return {
             "id": self.id,
