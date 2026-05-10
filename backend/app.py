@@ -987,7 +987,7 @@ def analytics_overview():
 @jwt_required()
 def recent_books():
     teacher = User.query.get(get_jwt_identity())
-    books = Book.query.filter_by(school_id=teacher.school_id, user_id=teacher.id).order_by(Book.uploaded_at.desc()).limit(6).all()
+    books = Book.query.filter_by(school_id=teacher.school_id).order_by(Book.uploaded_at.desc()).limit(6).all()
 
     return jsonify([
         {
