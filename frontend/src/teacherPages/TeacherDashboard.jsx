@@ -151,7 +151,7 @@ export default function TeacherDashboard() {
             Performance Overview
           </h2>
           <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" className={`${bg} ${textSecondary}`}>
               <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} />
                 <XAxis 
@@ -168,7 +168,6 @@ export default function TeacherDashboard() {
                 />
                 <Tooltip 
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-                    className={`${bg}`}
                 />
                 <Line
                   type="monotone"
@@ -203,7 +202,7 @@ export default function TeacherDashboard() {
                         {book.subject} • Grade {book.grade}
                       </p>
                       <Button 
-                        variant="secondary" 
+                        variant="primary" 
                         size="sm" 
                         className="w-full text-xs font-bold"
                         onClick={() => window.open(book.file_url, '_blank')}
