@@ -76,15 +76,15 @@ export default function Analytics() {
           
           {/* Filter Bar - Better layout on mobile */}
           <div className={`flex flex-wrap gap-3 items-center ${bgCard} p-2 md:p-3 rounded-2xl border ${border} w-full sm:w-auto`}>
-            <CustomSelect 
-                onValueChange={setGradeFilter} 
-                defaultValue="10"
+            <CustomSelect
+                value={gradeFilter}
+                onValueChange={setGradeFilter}
                 options={[{ value: "6", label: "6th Grade" }, { value: "7", label: "7th Grade" }, { value: "8", label: "8th Grade" }, { value: "9", label: "9th Grade" }, { value: "10", label: "10th Grade" }, { value: "11", label: "11th Grade" }, { value: "12", label: "12th Grade" }]}
                 theme={theme}
             />
-            <CustomSelect 
-                onValueChange={setSubjectFilter} 
-                defaultValue="all"
+            <CustomSelect
+              value={subjectFilter}
+              onValueChange={setSubjectFilter}
                 options={[
                     { value: "all", label: "All Subjects" },
                     { value: "Math", label: "Math" },
