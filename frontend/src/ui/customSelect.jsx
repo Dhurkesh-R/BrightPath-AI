@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useTheme } from "../contexts/ThemeContext";
 
-export const CustomSelect = ({ onValueChange, defaultValue, options, placeholder, className = "w-[150px]" }) => {
+export const CustomSelect = ({ onValueChange, value, options, placeholder, className = "w-[150px]" }) => {
     const { theme, getThemeClasses } = useTheme();
-    const [localValue, setLocalValue] = useState(defaultValue);
+    const [localValue, setLocalValue] = useState(value);
     const {cardBg, border, text } = getThemeClasses(theme);
 
     const handleChange = (e) => {
