@@ -151,7 +151,7 @@ export default function TeacherDashboard() {
             Performance Overview
           </h2>
           <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%" className={`${textSecondary}`}>
+            <ResponsiveContainer width="100%" height="100%" className={`${text} ${cardBg}`}>
               <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} />
                 <XAxis 
