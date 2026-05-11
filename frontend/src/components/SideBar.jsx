@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { 
-  MessageCircle, 
-  Settings, 
-  LayoutDashboard, 
-  Activity, 
-  Goal, 
-  BookOpen, 
-  Book, 
-  User, 
-  ChartColumn, 
-  Users, 
+import {
+  MessageCircle,
+  Settings,
+  LayoutDashboard,
+  Activity,
+  Goal,
+  BookOpen,
+  Book,
+  User,
+  ChartColumn,
+  Users,
   ShieldAlert,
   School,
   MessagesSquare,
@@ -20,113 +20,161 @@ import {
   LayoutGrid,
   Megaphone,
 } from "lucide-react";
+
 import { useTheme, getThemeClasses } from "../contexts/ThemeContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { fetchParentNotifications } from "../services/api";
 
-
 export default function Sidebar({ isOpen, setIsOpen }) {
-  // ✅ FIXED: Moved useAuth() inside component (was at module level on line 29)
   const { user } = useAuth();
   const userRole = user?.role || "student";
 
-  const topMenu = userRole === "student" 
-    ? [
-        { name: "Chat", icon: MessageCircle, path: "/" },
-        { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-        { name: "Activities", icon: Activity, path: "/activities" },
-        { name: "Goals", icon: Goal, path: "/goals" },
-        { name: "Quizzes", icon: BookOpen, path: "/quizzes" },
-        { name: "Books", icon: Book, path: "/books" },
-        { name: "Assignments", icon: School, path: "/assignments" },
-        { name: "Announcements", icon: Megaphone, path: "/announcements" },
-      ] 
-    : userRole === "teacher" 
-    ? [
-        { name: "Chat", icon: MessageCircle, path: "/" },
-        { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-        { name: "Analytics", icon: ChartColumn, path: "/analytics" },
-        { name: "Students", icon: Users, path: "/students" },
-        { name: "Books", icon: Book, path: "/books" },
-        { name: "Interventions", icon: ShieldAlert, path: "/interventions" },
-        { name: "Assignments", icon: School, path: "/assignments" },
-        { name: "Messages", icon: MessagesSquare, path: "/messages" },
-        { name: "Announcements", icon: Megaphone, path: "/announcements" },
-      ] 
-    : userRole === "parent"
-    ? [
-        { name: "Chat", icon: MessageCircle, path: "/" },
-        { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-        { name: "Reports", icon: FileText, path: "/reports" },
-        { name: "Progress", icon: TrendingUp, path: "/progress" },
-        { name: "Recommendations", icon: Lightbulb, path: "/recommendations" },
-        { name: "Notifications", icon: Bell, path: "/notifications" },
-        { name: "Messages", icon: MessagesSquare, path: "/messages" },
-        { name: "Announcements", icon: Megaphone, path: "/announcements" },
-      ]
-    : [
-      { name: "Dashboard", icon: LayoutDashboard, path: "/" },
-      { name: "Stats", icon: ChartColumn, path: "/stats" },
-      { name: "Classes", icon: LayoutGrid, path: "/classes" },
-      { name: "Announcements", icon: Megaphone, path: "/announcements" },
-    ];
+  /* ---------------- MENU ---------------- */
 
-  const bottomMenu = userRole === "student" || userRole === "teacher"
-    ? [
-      { name: "Profile", icon: User, path: "/profile" },
-      { name: "Settings", icon: Settings, path: "/settings" },
-    ] : [
-      { name: "Settings", icon: Settings, path: "/settings" },
-    ];
+  const topMenu =
+    userRole === "student"
+      ? [
+          { name: "Chat", icon: MessageCircle, path: "/" },
+          { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+          { name: "Activities", icon: Activity, path: "/activities" },
+          { name: "Goals", icon: Goal, path: "/goals" },
+          { name: "Quizzes", icon: BookOpen, path: "/quizzes" },
+          { name: "Books", icon: Book, path: "/books" },
+          { name: "Assignments", icon: School, path: "/assignments" },
+          { name: "Announcements", icon: Megaphone, path: "/announcements" },
+        ]
+      : userRole === "teacher"
+      ? [
+          { name: "Chat", icon: MessageCircle, path: "/" },
+          { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+          { name: "Analytics", icon: ChartColumn, path: "/analytics" },
+          { name: "Students", icon: Users, path: "/students" },
+          { name: "Books", icon: Book, path: "/books" },
+          { name: "Interventions", icon: ShieldAlert, path: "/interventions" },
+          { name: "Assignments", icon: School, path: "/assignments" },
+          { name: "Messages", icon: MessagesSquare, path: "/messages" },
+          { name: "Announcements", icon: Megaphone, path: "/announcements" },
+        ]
+      : userRole === "parent"
+      ? [
+          { name: "Chat", icon: MessageCircle, path: "/" },
+          { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+          { name: "Reports", icon: FileText, path: "/reports" },
+          { name: "Progress", icon: TrendingUp, path: "/progress" },
+          { name: "Recommendations", icon: Lightbulb, path: "/recommendations" },
+          { name: "Notifications", icon: Bell, path: "/notifications" },
+          { name: "Messages", icon: MessagesSquare, path: "/messages" },
+          { name: "Announcements", icon: Megaphone, path: "/announcements" },
+        ]
+      : [
+          { name: "Dashboard", icon: LayoutDashboard, path: "/" },
+          { name: "Stats", icon: ChartColumn, path: "/stats" },
+          { name: "Classes", icon: LayoutGrid, path: "/classes" },
+          { name: "Announcements", icon: Megaphone, path: "/announcements" },
+        ];
+
+  const bottomMenu =
+    userRole === "student" || userRole === "teacher"
+      ? [
+          { name: "Profile", icon: User, path: "/profile" },
+          { name: "Settings", icon: Settings, path: "/settings" },
+        ]
+      : [{ name: "Settings", icon: Settings, path: "/settings" }];
+
+  /* ---------------- THEME ---------------- */
 
   const { theme } = useTheme();
   const { barBg, border } = getThemeClasses(theme);
-  const location = useLocation();
+
   const [unreadCount, setUnreadCount] = useState(0);
 
+  /* ---------------- NOTIFICATIONS ---------------- */
+
   useEffect(() => {
-      if (userRole === 'parent') {
-          const checkNotifs = async () => {
-              try {
-                  const data = await fetchParentNotifications();
-                  setUnreadCount(data.filter(n => !n.read).length);
-              } catch (e) { console.error(e); }
-          };
-          checkNotifs();
-          const interval = setInterval(checkNotifs, 60000); // Check every minute
-          return () => clearInterval(interval);
-      }
+    if (userRole === "parent") {
+      const check = async () => {
+        try {
+          const data = await fetchParentNotifications();
+          setUnreadCount(data.filter((n) => !n.read).length);
+        } catch (e) {
+          console.error(e);
+        }
+      };
+
+      check();
+      const interval = setInterval(check, 60000);
+      return () => clearInterval(interval);
+    }
   }, [userRole]);
 
+  /* ---------------- AUTO FLEX SIZES ---------------- */
+
+  const topCount = topMenu.length;
+
+  const itemGap =
+    topCount >= 9 ? "gap-2" :
+    topCount >= 8 ? "gap-3" :
+    "gap-4";
+
+  const iconSize =
+    topCount >= 9 ? 18 :
+    topCount >= 8 ? 20 :
+    22;
+
+  const btnPadding =
+    topCount >= 9 ? "p-2" :
+    topCount >= 8 ? "p-2.5" :
+    "p-3";
+
   return (
-    <aside 
+    <aside
       className={`
-        h-screen w-16 ${barBg} flex flex-col items-center py-6 justify-between border-r ${border} 
-        fixed left-0 top-0 z-[60] transition-transform duration-300 ease-in-out
-        ${isOpen ? "translate-x-0" : "-translate-x-full"} 
+        h-screen w-16 ${barBg}
+        border-r ${border}
+        fixed left-0 top-0 z-[60]
+        transition-transform duration-300 ease-in-out
+        flex flex-col
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
         md:translate-x-0
       `}
     >
-      {/* Top Menu Section */}
-      <div className="flex flex-col space-y-4 w-full mt-12 md:mt-0">
-        {topMenu.map((item, idx) => (
-          <MenuItem 
-            key={`top-${idx}`} 
-            item={item} 
-            unreadCount={unreadCount}
-            closeSidebar={() => setIsOpen(false)} // Close on click for mobile
-          />
-        ))}
+      {/* TOP SECTION */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div
+          className={`
+            flex flex-col items-center
+            pt-4 md:pt-5
+            ${itemGap}
+            overflow-y-auto
+            scrollbar-hide
+          `}
+        >
+          {topMenu.map((item, idx) => (
+            <MenuItem
+              key={idx}
+              item={item}
+              unreadCount={unreadCount}
+              closeSidebar={() => setIsOpen(false)}
+              iconSize={iconSize}
+              btnPadding={btnPadding}
+            />
+          ))}
+        </div>
       </div>
-      
-      {/* Bottom Menu Section */}
-      <div className="flex flex-col space-y-4 w-full">
+
+      {/* GAP BETWEEN MENUS */}
+      <div className="h-6 md:h-10 shrink-0" />
+
+      {/* BOTTOM SECTION */}
+      <div className={`pb-4 flex flex-col items-center ${itemGap}`}>
         {bottomMenu.map((item, idx) => (
-          <MenuItem 
-            key={`bottom-${idx}`} 
-            item={item} 
+          <MenuItem
+            key={idx}
+            item={item}
             closeSidebar={() => setIsOpen(false)}
+            iconSize={iconSize}
+            btnPadding={btnPadding}
           />
         ))}
       </div>
@@ -134,50 +182,84 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   );
 }
 
-const MenuItem = ({ item, unreadCount, closeSidebar }) => {
+/* ---------------- MENU ITEM ---------------- */
+
+const MenuItem = ({
+  item,
+  unreadCount,
+  closeSidebar,
+  iconSize,
+  btnPadding,
+}) => {
   const { theme } = useTheme();
   const classes = getThemeClasses(theme);
+
   const Icon = item.icon;
   const navigate = useNavigate();
   const location = useLocation();
+
   const isActive = location.pathname === item.path;
 
   const handleClick = () => {
     navigate(item.path);
+
     if (window.innerWidth < 768) {
-      closeSidebar(); // Auto-hide sidebar after navigation on mobile
+      closeSidebar();
     }
   };
 
   return (
-    <div className="relative group flex items-center justify-center w-full px-2">
-      <div className={`absolute left-0 w-1 h-6 bg-indigo-600 rounded-r-full transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`} />
-      <button 
-        className={`p-2.5 rounded-xl transition-all duration-200 relative
-          ${isActive ? 'bg-indigo-600/10 text-indigo-600' : `${classes.hoverBg} ${classes.text} opacity-70`}`} 
+    <div className="relative group w-full flex justify-center">
+      {/* ACTIVE BAR */}
+      <div
+        className={`
+          absolute left-0 w-1 rounded-r-full bg-indigo-600
+          transition-all duration-300
+          ${isActive ? "opacity-100 h-6" : "opacity-0 h-4"}
+        `}
+      />
+
+      {/* BUTTON */}
+      <button
         onClick={handleClick}
+        className={`
+          ${btnPadding}
+          rounded-xl transition-all duration-200 relative
+
+          ${
+            isActive
+              ? "bg-indigo-600/10 text-indigo-500 scale-105"
+              : `${classes.hoverBg} ${classes.text} opacity-70 hover:opacity-100`
+          }
+        `}
       >
-        <Icon size={22} />
+        <Icon size={iconSize} />
       </button>
 
-      
-      {item.path === '/notifications' && unreadCount > 0 && (
-          <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] px-1.5 rounded-full animate-bounce">
-              {unreadCount}
-          </span>
+      {/* BADGE */}
+      {item.path === "/notifications" && unreadCount > 0 && (
+        <span className="absolute top-0 right-1 bg-red-500 text-white text-[10px] min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center">
+          {unreadCount}
+        </span>
       )}
-      
-      {/* Tooltip: Hidden on mobile to avoid clutter */}
-      <span className={`
-        absolute left-16 px-3 py-1.5 
-        ${classes.cardBg} ${classes.text} 
-        text-xs font-bold rounded-lg shadow-xl border ${classes.border}
-        opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0
-        transition-all duration-200 whitespace-nowrap z-[100] pointer-events-none
 
-      `}>
+      {/* TOOLTIP */}
+      <span
+        className={`
+          hidden md:block
+          absolute left-16
+          px-3 py-1.5
+          ${classes.cardBg} ${classes.text}
+          border ${classes.border}
+          rounded-lg shadow-xl
+          text-xs font-bold whitespace-nowrap
+          opacity-0 group-hover:opacity-100
+          translate-x-[-10px] group-hover:translate-x-0
+          transition-all duration-200
+          pointer-events-none z-[100]
+        `}
+      >
         {item.name}
-
       </span>
     </div>
   );
