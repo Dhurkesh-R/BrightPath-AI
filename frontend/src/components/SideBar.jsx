@@ -131,50 +131,41 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     <aside
       className={`
         h-screen w-16 ${barBg}
-        border-r ${border}
         fixed left-0 top-0 z-[60]
-        transition-transform duration-300 ease-in-out
+        border-r ${border}
         flex flex-col
+        transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
         md:translate-x-0
       `}
     >
       {/* TOP SECTION */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <div
-          className={`
-            flex flex-col items-center
-            pt-4 md:pt-5
-            ${itemGap}
-            overflow-y-auto
-            scrollbar-hide
-          `}
-        >
+      <div className="flex-1 flex flex-col pt-4 pb-3 min-h-0">
+        
+        {/* Logo / Top Gap */}
+        <div className="h-2 shrink-0" />
+    
+        {/* Menu Items */}
+        <div className="flex-1 flex flex-col justify-start gap-2 px-1">
           {topMenu.map((item, idx) => (
             <MenuItem
-              key={idx}
+              key={`top-${idx}`}
               item={item}
               unreadCount={unreadCount}
               closeSidebar={() => setIsOpen(false)}
-              iconSize={iconSize}
-              btnPadding={btnPadding}
+              compact={topMenu.length > 8}
             />
           ))}
         </div>
       </div>
-
-      {/* GAP BETWEEN MENUS */}
-      <div className="h-6 md:h-10 shrink-0" />
-
+    
       {/* BOTTOM SECTION */}
-      <div className={`pb-4 flex flex-col items-center ${itemGap}`}>
+      <div className="pb-4 pt-3 border-t border-white/5 flex flex-col gap-2 px-1 shrink-0">
         {bottomMenu.map((item, idx) => (
           <MenuItem
-            key={idx}
+            key={`bottom-${idx}`}
             item={item}
             closeSidebar={() => setIsOpen(false)}
-            iconSize={iconSize}
-            btnPadding={btnPadding}
           />
         ))}
       </div>
@@ -184,13 +175,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
 /* ---------------- MENU ITEM ---------------- */
 
-const MenuItem = ({
-  item,
-  unreadCount,
-  closeSidebar,
-  iconSize,
-  btnPadding,
-}) => {
+const MenuItem = ({ item, unreadCount, closeSidebar, compact = false }) => {
   const { theme } = useTheme();
   const classes = getThemeClasses(theme);
 
@@ -221,19 +206,15 @@ const MenuItem = ({
 
       {/* BUTTON */}
       <button
-        onClick={handleClick}
         className={`
-          ${btnPadding}
+          ${compact ? "p-2" : "p-2.5"}
           rounded-xl transition-all duration-200 relative
-
-          ${
-            isActive
-              ? "bg-indigo-600/10 text-indigo-500 scale-105"
-              : `${classes.hoverBg} ${classes.text} opacity-70 hover:opacity-100`
-          }
+          ${isActive
+            ? "bg-indigo-600/10 text-indigo-600"
+            : `${classes.hoverBg} ${classes.text} opacity-70`}
         `}
-      >
-        <Icon size={iconSize} />
+        >
+        <Icon size={compact ? 18 : 22} />
       </button>
 
       {/* BADGE */}
