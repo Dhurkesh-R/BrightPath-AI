@@ -206,6 +206,7 @@ const MenuItem = ({ item, unreadCount, closeSidebar, compact = false }) => {
 
       {/* BUTTON */}
       <button
+        onClick={handleClick}
         className={`
           ${compact ? "p-2" : "p-2.5"}
           rounded-xl transition-all duration-200 relative
