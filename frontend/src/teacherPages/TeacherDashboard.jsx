@@ -30,7 +30,7 @@ import {
 
 export default function TeacherDashboard() {
   const { theme } = useTheme();
-  const { bg, text, border, primary, textSecondary, bgCard } = getThemeClasses(theme);
+  const { bg, text, border, primary, textSecondary, cardBg } = getThemeClasses(theme);
   
   const [stats, setStats] = useState({
     totalStudents: 0,
@@ -125,7 +125,7 @@ export default function TeacherDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
             >
-              <Card className={`border ${border} ${bgCard} hover:shadow-md transition-shadow`}>
+              <Card className={`border ${border} ${cardBg} hover:shadow-md transition-shadow`}>
                 <CardContent className="flex items-center gap-4 p-5">
                   <div className="p-3 bg-gray-500/5 rounded-2xl">
                     {card.icon}
@@ -145,7 +145,7 @@ export default function TeacherDashboard() {
         </div>
 
         {/* Performance Chart - Responsive Container Fix */}
-        <Card className={`border ${border} ${bgCard} p-4 md:p-6 overflow-hidden`}>
+        <Card className={`border ${border} ${cardBg} p-4 md:p-6 overflow-hidden`}>
           <h2 className="text-lg font-bold mb-6 flex items-center gap-2">
             <BarChart3 size={20} className="text-blue-500" />
             Performance Overview
@@ -195,7 +195,7 @@ export default function TeacherDashboard() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {recentBooks.map((book) => (
-                  <Card key={book.id} className={`border ${border} ${bgCard} p-4 hover:border-blue-500/50 transition-colors`}>
+                  <Card key={book.id} className={`border ${border} ${cardBg} p-4 hover:border-blue-500/50 transition-colors`}>
                     <CardContent className="p-0">
                       <h3 className="font-bold text-sm mb-1 truncate">{book.title}</h3>
                       <p className={`text-xs ${textSecondary} mb-3`}>
