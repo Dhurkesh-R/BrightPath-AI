@@ -12,7 +12,7 @@ import { Loader2, TrendingUp, ShieldAlert, Heart } from "lucide-react";
 export default function Analytics() {
   const { theme, bg, text, border, textSecondary, bgCard } = useTheme(); 
   
-  const [gradeFilter, setGradeFilter] = useState("9");
+  const [gradeFilter, setGradeFilter] = useState("10");
   const [subjectFilter, setSubjectFilter] = useState("all"); 
   const [data, setData] = useState({
     averageScore: null,
@@ -78,8 +78,8 @@ export default function Analytics() {
           <div className={`flex flex-wrap gap-3 items-center ${bgCard} p-2 md:p-3 rounded-2xl border ${border} w-full sm:w-auto`}>
             <CustomSelect 
                 onValueChange={setGradeFilter} 
-                defaultValue="9"
-                options={[{ value: "9", label: "9th Grade" }, { value: "10", label: "10th Grade" }]}
+                defaultValue="10"
+                options={[{ value: "6", label: "6th Grade" }, { value: "7", label: "7th Grade" }, { value: "8", label: "8th Grade" }, { value: "9", label: "9th Grade" }, { value: "10", label: "10th Grade" }, { value: "11", label: "11th Grade" }, { value: "12", label: "12th Grade" }]}
                 theme={theme}
             />
             <CustomSelect 
