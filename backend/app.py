@@ -1776,21 +1776,27 @@ def admin_delete_user(user_id):
     users = [u.to_admin_dict() for u in User.query.all()]
     return jsonify(users), 200
 
+from sqlalchemy import func
+from datetime import datetime, timedelta
+
 @app.route("/admin/stats", methods=["GET"])
 @jwt_required()
 def get_admin_stats():
     claims = get_jwt()
     if claims.get("role") != "admin":
         return jsonify({"error": "Admin access required"}), 403
+        
     admin = User.query.get(get_jwt_identity())
-    # Basic Counts
+    
+    # 1. Basic Counts
     total_users = User.query.filter_by(school_id=admin.school_id).count()
     student_count = User.query.filter_by(school_id=admin.school_id, role='student').count()
     teacher_count = User.query.filter_by(school_id=admin.school_id, role='teacher').count()
     parent_count = User.query.filter_by(school_id=admin.school_id, role='parent').count()
     
-    # Activity Stats (Last 30 days)
+    # 2. Activity Stats (Last 30 days)
     recent_users = User.query.filter_by(school_id=admin.school_id).filter(User.created_at >= datetime.utcnow() - timedelta(days=30)).count()
+    
     total_chats = (
         db.session.query(ChatLog)
         .join(User, ChatLog.user_id == User.id)
@@ -1804,6 +1810,43 @@ def get_admin_stats():
         .filter(User.school_id == admin.school_id)
         .count()
     )
+
+    # 3. Extract Monthly Growth Data directly from your Database
+    monthly_logs = (
+        db.session.query(
+            func.to_char(User.created_at, 'MM').label('month_num'),
+            User.role,
+            func.count(User.id).label('count')
+        )
+        .filter(User.school_id == admin.school_id)
+        .group_by('month_num', User.role)
+        .order_by('month_num')
+        .all()
+    )
+
+    # Dictionary mapper to turn numeric months into Shortened Month Names (X-Axis keys)
+    month_map = {
+        "01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", 
+        "05": "May", "06": "Jun", "07": "Jul", "08": "Aug", 
+        "09": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"
+    }
+
+    # Restructure SQL results into tracking dictionaries
+    growth_dict = {}
+    for month_num, role, count in monthly_logs:
+        month_name = month_map.get(month_num, f"M{month_num}")
+        if month_name not in growth_dict:
+            growth_dict[month_name] = {"name": month_name, "Students": 0, "Teachers": 0}
+        
+        if role == 'student':
+            growth_dict[month_name]["Students"] = count
+        elif role == 'teacher':
+            growth_dict[month_name]["Teachers"] = count
+
+    # Turn key dictionary into an ordered Array structure for Recharts to ingest
+    historical_growth_data = list(growth_dict.values())
+    
+    # 4. Perfectly preserved original schema with historical tracking attached
     stats = {
         "user_overview": {
             "total": total_users,
@@ -1815,11 +1858,12 @@ def get_admin_stats():
         "engagement": {
             "total_ai_interactions": total_chats,
             "active_goals": total_goals
-        }
+        },
+        "historical_growth": historical_growth_data
     }
 
     return jsonify(stats), 200
-
+    
 @app.route("/admin/users/<int:user_id>/verify", methods=["PATCH"])
 @jwt_required()
 def verify_user(user_id):
