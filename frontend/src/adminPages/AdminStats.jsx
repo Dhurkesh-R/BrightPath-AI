@@ -65,13 +65,7 @@ export default function AdminStats() {
     getStats();
   }, []);
 
-  // 2. Generate or extract standard historical baseline analytics
-  const growthData = stats?.historical_growth || [
-    { name: 'Jan', Students: Math.floor((stats?.user_overview?.students || 20) * 0.4), Teachers: Math.floor((stats?.user_overview?.teachers || 5) * 0.5) },
-    { name: 'Feb', Students: Math.floor((stats?.user_overview?.students || 20) * 0.6), Teachers: Math.floor((stats?.user_overview?.teachers || 5) * 0.7) },
-    { name: 'Mar', Students: Math.floor((stats?.user_overview?.students || 20) * 0.8), Teachers: Math.floor((stats?.user_overview?.teachers || 5) * 0.9) },
-    { name: 'Apr', Students: stats?.user_overview?.students || 0, Teachers: stats?.user_overview?.teachers || 0 },
-  ];
+  const growthData = stats?.historical_growth || [];
 
   if (loading && !stats) {
     return (
@@ -144,46 +138,52 @@ export default function AdminStats() {
       {/* DETAILED INSIGHTS SECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* GROWTH CHART IMPLEMENTATION */}
+        {/* GROWTH CHART */}
         <div className={`lg:col-span-2 p-6 rounded-3xl border ${border} ${inputBg} flex flex-col justify-between min-h-[350px]`}>
           <div className="mb-4">
             <h3 className="font-bold uppercase tracking-widest text-sm">User Registration Growth</h3>
-            <p className={`text-xs ${textSecondary}`}>Monthly trends for students and teachers</p>
+            <p className={`text-xs ${textSecondary}`}>Monthly trends for platform onboarding</p>
           </div>
           
           <div className="w-full h-64 text-xs font-semibold">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={growthData} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={chartStrokeColor} vertical={false} />
-                <XAxis dataKey="name" stroke={axisLabelColor} tickLine={false} />
-                <YAxis stroke={axisLabelColor} tickLine={false} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff', 
-                    borderColor: chartStrokeColor,
-                    borderRadius: '12px',
-                    color: theme === 'dark' ? '#f3f4f6' : '#1f2937'
-                  }} 
-                />
-                <Legend verticalAlign="top" height={36} iconType="circle" />
-                <Line 
-                  type="monotone" 
-                  dataKey="Students" 
-                  stroke="#10b981" 
-                  strokeWidth={3} 
-                  activeDot={{ r: 6 }} 
-                  dot={{ r: 4 }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="Teachers" 
-                  stroke="#3b82f6" 
-                  strokeWidth={3} 
-                  activeDot={{ r: 6 }}
-                  dot={{ r: 4 }} 
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {growthData.length === 0 ? (
+              <div className="w-full h-full flex items-center justify-center italic text-gray-400 opacity-60">
+                No historical growth logs available yet.
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={growthData} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartStrokeColor} vertical={false} />
+                  <XAxis dataKey="name" stroke={axisLabelColor} tickLine={false} />
+                  <YAxis stroke={axisLabelColor} tickLine={false} allowDecimals={false} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff', 
+                      borderColor: chartStrokeColor,
+                      borderRadius: '12px',
+                      color: theme === 'dark' ? '#f3f4f6' : '#1f2937'
+                    }} 
+                  />
+                  <Legend verticalAlign="top" height={36} iconType="circle" />
+                  <Line 
+                    type="monotone" 
+                    dataKey="Students" 
+                    stroke="#10b981" 
+                    strokeWidth={3} 
+                    activeDot={{ r: 6 }} 
+                    dot={{ r: 4 }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="Teachers" 
+                    stroke="#3b82f6" 
+                    strokeWidth={3} 
+                    activeDot={{ r: 6 }}
+                    dot={{ r: 4 }} 
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
         
