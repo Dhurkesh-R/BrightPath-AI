@@ -42,7 +42,6 @@ def register():
             user_id=user.id,
             grade=data.get("class"), # matched to frontend key
             section=data.get("section"),
-            school=data.get("school"),
             age=data.get("age"),
             city=data.get("city"),
             interests=data.get("interests")
@@ -106,7 +105,7 @@ def login():
         additional_claims={"role": user.role}
     )
     refresh_token = create_refresh_token(identity=str(user.id))
-    school_name = user.school.name if user.school else "Unassigned"
+    school_name = user.school.name
     return jsonify({
         # FIX 1: Change 'access_token' to 'token' to match client's expectation
         "token": access_token, 
